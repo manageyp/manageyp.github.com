@@ -1,0 +1,11 @@
+---
+layout: page
+title: 分类
+permalink: /categories/
+---
+{% for category in site.categories %}
+<a name="{{ category | first }}"><h2>{{ category | first }}</h2></a>
+<ul>
+    {% for post in category.last %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}
+</ul>
+{% endfor %}

@@ -1,0 +1,11 @@
+---
+layout: page
+title: 各种标签
+permalink: /tags/
+---
+{% for tag in site.tags %}
+<a name="{{ tag | first }}"><h2>{{ tag | first }}</h2></a>
+<ul>
+    {% for post in tag.last %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}
+</ul>
+{% endfor %}
