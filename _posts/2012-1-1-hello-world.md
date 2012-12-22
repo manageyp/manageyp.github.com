@@ -7,5 +7,8 @@ tags: hello world
 record_on: 2012-1-1
 ---
 
-Hello World!
+{% highlight bash %} 
+$ irb
+$ puts Hello World!
+{% endhighlight %}
 -- by Henry Lee from Shanghai.

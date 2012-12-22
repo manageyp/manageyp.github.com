@@ -1,5 +1,6 @@
 ---
 layout: page
+title: Henry Lee's Blog Home Page
 permalink: /
 ---
 {% for post in site.posts limit: 1 %}
@@ -9,13 +10,13 @@ permalink: /
 {% endfor %}
 {% for post in site.posts limit: 1 offset: 1 %}
   <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-  <div>{{ post.date }}</div>
-  <p>{{ post.description }} <a href="{{ post.url }}">继续阅读</a></p>
+  <div>{{ post.record_on }}</div>
+  <p>{{ post.description }} <a href="{{ post.url }}">Read more</a></p>
 {% endfor %}
 <hr />
 <ul>
   {% for post in site.posts limit: 10 offset: 3 %}
-    {{ post.date }}
+    {{ post.record_on }}
     <a href="{{ post.url }}">{{ post.title }}</a><br />
   {% endfor %}
 </ul>
