@@ -8,7 +8,7 @@ permalink: /
   {{ post.content }}
   <div>{{ post.record_on }}</div>
 {% endfor %}
-{% for post in site.posts limit: 1 offset: 1 %}
+{% for post in site.posts limit: 2 offset: 1 %}
   <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
   <div>{{ post.record_on }}</div>
   <p>{{ post.description }} <a href="{{ post.url }}">Read more</a></p>

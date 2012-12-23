@@ -1,0 +1,26 @@
+---
+layout: post
+title: How I built my blog based on Github Pages
+description: How I built my blog based on Github Pages, using jekyll.
+categories: Github
+tags: Github jekyll
+record_on: 2012-12-23
+---
+<p>A lot of my friends use Github to host their blogs, such as <a href="http://stormzhang.github.com/" target="_blank">Storm</a>, <a href="http://ryancheung.me/" target="_blank">Ryan</a>, as well as <a href="http://zhouguangming.github.com/" target="_blank">Guangming</a>. Recently, I figured out the details to build one, all by myself. I thought I would write a post about it.
+BTW, it's really easy. If you prefer to Chinese, you can checkout this <a href="http://www.ruanyifeng.com/blog/2012/08/blogging_with_jekyll.html" target="_blank">post</a>.</p>
+<p><strong>First</strong>, you need to setup a <a href="http://www.github.com/" target="_blank">Github</a> account, and follow the git setup <a href="http://help.github.com/win-set-up-git/" target="_blank">instructions</a>. </p>
+<p><strong>Second</strong>, create a repository with your Github username. For me it's <a href="https://github.com/manageyp/manageyp.github.com" target="_blank">manageyp.github.com</a></p>
+<p><strong>Third</strong>, your can use Github tools to generate Pages automatically, here are the official <a href="https://help.github.com/categories/20/articles" target="_blank">documentations</a>.
+But I want to setup my own styles and configurations. So I created the project manually and take hours to 
+design the layouts. Here are the details:</p>
+<pre><code class="ruby">git clone https://github.com/manageyp/manageyp.github.com.git
+cd manageyp.github.com</code></pre></br>
+<p><strong>Four</strong>, you need to install <strong>jekyll</strong>, it's a static site generator. Following the <a href="http://wiki.github.com/mojombo/jekyll/configuration" target="_blank">configuration</a>, you can setup a blog aware project. </p>
+<p>After then, you can use the following command to spin up a jekyll server.</p>
+<pre><code class="ruby">jekyll --server --auto</code></pre></br>
+<p>This will fire up a local server which will serve up your blog project.
+You should be able to browser it like this</p>
+<pre><code class="ruby">localhost:4000</code></pre></br>
+<p>When you finished setup settings, you can push your project back to Github host.</p>
+<pre><code class="ruby">git push origin master</code></pre></br>
+<p><strong>Finally</strong>, your first blog is online now. You can access it via <a href="https://github.com/manageyp" target="_blank">managyp.github.com</a>.</p>
