@@ -1,0 +1,49 @@
+---
+layout: post
+title: MongoDB Basic Concepts
+description: MongoDB Basic Concepts
+categories: MongoDB
+tags: MongoDB
+record_on: 2012-12-30
+---
+<p>
+学习资源：<a href="http://cn.docs.mongodb.org/manual/" target="_blank"> MongoDB 官方中文手册</a>，
+<a href="http://www.amazon.cn/gp/product/B0050CQ4MQ/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=manageyp-23&linkCode=as2&camp=536&creative=3200&creativeASIN=B0050CQ4MQ" target="_blank"> MongoDB 权威指南</a>
+</p>
+<h3>文档</h3>
+<p>
+<b>文档是 MongoDB 中数据的基本单元</b>，类似与关系数据库系统中的行。多个键及其关联的值有序地放置在
+一起便是文档。文档中的值支持多种数据类型。</br>
+<b>文档的键是字符串</b>。除了少数例外情况，键可以使用任意 UTF-8 字符。</br>
+1. 键不能含有\0(空字符)。这个字符用来表示键的结尾；</br>
+2. $和.为保留字符，有特别的意义；</br>
+3. 以”_”开头的键是保留的。</br>
+举例：<code class="ruby">{“greeting”：“Hello World.”}</code>
+</p>
+
+<p>
+<b>MongoDB 不但区分类型，也区分大小写。且不能出现重复的键。</b></br>
+以下两个文档是不同的：</br>
+<code class="ruby">{“foo”：2}</code></br>
+<code class="ruby">{“foo”：“2”}</code></br>
+以下两个也是不同的：</br>
+<code class="ruby">{“foo”：2}</code></br>
+<code class="ruby">{“Foo”：2}</code></br>
+</p>
+<h3>集合</h3>
+<p>
+集合就是一组文档，如同关系数据库系统中的表；
+每一个文档都有一个特殊的键“_id”，它在文档所处的集合中是唯一的；
+<b>集合是没有模式的</b>，因此集合中的文档可以是各式各样的。</br>
+集合命名规范：</br>
+1. 不能是空字符串；</br>
+2. 不能含有 \0字符；</br>
+3. 不能以“system”开头</br>
+4. 其他保留字符。</br>
+</p>
+<p>
+MongoDB 中使用<b>子集合</b>来组织数据是很好的方法。如： db.blog 代表 blog 集合，db.blog.posts 代表 blog.posts 集合。</br>
+MongoDB 的单个实例，可以容纳多个独立的数据库，每一个都有自己的集合和权限；
+数据库名会变成文件系统里的文件。因此数据库名会有很多限制，尽量不包含特殊字符。</br>
+把数据库的名字放到集合名前面，得到的就是集合的完全限定名，称为<b>命名空间</b>。
+</p>

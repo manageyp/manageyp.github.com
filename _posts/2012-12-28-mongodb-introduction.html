@@ -1,0 +1,61 @@
+---
+layout: post
+title: MongoDB Introduction
+description: MongoDB Introduction
+categories: MongoDB
+tags: MongoDB
+record_on: 2012-12-28
+---
+<p>
+第一次接触 <a href="http://www.mongodb.org/" target="_blank"> MongoDB </a>时间是在2010年12月份左右，当时网上对 NoSQL 的讨论很热烈。预测未来构建互联网项目的一个趋势：MongoDB，Nginx，Linux，Ruby/PHP/Python。由此开始关注 MongoDB，同时也关注了<a href="http://redis.io/" target="_blank"> redis </a>。目前 redis 已经引入到项目中，使用在频繁查询状态的情景下，性能很不错。使用 MongoDB 的门槛较 redis 要高一些，在元旦假期里（2013年1月1日），打算对 MongoDB 进行系统的学习。
+</p>
+<p>
+学习资源：<a href="http://cn.docs.mongodb.org/manual/" target="_blank"> MongoDB 官方中文手册</a>，
+<a href="http://www.amazon.cn/gp/product/B0050CQ4MQ/ref=as_li_qf_sp_asin_tl?ie=UTF8&tag=manageyp-23&linkCode=as2&camp=536&creative=3200&creativeASIN=B0050CQ4MQ" target="_blank"> MongoDB 权威指南</a>
+</p>
+<p>
+  第一篇，介绍一下 MongoDB 的一些背景知识，以及基本概念。
+</p>
+<h3>项目创立的原因</h3>
+<p>
+创立 MongoDB 这个项目，是为了建设一种灵活、高效、易于扩展、功能完备的数据库。MongoDB 是面向文档的数据库，放弃关系模型的原因是为了获得更加方便的扩展性。将原来“行”（row）的概念，换成“文档”（document）模型。可以将文档或者数组内嵌进来，一条记录可以表示复杂的层次关系。没有模式：文档的健不会事先定义，也不会固定不变。可以非常容易的变更数据模型。
+</p>
+<h3>希望达到的目标</h3>
+<p>
+<strong>容易扩展</strong></br>
+数据分散到多台机器上。MongoDB 最初设计的时候，即考虑了扩展问题。面向文档的数据模型，使其可以自动
+在多台服务器之间分割数据。还可以平衡集群的数据和负载，自动重排文档。开发者可以专注于编写应用，在需要更大容量的时候，只需在集群中添加新机器，剩下的处理交给 MongoDB 就可以了。
+</p>
+<p>
+<strong>丰富的功能</strong></br>
+索引：支持通用辅助索引，能够进行多种快速查询，也提供唯一的、复合的等索引能力；</br>
+存储 JavaScript：直接在服务期端存储 JavaScript 的函数和值；</br>
+聚合：MongoDB 支持 MapReduce 和其他聚合工具；</br>
+固定集合：集合的大小是有上限的，对某些类型的数据（如日志）特别有用；</br>
+文件存储： MongoDB 支持用一种容易使用的协议，存储大型文件和文件的元数据。</br></br>
+<em>缺陷：有些关系型数据库常见的功能 MongoDB 并不具备，如联接（join）和复杂的多事务，
+因为功能很难在一个分布式系统上实现。</em>
+</p>
+<p>
+<strong>性能</strong></br>
+MongoDB 在各个方面都充分考虑了性能。MongoDB 使用 MongoDB 传输协议作为与服务器交互的
+主要方式。对文档进行动态填充，预分配数据文件，用空间换取性能的稳定。默认的存储引擎中使用了
+内存映射文件，将内存管理工作交给操作系统处理。动态查询优化器会“记住”执行查询最高效的方式。
+</p>
+<h3>选择 MongoDB 的理由</h3>
+<p>
+MongoDB 自由灵活的文档模型，使面向对象的开发更加自然，对于大数据量，高并发，弱事务的互联网应用。
+可能不会在所有场合取代 MySQL，完全可以满足 Web 2.0 和移动互联网应用的数据存储需求。
+MongoDB 内置的水平扩展机制，提供了从百万到十亿级别的数据量处理能力。
+开箱即用的特性，大大降低了中小网站的运维成本。
+</p>
+<p>
+互联网项目时刻都在发展和变动，改变一个存储单元的结构是常事，对于关系型数据库，
+如MySQL，在线模式，更新结构，不是一件简单的事情。
+</p>
+<p>
+MongoDB 简单易用，集合支持松散的模式，易于灵活调整。支持复杂的属性，可以建立索引，
+可以直接对某个字段，进行原子性的改变。
+支持主流 Web 应用的关键功能：索引、复制、分片、丰富的查询语法，特别灵活的数据模型。
+速度也不错。
+</p>
