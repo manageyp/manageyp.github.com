@@ -32,7 +32,7 @@ lib/abstract_controller/layouts.rb:272:in `template_exists?'
   render :template=>template, :layout => "application"</code>
 </pre>
 
-<h3>Helper all</h3>
+<h3>2. Helper all</h3>
 <p>
 Rails 3.0 automatic loading for helper :all。<a href="https://rails.lighthouseapp.com/projects/8994/tickets/3945-helper-all-on-by-default" target="_blank">原文链接。</a><br/>
 项目中存在 helper 方法命名冲突的可能性很大！
@@ -40,13 +40,13 @@ Rails 3.0 automatic loading for helper :all。<a href="https://rails.lighthousea
 其他替代方法：Decorators etc.
 </p>
 
-<h3>Mass assignment vulnerability</h3>
+<h3>3. Mass assignment vulnerability</h3>
 <p>黑客，可以很容易的篡改表单提交的数据，而且，程序会真实保存。<a href="https://github.com/rails/rails/issues/5228" target="_blank">原文链接。</a><br/>
 Rails 3.2 已经完善，需要显示在 model 中声明 attr_accessible , 才能对其赋值， 
 提高了项目的安全性。
 </p>
 
-<h3>Multiple vulnerabilities in parameter parsing in Action Pack</h3>
+<h3>4. Multiple vulnerabilities in parameter parsing in Action Pack</h3>
 <p>
 <a href="http://arstechnica.com/security/2013/01/extremely-crtical-ruby-on-rails-bug-threatens-more-than-200000-sites/" target="_blank">Extremely critical Ruby on Rails bug</a><br/>
 <a href="http://ruby-china.org/topics/7941" target="_blank">Rails这次漏洞有点严重啊</a><br/>
