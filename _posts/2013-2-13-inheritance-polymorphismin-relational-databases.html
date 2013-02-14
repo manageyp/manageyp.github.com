@@ -1,0 +1,69 @@
+---
+layout: post
+title: Inheritance and Polymorphismin Model Design in Relational Databases
+description: Inheritance and Polymorphismin Model Design in Relational Databases
+categories: Model Design
+tags: Model Design
+record_on: 2013-2-13
+---
+<p>在关系型数据库的表设计中，使用继承和多态</p>
+<p>基于 Web 开发的互联网应用，仍然在使用关系型数据库，如 MySQL。在表设计上，引入继承和多态，可以解决一些常见的问题。
+下面是举例：在电商网站，一定会涉及到商品，假设商品只包含图书和手机。<br/>
+</p>
+
+<h3>1. 分表设计</h3>
+
+<p>将图书和手机，看做独立的商品，各自有单独的表结构：</p>
+<p><img src="/images/posts/model-design-1.jpeg" /></p>
+
+<p>
+  <pre>
+    优点：独立的表结构设计，结构清晰
+    缺点：有重复的、统一字段，如：title, price; 
+                丢失统一字段的索引，如：
+                a. SKU, 产品统一编号的简称，每种产品均对应有唯一的SKU号, 因此需要在多个表中，维护其唯一性；
+                b. 搜索 title 包含 ‘手机’的商品，既要搜索 books, 又要搜索 phones 表。若这样独立的商品种类越多，越麻烦。
+  </pre>
+</p>
+
+
+<h3>2. 单表设计</h3>
+
+<p>将图书和手机，看做统一的商品，设计在一张表中：</p>
+<p><img src="/images/posts/model-design-2.jpeg" /></p>
+
+<p>
+  <pre>
+    优点：解决了第1种设计存在的重复字段、索引的缺点
+    缺点：多余、冗余的字段，不仅占用多余的存储空间，同时使该表结构变的复杂，使用上容易产生困惑；
+                随着商品种类的增多，该表结构会更复杂。
+  </pre>
+</p>
+
+<h3>3. 继承表设计</h3>
+
+<p>将图书和手机，看做独立的商品，各自有单独的表结构：</p>
+<p><img src="/images/posts/model-design-3.jpeg" /></p>
+
+<p>
+  <pre>
+    优点：解决了第1、2种设计存在的缺点; 
+                能够较好的适应未来的变化
+    缺点：创建时需要维护表之间 关系；
+                读取时，需要关联表查询
+  </pre>
+</p>
+
+<h3>4. 多态表设计</h3>
+
+<p>将图书和手机，看做独立的商品，各自有单独的表结构：</p>
+<p><img src="/images/posts/model-design-4.jpeg" /></p>
+
+<p>
+  <pre>
+    优点：解决了第1、2种设计存在的缺点; 
+                能够较好的适应未来的变化；
+                Rails 已经有了很好的支持
+    缺点：应用层需要维护表之间的关系
+  </pre>
+</p>
