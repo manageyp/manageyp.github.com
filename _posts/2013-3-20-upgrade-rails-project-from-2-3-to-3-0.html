@@ -1,0 +1,127 @@
+---
+layout: post
+title: Upgrade Rails project from 2.3 to 3.0
+description: Upgrade Rails project version from 2.3.x to 3.0.x
+categories: Rails
+tags: Rails
+record_on: 2013-3-20
+---
+<p>曾今将一个项目代码由 Rails 2.3.11 升级为 3.0.20。整理一下在这个过程中，解决问题的清单。</p>
+<p>升级的原因主要是 Rails 3 在性能和安全上有很大提升，另外 3 引入 assets 管理 js/css/images；
+使用 bundler 管理 gems等特性都非常实用。
+</p>
+
+<h3>1. 安装 rails_upgrade</h3>
+
+<p><a href="https://github.com/rails/rails_upgrade" target="_blank"> 链接</a>
+  这个 Gem 封装了以下四个 rake 命令：</p>
+<p>
+  <pre>
+    # Check your app for required upgrades
+    <code class="ruby"><big>rake rails:upgrade:check</big></code>
+  </pre>
+  <pre>
+    执行完上面的任务，会查找不兼容的语法和插件。
+    最后列出一堆需要修改的文件，并给出需要修改的原因。
+  </pre>
+  <pre>
+    # Backup your likely modified files that might be overwritten by the generator
+    <code class="ruby"><big>rake rails:upgrade:backup</big></code>
+  </pre>
+  <pre>
+    该任务用来备份重要的配置文件。
+  </pre>
+  <pre>
+    # Generate a new route file
+    <code class="ruby"><big>rake rails:upgrade:routes</big></code>
+  </pre>
+  <pre>
+    会把 Rails 2.3 格式的 route 文件转化成 Rails 3 格式。
+  </pre>
+  <pre>
+    # Generate a Gemfile from your config.gem directives
+    <code class="ruby"><big>rake rails:upgrade:gems</big></code>
+  </pre>
+  <pre>
+    会把写在 environment.rb 里面的 gem 管理方式变成 bundle 管理的 Gemfile 格式。
+  </pre>
+  <pre>
+    # Generate code for a new config/application.rb from your environment.rb
+    <code class="ruby"><big>rake rails:upgrade:configuration</big></code>
+  </pre>
+  <pre>
+    会将原先在 environment.rb 里面的其他设置转化成 Rails 3 格式的 config/application.rb 文件。
+  </pre>
+</p>
+
+<h3>2. 生成 Rails 3 文件</h3>
+
+<p>
+  <pre>
+    在项目目录下执行 
+    <code class="ruby"><big>rails new .</big></code>
+  </pre>
+  <pre>
+    文件生成后，基于 Rails 3 修改项目配置信息: session, cookie等。
+    # Rails 3
+    Railsapp::Application.config.session_store :active_record_store, :key => 'your-session-key'
+    Railsapp::ActionController::Base.config.secret_token = 'your-secret-token'
+
+    # 项目常量写法
+    RAILS_ENV Rails.env
+    RAILS_ROOT  Rails.root
+
+    # Test helpers path
+    require 'rails/test_help'
+
+    # autoload path
+    config.autoload_paths += %W(#{Rails.root}/lib #{Rails.root}/extras)
+
+    调整 route 配置，参考文章
+    <a href="http://yehudakatz.com/2009/12/26/the-rails-3-router-rack-it-up/" target="_blank"> rails-3-router</a>
+    <a href="http://gregmoreno.wordpress.com/2010/08/12/rails-3-upgrade-part-2-routes/" target="_blank"> rails-3-upgrade</a>
+  </pre>
+</p>
+
+<h3>3. Gems/Plugins 升级</h3>
+
+<p>
+  will_paginate 由 plugin 替换为 gem. 重写分页的显示需要参考: <a href="http://thewebfellas.com/blog/2010/8/22/revisited-roll-your-own-pagination-links-with-will_paginate-and-rails-3" target="_blank"> 文章链接</a>
+  <pre>
+    # .paginate().all 
+  </pre>
+  cache_fu 替换为 dalli <a href="https://github.com/mperham/dalli" target="_blank"> Dalli 链接</a>
+</p>
+
+<h3>4. Helpers </h3>
+<p>
+  <pre>
+  # 多加 = 等号，输出 html
+  # form_for, form_tag, fields_for and link_to using < % = instead of < %
+      
+  # Rails 3 默认使用了 safebuffers, 不需要到处加< % = h ... % >
+  # Rails 3 推荐无侵入式的JS，一些旧的 onclick 的 helper 都改写成 UJS 方式
+  # Use raw to avoid escaping HTML characters in views
+  # html_safe
+  # helper :all，Rails 源代码 Bug
+  # 重写 error_messages_for
+  # form_remote_for 参考改进链接：
+  <a href="https://github.com/rails/prototype_legacy_helper/blob/master/lib/prototype_legacy_helper.rb" target="_blank">prototype_legacy_helper</a>
+  </pre>
+</p>
+<h3>5. ActiveRecord </h3>
+<p>
+  <pre>
+  # validate callback 语法改变
+  # Change :dependent => destroy to :dependent => :destroy
+  # has_and_belongs_to_many
+  # .find(:all) to .all()
+  </pre>
+</p>
+<h3>6. ActionController </h3>
+<p>
+  <pre>
+  # 需要显示指明 layout, 法则报错。错误原因为 Rails 源代码 Bug
+  # render :template=>template, :layout => "application"
+  </pre>
+</p>
