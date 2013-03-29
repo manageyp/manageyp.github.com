@@ -13,23 +13,18 @@ record_on: 2013-1-13
 
 <p>需要在 controller 中，显示的声明 layout 的调用。即使父类有声明，子类也需要再次声明。
 否则，报如下错误：</p>
-<pre>
-  <code class="ruby">
+<pre class="prettyprint lang-html">
 ArgumentError in FoolController#index
 wrong number of arguments (2 for 1)actionpack (3.0.6) 
 lib/abstract_controller/layouts.rb:272:in `template_exists?'
-</code>
 </pre>
 <p><a href="https://github.com/rails/rails/blob/3-0-stable/actionpack/lib/abstract_controller/layouts.rb" target="_blank"> Rails 源代码 </a>，第272行。</p>
-<pre>
-  <code class="ruby">
-    if template_exists?("#{_implied_layout_name}", #{_prefix.inspect})
-</code>
+<pre class="prettyprint lang-html">
+if template_exists?("#{_implied_layout_name}", #{_prefix.inspect})
 </pre>
 <p>上面的 if 条件，运行时必定报错！下面的语句，同样需要显示指明 layout。</p>
-<pre>
-  <code class="ruby">
-  render :template=>template, :layout => "application"</code>
+<pre class="prettyprint lang-html">
+render :template=>template, :layout => "application"
 </pre>
 
 <h3>2. Helper all</h3>

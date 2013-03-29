@@ -18,53 +18,45 @@ record_on: 2013-1-2
 <p>
 可以使用下面的 curl 下载（比较慢）。可以通过网页直接下载，点击<a href="http://www.mongodb.org/dr/fastdl.mongodb.org/osx/mongodb-osx-x86_64-2.2.2.tgz/download" target="_blank">
 下载链接。</a></br>
-<code class="ruby">
-  curl http://downloads.mongodb.org/osx/mongodb-osx-x86_64-2.2.2.tgz > mongodb.tgz
-</code></br>
+<pre class="prettyprint lang-html">
+curl http://downloads.mongodb.org/osx/mongodb-osx-x86_64-2.2.2.tgz > mongodb.tgz
+</pre>
 下载完成后，找到安装包，并解压。</br>
-<code class="ruby">
-  cd /Users/[your-name]/Downloads
-</code></br>
-<code class="ruby">
-  tar -zxvf mongodb-osx-x86_64-2.2.2.tgz
-</code>
+<pre class="prettyprint lang-html">
+cd /Users/[your-name]/Downloads
+tar -zxvf mongodb-osx-x86_64-2.2.2.tgz
+</pre>
 </p>
 <h3>安装和环境配置</h3>
 <p>
 本人安装在<b> /usr/local/ </b>目录下面。</br>
-<code class="ruby">
-  sudo mv mongodb-osx-x86_64-2.2.2 /usr/local/mongodb
-</code></br>
+<pre class="prettyprint lang-html">
+sudo mv mongodb-osx-x86_64-2.2.2 /usr/local/mongodb
+</pre>
 手动创建 MongoDB 数据和log存储位置。</br>
-<code class="ruby">
-  sudo mkdir /usr/local/mongodb_data /var/log/mongodb
-</code></br>
+<pre class="prettyprint lang-html">
+sudo mkdir /usr/local/mongodb_data /var/log/mongodb
+</pre>
 配置文件访问权限。</br>
-<code class="ruby">
-  sudo chown -R root /usr/local/mongodb
-</code></br>
+<pre class="prettyprint lang-html">
+sudo chown -R root /usr/local/mongodb
+</pre>
 简单配置一下 MongoDB Server 的参数。</br>
-<code class="ruby">
-  sudo vim /usr/local/mongodb/mongod.conf
-</code></br>
+<pre class="prettyprint lang-html">
+sudo vim /usr/local/mongodb/mongod.conf
+</pre>
 输入下面的配置信息，并保存。
-<table class="CodeRay"><tbody><tr>
-  <td class="line_numbers" title="click to toggle" onclick="with (this.firstChild.style) { display = (display == '') ? 'none' : '' }"><pre>1<tt>
-</tt>2<tt>
-</tt>3<tt>
-</tt>4<tt>
-</tt>5<tt>
-</tt></pre></td>
-  <td class="code"><pre ondblclick="with (this.style) { overflow = (overflow == 'auto' || overflow == '') ? 'visible' : 'auto' }" style="overflow: auto;"># Store data alongside MongoDB instead of the default, /data/db/<tt>
-</tt>dbpath = /usr/local/mongodb_data<tt>
-</tt><tt>
-</tt># Only accept local connections<tt>
-</tt>bind_ip = 127.0.0.1</pre></td>
-</tr></tbody></table>
+<pre class="prettyprint lang-html">
+# Store data alongside MongoDB instead of the default, /data/db/
+dbpath = /usr/local/mongodb_data
+
+# Only accept local connections
+bind_ip = 127.0.0.1
+</pre>
 将 MongoDB Server 注册为 OS X 系统进程。在系统启动时，即加载 MongoDB 服务。</br></br>
-<code class="ruby">
-  sudo vim /Library/LaunchDaemons/org.mongodb.mongod.plist
-</code></br></br>
+<pre class="prettyprint lang-html">
+sudo vim /Library/LaunchDaemons/org.mongodb.mongod.plist
+</pre>
 输入下面的配置信息，并保存。</br></br>
 <table class="CodeRay"><tbody><tr>
   <td class="line_numbers" title="click to toggle" onclick="with (this.firstChild.style) { display = (display == '') ? 'none' : '' }"><pre>1<tt>
@@ -122,40 +114,28 @@ record_on: 2013-1-2
 </tt><span class="ta">&lt;/plist&gt;</span></pre></td>
 </tr></tbody></table>
 重新加载 launch。</br></br>
-<code class="ruby">
-  sudo launchctl load /Library/LaunchDaemons/org.mongodb.mongod.plist
-</code></br></br>
+<pre class="prettyprint lang-html">
+sudo launchctl load /Library/LaunchDaemons/org.mongodb.mongod.plist
+</pre>
 检查是否配置成功，可以使用浏览器访问： <a href="http://localhost:28017" target="_blank">localhost:28017</a>
 </p>
 <p>
 配置 PATH，方便以后在命令行中直接使用 mongo 等工具。</br>
-<code class="ruby">
+<pre class="prettyprint lang-html">
 sudo vim ~/.bash_profile
-</code></br>
+</pre>
 添加下面一行配置信息。
-<table class="CodeRay"><tbody><tr>
-  <td class="line_numbers" title="click to toggle" onclick="with (this.firstChild.style) { display = (display == '') ? 'none' : '' }"><pre>1<tt>
-</tt></pre></td>
-  <td class="code">
-  <pre ondblclick="with (this.style) { overflow = (overflow == 'auto' || overflow == '') ? 'visible' : 'auto' }" style="overflow: auto;">export PATH=/usr/local/mongodb/bin:$PATH
-</pre></td>
-</tr></tbody></table>
+<pre class="prettyprint lang-html">
+export PATH=/usr/local/mongodb/bin:$PATH
+</pre>
 保存后，在命令行输入 mongo，回车后即进入 MongoDB 自带简洁，但功能强大的 JavaScript shell，这个工具对于管理 MongoDB 实例和
 操作数据库作用非常大。</br></br>
-<table class="CodeRay"><tbody><tr>
-  <td class="line_numbers" title="click to toggle" onclick="with (this.firstChild.style) { display = (display == '') ? 'none' : '' }"><pre>1<tt>
-</tt>2<tt>
-</tt>3<tt>
-</tt>4<tt>
-</tt>5<tt>
-</tt>6<tt>
-</tt></pre></td>
-  <td class="code"><pre ondblclick="with (this.style) { overflow = (overflow == 'auto' || overflow == '') ? 'visible' : 'auto' }" style="overflow: auto;">$ mongo<tt>
-</tt>  MongoDB shell version: 2.2.2<tt>
-</tt>  connecting to: test<tt>
-</tt>$ db.test.save( { greeting: "Hello World!" } )<tt>
-</tt>$ db.test.find()<tt>
-</tt>  { "_id" : ObjectId("50e3f4f5ca036a7c173cbb41"), "greeting" : "Hello World!" }
-</pre></td>
-</tr></tbody></table>
+<pre class="prettyprint lang-html">
+$ mongo
+  MongoDB shell version: 2.2.2
+  connecting to: test
+$ db.test.save( { greeting: "Hello World!" } )
+$ db.test.find()
+  { "_id" : ObjectId("50e3f4f5ca036a7c173cbb41"), "greeting" : "Hello World!" }
+</pre>
 </p>

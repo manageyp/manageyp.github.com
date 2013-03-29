@@ -8,9 +8,13 @@
   <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
   <link rel="stylesheet" href="/stylesheets/foundation.min.css">
   <link rel="stylesheet" href="/stylesheets/pygment_trac.css">
+  <link rel="stylesheet" href="/stylesheets/prettify.css">
+  <link rel="stylesheet" href="/stylesheets/sunburst.css">
   <script src="/javascripts/modernizr.foundation.js"></script>
+  <script src="/javascripts/prettify.js"></script>
+  <script src="/javascripts/lang-css.js"></script>
 </head>
-<body>
+<body onload="prettyPrint();">
   <div class="row">
     <div class="twelve columns">
       <h1>{{ site.title }}</h1>

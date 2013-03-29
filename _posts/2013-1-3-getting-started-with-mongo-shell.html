@@ -12,68 +12,34 @@ record_on: 2013-1-3
 </p>
 <h3>数据库操作</h3>
 <p>
-  <code class="ruby">
-    $ <big>mongo</big>
-  </code>
-  <pre>
-    MongoDB shell version: 2.2.2
-    connecting to: test
-  </pre>
-  <code class="ruby">
-    <big>> show dbs</big>
-  </code>
-  <pre>
-    local   (empty) </br>
+<pre class="prettyprint lang-html">
+$ mongo
+  MongoDB shell version: 2.2.2
+  connecting to: test
+> show dbs
+  local   (empty)
+  test    0.203125GB
+> use test
+  switched to db test
+> show collections
+  system.indexes
+  test
+> use blog
+  switched to db blog
+> show dbs
+  local   (empty)
     test    0.203125GB
-  </pre>
-  <code class="ruby">
-    <big>> use test</big>
-  </code>
-  <pre>
-    switched to db test
-  </pre>
-  <code class="ruby">
-    <big>> show collections</big> </br>
-  </code>
-  <pre>
-    system.indexes </br>
-    test
-  </pre>
-  <code class="ruby">
-    <big>> use blog</big> </br>
-  </code>
-  <pre>
-    switched to db blog
-  </pre>
-  <code class="ruby">
-    <big>> show dbs</big> </br>
-  </code>
-  <pre>
-    local   (empty) </br>
-    test    0.203125GB
-  </pre>
-  <code class="ruby">
-    <big>> db.users.save( { username:"HenryLee" } )</big> </br>
-    <big>> show dbs</big> </br>
-  </code>
-  <pre>
-    blog    0.203125GB </br>
-    local   (empty) </br>
-    test    0.203125GB
-  </pre>
-  <code class="ruby">
-    <big>> show collections</big> </br>
-  </code>
-  <pre>
-    system.indexes </br>
-    users
-  </pre>
-  <code class="ruby">
-    <big>> db.users.find()</big> </br>
-  </code>
-  <pre>
-    { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
-  </pre>
+> db.users.save( { username:"HenryLee" } )
+> show dbs
+  blog    0.203125GB
+  local   (empty)
+  test    0.203125GB
+> show collections
+  system.indexes
+  users
+> db.users.find()
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+</pre>
 </p>
 <p>
 从结果来看，MongoDB 的实现与我们之前的 SQL 操作习惯有很多差别。
@@ -91,27 +57,25 @@ MangoDB will create the value, collection and database automatically.
     db.collection.insert( < document > )</br>
     < document > ： 文档
   </pre>
-  <code class="ruby">
-    <big>> db.users.insert( { username:"StormZhang" } )</big></br>
-    <big>> db.users.find()</big>
-  </code>
-  <pre></br>
-   { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }</br>
-   { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }</br>
-  </pre>
+
+<pre class="prettyprint lang-html">
+> db.users.insert( { username:"StormZhang" } )
+> db.users.find()
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+  { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }
+</pre>
   <b>2. Create with Save</b>
   <pre></br>
     db.collection.save( < document > )
   </pre>
-  <code class="ruby">
-    <big>> db.users.save( { username:"pipi" } )</big></br>
-    <big>> db.users.find()</big>
-  </code>
-  <pre></br>
-   { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }</br>
-   { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }</br>
-   { "_id" : ObjectId("50e55fcaa3747d523d3b66fe"), "username" : "pipi" }</br>
-  </pre>
+
+<pre class="prettyprint lang-html">
+> db.users.save( { username:"pipi" } )
+> db.users.find()
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+  { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }
+  { "_id" : ObjectId("50e55fcaa3747d523d3b66fe"), "username" : "pipi" }
+</pre>
   <b>3. Create with Upsert（具体用法，参考 "更新 Update"）</b>
   <pre></br>
     db.collection.update( < query >,
@@ -127,81 +91,64 @@ MangoDB will create the value, collection and database automatically.
     < query >：SQL SELECT</br>
     < projection >： 返回数据集包含的字段（returns only those fields as specified）
   </pre>
-  <code class="ruby">
-    <big>> db.users.find( { username:"HenryLee" } )</big>
-  </code>
-  <pre></br>
-   { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }</br>
-  </pre>
-  <code class="ruby">
-    <big>> db.users.find( { username:"HenryLee" }, { _id:0, username:1 }</big>
-  </code>
-  <pre></br>
-    { "username" : "HenryLee" }</br>
-  </pre>
+<pre class="prettyprint lang-html">
+> db.users.find( { username:"HenryLee" } )
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+> db.users.find( { username:"HenryLee" }, { _id:0, username:1 }
+  { "username" : "HenryLee" }
+</pre>
   <b>2. Find One</b>
   <pre></br>
-    db.collection.findOne( < query >, < projection > ) 
+    db.collection.findOne( < query >, < projection > )
   </pre>
-  <code class="ruby">
-    <big>> db.users.findOne()</big>
-  </code>
-  <pre></br>
-   { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
-  </pre>
+<pre class="prettyprint lang-html">
+> db.users.findOne()
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+</pre>
   <b>其他用法</b></br>
-  <code class="ruby">
-   <big>db.users.find().sort( { username: 1 } )</big></br>
-   <big>db.users.find().limit( 2 )</big>
-  </code>
-</p>
+<pre class="prettyprint lang-html">
+db.users.find().sort( { username: 1 } )
+db.users.find().limit( 2 )
+</pre>
 <p>
   <big>更新 Update</big></br>
   <b>1. Save</b>
   <pre>
     db.collection.save( < document > )
   </pre>
-  <code class="ruby">
-    <big>> db.users.save( { _id:10 , username:"xiaogang" } )</big></br>
-    <big>> db.users.find()</big>
-  </code>
-  <pre></br>
-   { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }</br>
-   { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }</br>
-   { "_id" : ObjectId("50e55fcaa3747d523d3b66fe"), "username" : "pipi" }</br>
-   { "_id" : 10, "username" : "xiaogang" }
-  </pre>
-  <code class="ruby">
-    <big>> db.users.save( { _id:10 , username:"Amy" } )</big></br>
-    <big>> db.users.find( { _id:10 } )</big>
-  </code>
-  <pre></br>
-    { "_id" : 10, "username" : "Amy" }</br>
-  </pre>
+<pre class="prettyprint lang-html">
+> db.users.save( { _id:10 , username:"xiaogang" } )
+> db.users.find()
+  { "_id" : ObjectId("50e55533a3747d523d3b66fc"), "username" : "HenryLee" }
+  { "_id" : ObjectId("50e55f8fa3747d523d3b66fd"), "username" : "StormZhang" }
+  { "_id" : ObjectId("50e55fcaa3747d523d3b66fe"), "username" : "pipi" }
+  { "_id" : 10, "username" : "xiaogang" }
+> db.users.save( { _id:10 , username:"Amy" } )
+> db.users.find( { _id:10 } )
+  { "_id" : 10, "username" : "Amy" }
+</pre>
   <b>2. Update </b>
   <pre></br>
     db.collection.update( < query >, < update >, < options > )</br>
     < update >：SQL SET</br>
     < options >：特殊参数
   </pre>
-  <code class="ruby">
-    <big>> db.users.update( { _id: 10, username: 'Amy' }, { $set: { 'username': 'Ryan' } } )</big></br>
-    <big>> db.users.find( { _id:10 } )</big>
-  </code>
-  <pre></br>
-   { "_id" : 10, "username" : "Ryan" }
-  </pre>
+<pre class="prettyprint lang-html">
+> db.users.update( { _id: 10, username: 'Amy' }, { $set: { 'username': 'Ryan' } } )
+> db.users.find( { _id:10 } )
+  { "_id" : 10, "username" : "Ryan" }
+</pre>
 </p>
 <p>
   <b>特殊参数举例</b></br>
   1. multi: true 将更新所有符合条件的数据。</br>
-  <code class="ruby">
-    <big>db.users.update( { username: 'henry' }, { $set: { username: 'Henry' } }, { multi: true } ) </big>
-  </code></br>
+<pre class="prettyprint lang-html">
+db.users.update( { username: 'henry' }, { $set: { username: 'Henry' } }, { multi: true } )
+</pre>
   2. upsert: true 若符合条件的数据不存在，则插入一条。</br>
-  <code class="ruby">
-    <big>db.users.update( { username: 'henry' }, { $set: { username: 'Henry' } }, { upsert: true } ) </big>
-  </code>
+<pre class="prettyprint lang-html">
+db.users.update( { username: 'henry' }, { $set: { username: 'Henry' } }, { upsert: true } )
+</pre>
 </p>
 <p>
   <big>删除 Delete</big></br>
@@ -210,13 +157,13 @@ MangoDB will create the value, collection and database automatically.
     db.collection.remove( < query >, < justOne > )
   </pre>
   删除所以符合条件的记录</br>
-  <code class="ruby">
-    <big>db.users.remove( { username: 'Henry' } )</big>
-  </code></br>
+<pre class="prettyprint lang-html">
+db.users.remove( { username: 'Henry' } )
+</pre>
   只删除第一条符合条件的记录</br>
-  <code class="ruby">
-    <big>db.users.remove( { username: 'Henry' }, 1 )</big>
-  </code></br>
+<pre class="prettyprint lang-html">
+db.users.remove( { username: 'Henry' }, 1 )
+</pre>
 </p>
 <p>
   <big>以上例子，未考虑性能优化。</big>
