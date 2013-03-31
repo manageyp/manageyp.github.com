@@ -1,0 +1,169 @@
+---
+layout: post
+title: Web API Design - Best Practices
+description: Web API Design -- Best Practices
+categories: API
+tags: API
+record_on: 2013-3-31
+---
+<p>
+有过半年的时间直配合 iOS 前端工程师，开发项目。期间学到最多的就是 API 的设计。</br>
+后端 API 的设计，需要兼顾：安全，版本控制，易读易用，稳定可靠，错误提示，异常处理，扩展性等问题。本周末做了一些整理，记录如下。
+</p>
+
+<h3>1. RESTful 风格</h3>
+
+<p>
+REST 指的是一组架构约束条件和原则。满足这些约束条件和原则的应用程序或设计就是 RESTful。</br>
+在服务器端，应用程序状态和功能可以分为各种资源。资源是一个有趣的概念实体，它向客户端公开。</br>
+拿博客系统举例：文章(articles)就是一个资源。
+每个资源都使用 URI (Universal Resource Identifier) 得到一个惟一的地址。所有资源都共享统一的界面，以便在客户端和服务器之间传输状态。</br>
+使用的是标准的 HTTP 方法，比如 GET、POST、PUT 和 DELETE。对应到 Rails controller actions：show/index, create, update, destroy，使用非常自然。
+</p>
+
+<h3>2. API 命名规范</h3>
+
+<p>
+基于 RESTful 的设计风格，我们将为每一个资源，提供两个基本的 URL。
+例如获取博客文章的 API：
+<pre class="prettyprint lang-html">
+# 读取所有文章
+/articles
+
+# 读取 id 为 1 的文章
+/articles/1
+</pre>
+
+结合 HTTP 的请求方式，则可以生成如下的 API：
+<pre class="prettyprint">
+Resource     POST(create)  GET(read)      PUT(update)    DELETE(delete)
+
+/articles    创建一篇文章    读取文章列表     Error          Error
+
+/articles/1  Error         读取id为1的文章  更新id为1的文章  删除id为1的文章
+</pre>
+
+命名规范: 资源名称优先使用名词，而不是动词；直观的 API 命名使用名词的复数。
+</p>
+
+<h3>3. 传参数，避免资源过多的嵌套</h3>
+
+<p>
+设想一种使用情景：读取 Henry 博主的文章。可以设计下面这样的 URL：
+<pre class="prettyprint lang-html">
+# 读取某博主的文章
+/users/:id/articles
+</pre>
+
+假设：读取使用 Ruby 语言的 Henry 博主的文章。还是可以设计下面的 URL：
+<pre class="prettyprint lang-html">
+# 读取使用，某开发语言，某博主的文章
+/languages/:id/users/:id/articles
+</pre>
+
+举的例子很牵强，主要为了说明设计 API 使用多层次的资源嵌套，非常的难于扩展。
+可以简单的使用传参数，来解决这一类问题：
+<pre class="prettyprint lang-html">
+# 读取使用，某开发语言，某博主的文章
+/articles?language=ruby&author=henry
+</pre>
+</p>
+
+<h3>4. 版本管理</h3>
+<p>
+项目迭代开发的过程中，一定会遇到 API 版本管理的问题。
+实践中发现：使用主版本号和次版本号结合，管理起来会更加的灵活。
+<pre class="prettyprint lang-html">
+# 读取文章接口 V1
+v1/articles?version=1.0
+
+# 读取文章接口 V2
+v2/articles?version=2.0
+
+# 读取文章接口 V2
+v2/articles?version=2.1
+</pre>
+URL 最前端使用 'v' 前缀，加上数字，代表一个版本的接口。</br>
+URL 尾部的参数 'version' 标明请求的终端(client)，具体是哪一个发布版本。</br></br>
+<pre>
+这样的设计有很多便利之处：</br>
+1. 若某次功能或业务，有重大调整，则将主版本号由 v1 升到 v2。
+   即可以保证 v1 实现的清晰和稳定性，同时 v2 可以自由的开发和设计。</br>
+2. 若 v2 的 2.0 版上线后，发现终端读取文章接口，显示标题因为 article.title 误写为 article.foo,
+   在查明 BUG 后，后端可以及时调整接口，将返回数据的 title key 改为 foo。</br>
+3. 方便统计各版本终端的使用数据。
+</pre>
+</p>
+
+<h3>5. 处理错误信息</h3>
+
+<p>较好的设计 API 错误提示信息，一方面是对用户友好，另外，方便对接和调试。<br/>
+   结合 HTTP 请求返回状态，最常使用的状态码如下：
+  <pre class="prettyprint lang-html">
+• 200 -OK
+• 400 -Bad Request
+• 404 –Not Found
+• 401 -Unauthorized
+• 403 -Forbidden
+• 500 -Internal Server Error
+  </pre>
+</p>
+
+<p>
+  读取文章接口返回实例：
+  <pre class="prettyprint lang-html">
+GET       /articles/1
+Response: 200 OK
+Response Data:
+{
+  "article": {
+    "id": 1,
+    "title": "web-api-design"
+  }
+}
+  </pre>
+</p>
+
+<p>
+  读取接口错误，返回实例：
+  <pre class="prettyprint lang-html">
+GET       /recommends/1
+Response: 401 Unauthorized
+Response Data:
+{
+  "errors": {
+    "code": 1128,
+    "message": "您无权查看推荐信息！"
+  }
+}
+  </pre>
+</p>
+
+<h3>6. 支持多种返回格式</h3>
+
+<p>
+  Rails route 默认支持多种格式的请求：
+  <pre class="prettyprint lang-html">
+  # routes
+  /v1/articles/:id(.:format)
+
+  # 请求 XML 格式的数据
+  /v1/articles/1.xml
+
+  # 请求 JSON 格式的数据
+  /v1/articles/1.json
+  </pre>
+  返回数据格式默认使用 JSON。
+</p>
+
+<h3>7. 添加异常处理</h3>
+
+<p>
+Rails 项目推荐使用 <a href="https://github.com/defunkt/exception_logger" target="_blank"> exception_logger</a>，捕获运行时异常，方便项目上线后的监测和优化。
+</p>
+
+<h3>8. 灵活变通</h3>
+
+<p>
+（本条纯属个人观点）需要换位思考，尽可能的从使用者的角度，去思考 API 该如何设计。想象一下 API 的使用情景，适时为使用者提供捷径，将会使前后端配合更加默契，项目稳步的推进。反对教条式的使用 RESTful。
+</p>
