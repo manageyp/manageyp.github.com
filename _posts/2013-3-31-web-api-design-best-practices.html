@@ -87,11 +87,11 @@ URL 最前端使用 'v' 前缀，加上数字，代表一个版本的接口。</
 URL 尾部的参数 'version' 标明请求的终端(client)，具体是哪一个发布版本。</br></br>
 <pre>
 这样的设计有很多便利之处：</br>
-1. 若某次功能或业务，有重大调整，则将主版本号由 v1 升到 v2。
+a. 若某次功能或业务，有重大调整，则将主版本号由 v1 升到 v2。
    即可以保证 v1 实现的清晰和稳定性，同时 v2 可以自由的开发和设计。</br>
-2. 若 v2 的 2.0 版上线后，发现终端读取文章接口，显示标题因为 article.title 误写为 article.foo,
+b. 若 v2 的 2.0 版上线后，发现终端读取文章接口，显示标题因为 article.title 误写为 article.foo,
    在查明 BUG 后，后端可以及时调整接口，将返回数据的 title key 改为 foo。</br>
-3. 方便统计各版本终端的使用数据。
+c. 方便统计各版本终端的使用数据。
 </pre>
 </p>
 
@@ -162,8 +162,25 @@ Response Data:
 Rails 项目推荐使用 <a href="https://github.com/defunkt/exception_logger" target="_blank"> exception_logger</a>，捕获运行时异常，方便项目上线后的监测和优化。
 </p>
 
-<h3>8. 灵活变通</h3>
+<h3>8. 分页实现</h3>
 
 <p>
-（本条纯属个人观点）需要换位思考，尽可能的从使用者的角度，去思考 API 该如何设计。想象一下 API 的使用情景，适时为使用者提供捷径，将会使前后端配合更加默契，项目稳步的推进。反对教条式的使用 RESTful。
+  <pre class="prettyprint lang-html">
+  # 获取第二页数据：默认参数:limit=10&offset=0
+  /v1/articles?limit=10&offset=10
+  </pre>
+</p>
+
+<h3>9. Facade 设计模式</h3>
+
+<p>
+  对于在线的大项目，引入 Facade 设计模式。《Ruby 设计模式》一书中省略了 Facade(门面模式)。这里有作者的补充说明:<a href="http://designpatternsinruby.com/section02/facade.html" target="_blank"> facade</a>.
+    这篇中文博客写的也很好，可以参考学习一下思想:<a href="http://www.cnblogs.com/zhenyulu/articles/55992.html" target="_blank"> 设计模式（15）－Facade Pattern</a>。<br/>
+  好处体现在 Facade 层做的隔离，对现有项目的业务代码侵入最小。结合 namespace 可以将 API 相关代码，进行非常好的隔离。最好将 API 后端相关代码，独立部署在一个子域名下，如：api.host.com.
+</p>
+
+<h3>10. 灵活变通</h3>
+
+<p>
+（本条纯属个人观点）需要换位思考，尽可能的从使用者的角度，去思考 API 该如何设计。想象一下 API 的使用情景，适时为使用者提供捷径，将会使前后端配合更加默契，项目稳步的推进。反对教条式的使用 RESTful ^_^。
 </p>
