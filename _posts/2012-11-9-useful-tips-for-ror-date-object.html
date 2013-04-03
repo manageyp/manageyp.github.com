@@ -6,10 +6,30 @@ categories: Date Ruby Rails
 tags: Date Ruby Rails
 record_on: 2012-11-9
 ---
-<p>Date Object</p>
+<p>Date Object Tips</p>
 <pre class="prettyprint lang-html">
-  var today = Date.today
-  today.wday # [0..6]
+  # 当天
+  today = Date.today
+
+  # 明天
   today.next
+
+  # 本周一
+  today.beginning_of_week
+
+  # 下周一
   today.next_week
+
+  # 7 天前, 一周前
+  7.days.ago.to_date
+
+  # 一周中的第几天：周日至周六，对应 0 至 6
+  today.wday
+
+  # 本月一号
+  Date.today.beginning_of_month
+
+  # 下个月
+  1.month.since
+
 </pre>
