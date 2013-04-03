@@ -1,0 +1,198 @@
+---
+layout: post
+title: High Performance Web Sites
+description: High Performance Web Sites
+categories: Performance
+tags: Performance
+record_on: 2013-4-3
+---
+<p>
+《高性能网站建设指南》阅读记录。学习了 Web 性能优化的几个规则，补充了 HTTP 协议的基础知识。
+ 书中提到一个性能黄金法则：只有10%~20%的最终用户响应时间花在下载 HTML 文档上。
+ 其余的 80%~90%时间花在下载页面中的所以组件上。
+</p>
+
+<h3>1. 减少 HTTP 请求</h3>
+
+<p>
+  <pre>
+    将多幅图片合并为一副单独的图片
+    合并 JS 和 CSS
+  </pre>
+</p>
+
+<h3>2. 使用内容发布网络</h3>
+
+<p>
+  <pre>
+    CDN：内容发布网络：Content Delivery Network
+    是一组发布在多个不同地理位置的 Web 服务器，用于更加有效地向用户发布内容。
+    可以选择网络节点跳跃数最小的服务器，或者，具有最短响应时候的服务器。
+    将缓存的资源返回给用户端。
+  </pre>
+</p>
+
+<h3>3. 添加 Expires 头</h3>
+
+<p>
+  <pre>
+    Expires: time stamp
+    Cache-Control: max-age=123456
+    修改文件名，保证获取最新文件
+  </pre>
+</p>
+
+<h3>4. 压缩组建</h3>
+
+<p>
+  <pre>
+    使用 gzip 压缩组建。
+    request: Accept-Encoding: gzip,deflate
+    response: Content-Encoding: gzip
+
+    代理缓存：Proxy Caching
+    Vary：Accept-Encoding, User-Agent
+  </pre>
+</p>
+
+<h3>5. 将样式表 CSS 放在顶部</h3>
+
+<p>
+  <pre>
+    可以避免页面白屏；白屏现象源自浏览器的行为
+    无样式内容的闪烁：加载 CSS 后，修饰页面标签样式
+  </pre>
+</p>
+
+<h3>6. 将脚本 JS 放在底部</h3>
+
+<p>
+  <pre>
+    页面既可以逐步展现，也可以提高下载的并行度。
+    a. 脚本会阻塞对其后面内容的呈现
+    b. 脚本会阻塞对其后面的组件下载
+  </pre>
+</p>
+
+<h3>7. 避免 CSS 表达式</h3>
+
+<p>
+  <pre>
+    影响页面的加载时间
+  </pre>
+</p>
+
+<h3>8. 使用外部 JavaScript 和 CSS</h3>
+
+<p>
+  <pre>
+    纯粹而言，内联快一些
+    组件重用，有助于缓存
+    可以动态加载
+  </pre>
+</p>
+
+<h3>9. 减少 DNS 查找</h3>
+
+<p>
+  <pre>
+    DNS 缓存：服务器可以表明记录可以被缓存多久，查找返回的 DNS 记录包含了一个存活时间值 TTL（Time-to-live），
+    该值告诉客户端可以对该记录缓存多久。
+    
+    拥有巨大数量用户的顶级网站，努力做到当服务器、虚拟IP地址或联合定位掉线时，提供快速故障转移。
+    会选择设置短 TTL。
+  </pre>
+</p>
+
+<h3>10. 精简 JavaScript</h3>
+
+<p>
+  <pre>
+    工具：JSMin，Dojo compressor，结合 gzip 压缩，效果更加
+    混淆：Obfuscation
+  </pre>
+</p>
+
+<h3>11. 避免重定向</h3>
+
+<p>
+  <pre>
+    URL 缺少尾部斜线 /
+    当主机名后缺少斜线，不会引起重定向
+    http://www.baidu.com 浏览器在进行 GET 请求时，必需值定一些路径，如果没有路径。
+    会简单使用文档根（/）
+    GET / HTTP 1.1
+
+    跟踪出站流量，除重定向之外的，使用信标beacon
+    跟踪内部流量，使用 Referer
+  </pre>
+</p>
+
+<h3>12. 移除重复脚本</h3>
+
+<p>
+  <pre>
+    重复的 HTTP 请求
+    脚本会被多次求值
+    确保脚本只被包含一次
+  </pre>
+</p>
+
+<h3>13. 配置 ETag 或移除 ETag</h3>
+
+<p>
+  <pre>
+    实体标签（Entity Tag）是 Web 服务器和浏览器用于确认缓存组件的有效性的一种机制。
+     
+    服务器在检测缓存的组件是否和原始服务器上的组件匹配时，有两种方式：
+    a。比较最新修改日期
+    b。比较实体标签
+
+    ETag 通常使用组件的某些属性来构造它，这些属性对于特定的寄宿了网站的服务器来说是唯一的。
+    对于使用服务器集群来处理请求的网站来说，浏览器从一台服务器上获取了原始组件，之后刷新页面，又从另外一台不同的服务器获取相同组件，但是 ETag 是不会匹配的。
+  </pre>
+</p>
+
+<h3>14. 是 Ajax 可缓存</h3>
+
+<p>
+  <pre>
+    Web 2.0：体验从浏览页面转变为与应用程序进行交互。
+
+    Ajax： 异步的 JavaScript 和 XML，如今 JSON 更流行。
+    代表了一组技术：包括 JavaScript、CSS、DOM和异步数据获取。
+  </pre>
+</p>
+
+<h3>【备注 1】. HTTP 协议知识</h3>
+
+<p>
+  <pre>
+   HTTP 协议：
+   [GET]
+   HTTP 1.1 200 OK
+   Content-Type: application/x-javascript
+   Last-Modified: time stamp
+   Expires: time stamp
+
+   [Connection]
+   HTTP 构建在 TCP（Transaction Control Protocol） 协议之上。
+   HTTP 早期实现中，每个请求都要打开一个 socket 连接，这样一个页面中，很多 HTTP 请求，都会指向同一台服务器，效率很低。
+   持久连接（Persistent Connection）解决了多对一，请求服务器导致的 socket 连接低效的问题。
+   她可以使浏览器在一个单独的连接上，进行多个请求。
+   浏览器和服务器使用 Connection 头来指出对 Keep-Alive 的支持。
+
+   Connection： keep-alive  
+  </pre>
+</p>
+
+<h3>【备注 2】. 实用工具</h3>
+
+<p>
+  <pre>
+    HTTP 请求图表：IBM Page Detialer
+    响应时间的测量：Gomez 的 Web 监视服务
+    Firebug
+    分析页面性能：YSlow
+  </pre>
+</p>
