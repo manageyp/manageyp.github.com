@@ -1,0 +1,153 @@
+---
+layout: post
+title: Learning Rails Engine
+description: Learning Rails Engine
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2012-8-29
+---
+<p>Rails 3.0 开始支持 Engine。设计 Engine 的初衷是将特定功能的 Rails 项目，打包为 Engine，分享给其他 Rail 项目使用。Engine 可以被看作是一个微型的应用程序，他提供一些额外的功能给他的宿主程序（host applications）。</p>
+
+<p>Engine 分为两种：<span>Full Engine</span> 和 <span>Mountable Engine</span>。</br>
+通过以下命令，可以方便的创建 Engine。
+<pre class="prettyprint lang-html">
+rails plugin new engine_name --full        # Full Engine
+rails plugin new engine_name --mountable   # Mountable Engine
+</pre>
+PS：可以方便的将 Engine 打包为 Gem，从而在其他 Rails 项目中使用。</p>
+
+<p>下面通过代码来学习这两种 Engine，并且对比两种实现所带来的利与弊，进行初步的分析。</p>
+
+<p>以下实例，基于 Rails 3.2.3。基于 Rails 3.0 创建 Engine, 推荐安装 enginex Gem 来生成 Engine。
+首先创建一个 Rails 项目：engine_demo</p>
+
+<h3>1. Full Engine</h3>
+<p>在 engine_demo 项目根目录下执行：</p>
+<pre class="prettyprint lang-html">
+rails plugin new food --full
+</pre>
+<p>重新组织一下文件结构：将food 文件夹拷贝至 vendor 目录下
+# 目录结构(截图)</p>
+
+<p><img src="/images/posts/full-engine.png" /></p>
+
+<p>Engine food 即是一个迷你版的 Rails application。
+ 下面实现一个展示食物的页面。</p>
+<pre class="prettyprint lang-html">
+# 新建一个 foods_controller.rb 包含 index 方法。
+# food/app/controllers/foods_controller.rb
+class FoodsController < ActionController::Base
+  def index
+  end
+end
+
+# 配置路由
+# food/config/routes.rb
+Rails.application.routes.draw do
+  get "foods" => "foods#index"
+end
+
+# food/lib/food.rb
+require "food/engine"
+module Food
+end
+
+# food/lib/food/engine.rb
+module Food
+  class Engine < Rails::Engine
+  end
+end
+
+# engine_demoe
+Gemfile
+gem 'food', :path => "vendor/food"
+
+$ rake routes
+》foods GET /foods(.:format) foods#index
+</pre>
+
+<pre>
+特点：
+没有命名空间，与 engine_demo 项目依赖度极高。
+Engine food 通过修改 Rails 的 route，将其功能添加进engine_demo 项目。
+
+优势：
+engine_demo 项目中不需要做额外的设置，即可拥有该功能。
+Engine food 中的routes,controllers,models,helpers 直接开放给 engine_demo 使用。
+
+劣势：容易引起命名冲突。
+</pre>
+
+
+<h3>2. Mountable Engine</h3>
+<p>在 engine_demo 项目根目录下执行：</p>
+<pre class="prettyprint lang-html">
+rails plugin new blog --mountable
+</pre>
+<p>Engine blog 的目录结构与 food 有些不一样。见下面的截图：</p>
+
+
+<p><img src="/images/posts/mountable-engine.png" /></p>
+
+<p>下面实现一个blog 展示页面。
+看以下代码实例：</p>
+
+<pre class="prettyprint lang-html">
+# blog/app/controllers/blog/application_controller.rb
+module Blog
+  class ApplicationController < ActionController::Base
+  end
+end
+
+# blog/lib/blog.rb
+require "blog/engine"
+module Blog
+end
+
+# blog/lib/blog/engine.rb
+module Blog
+  class Engine < Rails::Engine
+    isolate_namespace Blog
+  end
+end
+
+# blog/app/controllers/blog/articles_controller.rb
+module Blog
+  class ArticlesController < Blog:: ApplicationController
+    def index
+    end
+  end
+end
+
+# blog/config/routes.rb
+Blog::Engine.routes.draw do
+  get "articles" => "articles#index"
+end
+
+# engine_demo/Gemfile
+gem 'blog', :path => "vendor/blog"
+
+# engine_demo/config/routes.rb
+EngineDemo::Application.routes.draw do
+  mount Blog::Engine => "/blog"
+end
+
+# engine_demo
+$ rake routes
+blog  /blog Blog::Engine
+
+Routes for Blog::Engine:
+articles GET /articles(.:format) blog/articles#index
+</pre>
+
+<pre>
+特点：
+包含命名空间，很好的与 engine_demo 项目进行了隔离。
+通过修改 engine_demo 的 route，引进 Engine blog 的功能。
+
+优势：很好的控制了命名冲突的风险。
+
+劣势：遵守命名规范，增加了一些配置。
+
+总结：Engine 适合与对复杂应用进行划分的场景。
+</pre>
