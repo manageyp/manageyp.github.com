@@ -1,0 +1,168 @@
+---
+layout: post
+title: Learning Ruby Singleton Pattern
+description: Learning Ruby Singleton Pattern
+categories: Ruby Design
+tags: Ruby Design
+record_on: 2013-5-3
+---
+
+<h3>1. 为什么需要 Singleton Pattern</h3>
+<p>
+Singleton Pattern（单例模式），是用来保证某个类的实例只有一个。<br />
+参考下面的英文原文：<br />
+Singleton is a design pattern that restricts instantiation of a class to only one instance 
+that is globally available. 
+It is useful when you need that instance to be accessible in different parts of the application, 
+usually for logging functionality, communication with external systems, database access, etc. 
+</p>
+
+<h3>2. 如何用 Ruby 实现 Singleton Pattern</h3>
+<p>
+2.1 使用 Ruby 内部 Singleton 库。<br />
+源代码文件目录：ruby/lib/singleton.rb
+</p>
+<p>
+  <pre class="prettyprint lang-html">
+    require 'singleton'
+
+    class Foo
+
+      include Singleton
+
+    end
+
+    ObjectSpace.each_object(Foo){}
+    => 0 
+     
+    a,b = Foo.instance, Foo.instance
+    => [#<Foo:0x007fcdf5234c20>, #<Foo:0x007fcdf5234c20>]
+    # 对象所对应的内存地址都是一样的
+
+    a == b
+    => true
+
+    ObjectSpace.each_object(Foo){}
+    => 1 
+  </pre>
+</p>
+
+<p>
+  该 Singleton module 包含以下方法：
+  <pre class="prettyprint lang-html">
+    # instance_methods:
+      clone
+      dup
+      _dump
+
+    # class_methods:
+      instance
+
+      # private
+      new
+      allocate
+  </pre>
+</p>
+
+<p>
+  Ruby Singleton module 源代码内部注释：
+  <pre class="prettyprint lang-html">
+    # The Singleton module implements the Singleton pattern.
+    # To use Singleton, include the module in your class.
+    # This ensures that only one instance of Klass can be created.
+    # The instance is created at upon the first call of Klass.instance().
+
+    # This above is achieved by:
+    # *  Making Klass.new and Klass.allocate private.
+    #
+    # *  Overriding Klass.inherited(sub_klass) and Klass.clone() to
+    #    ensure that the Singleton properties are kept
+    #    when inherited and cloned.
+    #
+    # *  Providing the Klass.instance() method that returns the 
+    #    same object each time it is called.
+    #
+    # *  Overriding Klass._load(str) to call Klass.instance().
+    #
+    # *  Overriding Klass#clone and Klass#dup to raise TypeErrors to
+    #    prevent cloning or duping.
+  </pre>
+</p>
+
+
+<p>
+2.2 使用类或模块<br />
+Ruby 把类作为对象来处理，在类或模块里定义一个方法，就是实现 Singleton Pattern.
+</p>
+<p>
+  <pre class="prettyprint lang-html">
+    require 'singleton'
+
+    class Foo
+
+      include Singleton
+
+    end
+
+    ObjectSpace.each_object(Foo){}
+    => 0 
+     
+    a,b = Foo.instance, Foo.instance
+    => [#<Foo:0x007fcdf5234c20>, #<Foo:0x007fcdf5234c20>]
+    # 对象所对应的内存地址都是一样的
+
+    a == b
+    => true
+
+    ObjectSpace.each_object(Foo){}
+    => 1 
+  </pre>
+</p>
+
+<p>
+2.3 使用对象，结合动态添加方法<br />
+在对象生成之后，为实例添加新的方法，该方法就是 Singleton 方法。
+</p>
+<p>
+  <pre class="prettyprint lang-html">
+    class Foo
+    end
+
+    Foo.singleton_methods
+    => [] 
+
+    a,b = Foo.new, Foo.new
+    => [#< Foo:0x007f87cacaf478 >, #< Foo:0x007f87cacaf450 >] 
+
+    # 添加 Singleton 方法
+    def a.greeting
+      "Hello singleton method"
+    end
+
+    # 未引起 Foo Class 的变化
+    Foo.singleton_methods
+    => [] 
+
+    Foo.instance_methods.include?("greeting")
+    => false 
+
+
+    a.greeting
+    => "Hello singleton method"
+
+    a.singleton_methods
+    => [:greeting]
+
+    # 未引起 b 实例的变化
+    b.singleton_methods
+    => []
+
+    b.greeting
+    NoMethodError: undefined method `greeting' for #< Foo:0x007f87cacaf450 >
+  </pre>
+</p>
+
+<p>
+2.4 把一般对象作为 Singleton 来使用<br />
+为了保证一个类的对象只有一个，可以在生成一个实例之后，不再生成其他对象。
+PS：现实中不太容易保证。</p>
