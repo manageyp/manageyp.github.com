@@ -32,14 +32,22 @@ record_on: 2013-4-3
 </p>
 
 <h3>3. 添加 Expires 头</h3>
-
 <p>
   <pre>
+    向Http头添加过期或者缓存控制(Add an Expires or a Cache-Control Header)
+    此规则规则主要包含如下两个方面：
+    a. 对于静态网页组件，通过设置足够长的Expires Header，来实现“永不过期“策略
+    b. 对于动态网页组件，通过设置恰当的Cache-Control Header，来帮助浏览器根据条件来判断是否做更新请求
+  </pre>
+  <pre class="prettyprint lang-html">
     Expires: time stamp
     Cache-Control: max-age=123456
-
-    设置 Expires 头之后，第一次请求，浏览器会将获取的文件做本地缓存。
-    重复请求，浏览器会检查资源是否过期，若未过期，则直接使用本地缓存的资源。
+  </pre>
+  <pre>
+    第一次请求，通过设置 HTTP 的 Expires Header 让这些组件缓存在客户端，
+    浏览器将获取的文件做本地缓存。
+    在接下来的页面浏览过程中,浏览器会检查资源是否过期，若未过期，
+    则直接使用本地缓存的资源，避免了不必要的Http请求。
 
     PS：修改文件名，可以保证获取最新文件
   </pre>
@@ -50,6 +58,8 @@ record_on: 2013-4-3
 <p>
   <pre>
     使用 gzip 压缩组建。
+  </pre>
+  <pre class="prettyprint lang-html">
     request: Accept-Encoding: gzip,deflate
     response: Content-Encoding: gzip
 
@@ -173,12 +183,15 @@ record_on: 2013-4-3
 <p>
   <pre>
    HTTP 协议：
+  </pre>
+  <pre class="prettyprint lang-html">
    [GET]
    HTTP 1.1 200 OK
    Content-Type: application/x-javascript
    Last-Modified: time stamp
    Expires: time stamp
-
+  </pre>
+  <pre>
    [Connection]
    HTTP 构建在 TCP（Transaction Control Protocol） 协议之上。
    HTTP 早期实现中，每个请求都要打开一个 socket 连接，这样一个页面中，很多 HTTP 请求，都会指向同一台服务器，效率很低。
