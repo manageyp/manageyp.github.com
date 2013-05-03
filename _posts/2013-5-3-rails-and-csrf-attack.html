@@ -1,0 +1,77 @@
+---
+layout: post
+title: Rails And CSRF Attack
+description: Rails And CSRF Attack
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2013-5-3
+---
+
+<h3>CSRF 介绍，攻击原理</h3>
+<p>
+CSRF 跨站伪造请求，是 Web 应用程序固有的攻击手段。<br />
+利用 CSRF，可能蒙混网络应用程序的认证，盗用受害者的身份，<br />
+经第三者发送各种各样伪造的请求，造成个人隐私泄露，财产安全等，危害很大。
+</p>
+<p>
+CSRF 攻击原理图解：<br />
+<img src="/images/posts/csrf-attack.jpg">
+</p>
+
+<h3>Rails 防范 CSRF 攻击</h3>
+<p>
+  官方文档指出：CSRF is an important security issue.<br />
+
+  <b>防范措施一：遵循HTTP协议</b><br />
+
+  HTTP 协议提供两种基本的请求方式：
+  <pre class="prettyprint lang-html">
+    GET：获取资源
+    POST：改变资源的状态
+  </pre>
+
+  因此，引起服务器资源改变的请求，避免使用 GET 请求。
+  这样可以避免下列 CSRF 攻击的手段：
+  <pre class="prettyprint lang-html">
+    < img src="http://www.foo.com/users/destroy/1" />
+    < a href="http://www.foo.com/users/destroy/1">Click< /a>
+  </pre>
+
+  但是，CSRF 的攻击手段不止这些，还可以模拟 POST 请求。
+
+  <pre class="prettyprint lang-html">
+    < a href="http://www.foo.com/" onclick="
+      var f = document.createElement('form');
+      f.style.display = 'none';
+      this.parentNode.appendChild(f);
+      f.method = 'POST';
+      f.action = 'http://www.foo.com/orders/paid/1';
+      f.submit();
+      return false;">Click< /a>
+
+    < img src="http://www.foo.com/img" onmouseover="..." />
+
+  </pre>
+
+  <b>防范措施二：验证 Security Token</b><br />
+
+  Rails 为表单 Form 提交以及 Ajax 请求，自动生成一个 token，如下面列举的：
+
+  <pre class="prettyprint lang-html">
+    < meta content="authenticity_token" name="csrf-param" />
+    < meta content="8TBeQ52iFagSqdv+E125ucR58rEpTm385431j1vfwzI=" name="csrf-token" />
+
+    < form accept-charset="UTF-8" action="/users" method="post" novalidate="novalidate">
+    < input name="utf8" type="hidden" value="&#x2713;" />
+    < input name="authenticity_token" type="hidden" value="8TBeQ52iFagSqdv+E125ucR58rEpTm385431j1vfwzI=" />
+  </pre>
+  这个 security token，是由 current session 和 server-side secret 按照一定规则生成。<br />
+  如果 client-side 的请求送回的 token 验证失败，则 session 会被注销，请求也不会被执行。<br />
+  但是，如果该 token 也被截获，那就可能造成危害。 
+</p>
+
+<p>
+参考文章：<br />
+<a href="http://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html" target="_blank">浅谈CSRF攻击方式</a><br />
+<a href="http://guides.rubyonrails.org/security.html#cross-site-request-forgery-csrf" target="_blank">Rails Security Guide</a>
+</p>
