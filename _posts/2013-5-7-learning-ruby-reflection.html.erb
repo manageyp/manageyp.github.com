@@ -1,0 +1,128 @@
+---
+layout: post
+title: Learning Ruby Reflection
+description: Learning Ruby Reflection
+categories: Ruby
+tags: Ruby
+record_on: 2013-5-7
+---
+
+<p>
+Reflection 也叫反射。<br />
+在编程语言中指在程序执行时，取出程序的信息, 或者改变程序信息。<br />
+Ruby 的反射功能包括：从对象查看类，查看类的基类，以及查看全局变量、局部变量等等，非常丰富。<br />
+
+下面一个例子: 查看数值 5 这个对象，所对应的对象的类型，以及该对象的父类情况。
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    touch reflection.rb
+    vim reflection.rb
+
+    c = 5.class
+
+    while c
+      s = c.superclass
+      if s
+        print c," < "
+      else
+        print c
+      end
+      c = s
+    end
+
+    puts
+
+    $ ruby reflection.rb 
+    Fixnum < Integer < Numeric < Object < BasicObject
+  </pre>
+</p>
+
+<p>
+可以数值类 Fixnum 依次继承的父类，直到 BasicObject。<br />
+同样我们查看一下字符串的类继承情况。简单修改一下程序，执行结果如下：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    c = "Hello ruby".class
+
+    String < Object < BasicObject
+  </pre>
+</p>
+
+<p>
+更进一步的，我们使用 ObjectSpace，遍历所有的类。<br />
+下面的例子，结果显示了一个更加完全的类层次：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    touch reflection.rb
+    vim objectspace.rb
+
+    c = 5.class
+
+    level = 1
+
+    while c
+      print "#{level}: #{c}"
+      ObjectSpace.each_object(Class) do |ob|
+        print " #{ob} " if c.superclass == ob.superclass && c != ob
+      end
+      puts
+      
+      c = c.superclass
+      level += 1
+    end
+
+    $ ruby objectspace.rb 
+    1: Fixnum Bignum 
+    2: Integer Complex  Rational  Float 
+    3: Numeric Fiber  Mutex  ThreadGroup  RubyVM::InstructionSequence
+       Thread RubyVM::Env  RubyVM  Enumerator::Yielder  Proc  IO
+       Enumerator::Generator  Enumerator Binding  UnboundMethod
+       Method  Process::Status  Random  Time  Dir File::Stat
+       ARGF.class  Range  MatchData  Regexp  String  Encoding
+       Struct  Hash  Array Exception  Symbol  FalseClass
+       TrueClass  Data  NilClass Module
+    4: Object
+    5: BasicObject
+  </pre>
+</p>
+
+<p>
+下面列举了常用的 Ruby 反射功能：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    Module#instance_methods   列出类/模块的方法
+    Object#methods            列出对象的方法
+    Object#instance_variables 列出对象的实例变量
+
+    global_variables          列出全局变量
+    local_variables           列出局部变量
+    Module#constants          列出类/模块的常量
+
+    Module#define_method      定义类方法
+    Module#remove_method      删除类方法
+    Module#undef_method       解除类方法定义
+    Module#alias_method       给类方法起别名
+
+    Class#superclass          获取父类
+    Module#include_modules    获取包含的类
+
+    method_missing            给未定义的方法设置钩子处理
+    eval                      解释字符串
+    Object#instance_eval      在对象的上下文中解释字符串
+    Module#class_eval         在类的上下文中解释字符串
+    defined?                  检查方法是否有定义
+  </pre>
+</p>
+
+<p>
+在 Ruby meta-programming （元编程）中，对反射机制加以运用，可以实现很多特异方法。<br />
+如：Delegator（委托或代理）方法。
+</p>
