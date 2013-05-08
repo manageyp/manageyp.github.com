@@ -8,10 +8,4 @@ permalink: /
   {{ post.content }}
   <div>{{ post.record_on }}</div>
 {% endfor %}
-<hr />
-<ul>
-  {% for post in site.posts limit: 10 offset: 1 %}
-    {{ post.record_on }}
-    <a href="{{ post.url }}">{{ post.title }}</a><br />
-  {% endfor %}
-</ul>
+<br />
