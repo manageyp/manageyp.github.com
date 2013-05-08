@@ -1,0 +1,13 @@
+---
+layout: page
+title: Archives
+permalink: /archives/
+---
+
+<h3>Blog Archive</h3>
+<ul>
+  {% for post in site.posts order: record_on %}
+    {{ post.record_on }}
+    <a href="{{ post.url }}">{{ post.title }}</a><br />
+  {% endfor %}
+</ul>
