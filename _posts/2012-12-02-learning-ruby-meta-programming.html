@@ -1,0 +1,205 @@
+---
+layout: post
+title: Learning Ruby Meta-programming
+description: Learning Ruby Meta-programming
+categories: Ruby
+tags: Ruby
+record_on: 2012-12-02
+---
+<p>
+元编程的意思是：对程序进行编程。<br />
+由于 Ruby 是一门动态编程语言，因此，在 Ruby 中可以很方便的实现元编程。<br />
+而在编程中灵活的使用元编程，将会非常有用和高效。<br /><br />
+
+下面列举几个实用的、常见的例子。PS：使用 ruby-1.9.3-p194，Rails 3.0.11
+</p>
+
+<p>
+1. Ruby 元编程中典型的例子：attr_accessor，attr_reader，attr_writer。<br />
+以 attr_accessor 为例，attr_accessor 是一个 Ruby 类中内嵌的方法，可以用来动态的生成访问实例变量的(set/get)方法。
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    class User
+
+      attr_accessor :name
+
+    end
+
+    puts User.instance_methods
+  </pre>
+</p>
+
+<p>
+输出结果中将包含：name 和 name= 。因此下面的程序将输出：'admin'
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  admin = User.new
+
+  admin.name = 'admin'
+
+  puts admin.name
+  # admin
+  </pre>
+</p>
+
+<p>
+2. Rails 中典型的例子：belongs_to，has_one，has_many 等。<br />
+以 belongs_to 为例：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  class Book < ActiveRecord::Base
+
+    belongs_to :user
+
+  end
+
+  book = Book.new
+  </pre>
+</p>
+
+<p>
+由于有 belongs_to :user 这句声明，book 这个实例，将拥有下面四个实例方法，实践中会经常用到。
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  user
+
+  user=
+
+  build_user
+
+  create_user
+  </pre>
+</p>
+
+<p>
+3. 使用 send 方法，对例1的程序稍作改动，如下：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  class User
+
+    attr_accessor :name
+
+    def initialize(attrs = {})
+
+      attrs.each do |k,v|
+
+        self.send("#{k}=", v)
+
+      end
+
+    end
+
+  end
+
+
+  admin = User.new(:name => 'admin')
+
+  puts admin.name
+  # admin
+  </pre>
+</p>
+
+<p>
+输出结果同样为'admin'。<br />
+好处在于新建 user 时，可以传入一个 Hash。这一优点在 user 属性多的时候，比较明显。
+</p>
+
+<p>
+4. 使用 class_eval 和 define_method 方法。<br />
+下面尝试初始一个类，并且在运行时，动态的为其增加一个方法。输出结果为注释的内容。
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  class User
+
+  end
+
+  u = User.new
+
+  puts u.respond_to?(:website_url)
+  # false
+
+  User.class_eval do
+
+    define_method :website_url do
+      "www.boohee.com"
+    end
+
+  end
+
+  puts u.respond_to?(:website_url)
+  # true
+
+  puts u.website_url
+  # www.boohee.com
+  </pre>
+</p>
+
+<p>
+5. 使用 method_missing 方法：Ruby 中非常强大的特性，灵活的运用可以简化代码。<br />
+Rails 源代码中有非常多的应用。例如，ActiveRecord::Base 类中，有下面这样一个方法定义：
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+  def method_missing(method_id, *arguments, &block)
+
+    if match = DynamicFinderMatch.match(method_id)
+
+      attribute_names = match.attribute_names
+
+      super unless all_attributes_exists?(attribute_names)
+
+      if match.finder?
+
+        ...
+
+        relation.send :find_by_attributes, match, attribute_names, *arguments
+
+      elsif match.instantiator?
+
+        scoped.send :find_or_instantiator_by_attributes, match, attribute_names, *arguments, &block
+
+      end
+
+    elsif match = DynamicScopeMatch.match(method_id)
+
+      ...
+
+    else
+
+      super
+
+    end
+
+  end
+  </pre>
+</p>
+
+<p>
+该方法即实现了所有 find_by_* 的方法。当我们调用 User.find_by_name('admin') 的时候，<br />
+
+实现原理是：User 类中没有该方法，Base中也没有，但是 Base 类中定义了 method_missing 方法。<br />
+因此执行该方法。大概浏览一下 DynamicFinderMatch 的 match 方法，他会使用正则解析，判断查找的方式是
+find_all 还是 find_last，并且解析将要查找的条件，最后，构造一个 find 语句。
+</p>
+
+<p>
+还有很多可以实现动态编程的方法。例如：eval, instance_eval, remove_method, undef_method。<br />
+理解 Ruby 元编程，需要清楚 Ruby 的 Classes 是一个对象（Object）。<br />
+
+而且，任意一个 Classes 都不是关闭的，在运行时可以被打开，重新定义程序信息。<br />
+在运用元编程实现动态编程的时候，需要清楚的知道它的 self 以及作用域，<br />
+否则，会遇到一些奇怪的问题，但是，思考一下（self 和 scope）就可以找到问题了。
+</p>
