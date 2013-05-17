@@ -1,0 +1,109 @@
+---
+layout: post
+title: Learning SQLite & Command Line
+description: Learning SQLite & Command Line
+categories: SQLite
+tags: SQLite
+record_on: 2013-05-17
+---
+
+<h3>1. 介绍</h3>
+<p>
+  SQLite 是一个开源的嵌入式关系数据库，实现自包容、零配置、支持事务的SQL数据库引擎。
+  其特点是高度便携、使用方便、结构紧凑、高效、可靠。 与其他数据库管理系统不同，SQLite 的安装和运行非常简单。
+  在大多数情况下：只要确保 SQLite 的二进制文件存在即可开始创建、连接和使用数据库。
+</p>
+
+<p>
+  <pre>
+【注意点】
+
+在 SQLite 中，每个表的每一行都有一个 64-bit signed integer ROWID;
+如果表中包含的列类型INTEGER PRIMARY KEY，则该栏将变为 ROWID 的别名。
+
+SQLite 中的每个表的数据存储，使用B叉树结构. 其中，每个表含有一个条目，使用 rowid 的值作为 key。
+
+这意味着，基于 rowid 进行检索或排序是非常快速的。基于 rowid 搜索一条记录，或者一个范围的记录，
+查找速度上将比任何其他基于 PRIMARY KEY 或索引值，快两倍左右。
+  </pre>
+</p>
+
+<h3>2. 安装</h3>
+<p>
+  如果你正在使用 Mac OS 雪豹或者更新版本的系统，那么系统上已经装有 SQLite 了。<br />
+  使用其他系统的，可以前往这里下载和安装：
+  <a href="http://www.sqlite.org/download.html" target="_blank">Download</a>
+</p>
+
+<h3>3. Command Line</h3>
+<p>
+  SQLite 库提供一个简单的命令行实用程序：sqlite3。<br />
+
+  <pre class="prettyprint lang-html">
+    $ sqlite3
+    SQLite version 3.7.12 2012-05-14 01:41:23
+    Enter ".help" for instructions
+    Enter SQL statements terminated with a ";"
+    sqlite>
+  </pre>
+
+  常用命令行记录：
+  <pre class="prettyprint lang-html">
+    # 创建数据库: 若数据库文件存在则打开，否则生成新的文件
+    $ sqlite3 colleges.sqlite 
+    SQLite version 3.7.12 2012-05-14 01:41:23
+    Enter ".help" for instructions
+    Enter SQL statements terminated with a ";"
+    sqlite> 
+
+    # 创建表
+    sqlite> create table schools(name varchar(200));
+
+    # 查看所以表名
+    sqlite> .tables
+    schools
+
+    # 查看单个表的结构
+    sqlite> .schema schools
+    CREATE TABLE schools(name varchar(200));
+
+    # 向表中插入数据
+    sqlite> insert into schools values('school one');
+
+    # 查找表中数据
+    sqlite> select *from schools;
+    school one
+    sqlite> 
+
+    # 设置查找结果的展示
+    sqlite> .mode column
+    sqlite> .header on
+    sqlite> select *from schools;
+    name      
+    ----------
+    school one
+ 
+    # 退出命令行
+    sqlite> .quit
+  </pre>
+</p>
+
+<p>
+  <pre>
+【备注】
+使用 Xcode 运行一个 SQLite 的 Demo。发现项目根目录下面的 db 文件内，数据始终为空。
+调查后发现，项目编译后，运行时 db 存储在 iPhone 模拟器文件目录下。
+参考路径如下：
+
+/Users/leehenry/Library/Application Support/iPhone Simulator/6.0/Applications/xxx/Documents
+</pre>
+</p>
+
+<p>
+参考文章：<br />
+<a href="http://database.51cto.com/art/201205/335411.htm" target="_blank">一个小时内学习SQLite数据库</a>
+<br />
+<a href="http://www.sqlite.org/sqlite.html" target="_blank">Command Line Shell For SQLite</a>
+<br />
+<a href="http://www.sqlite.org/datatype3.html" target="_blank">Datatypes In SQLite Version 3</a>
+</p>
