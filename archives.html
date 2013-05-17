@@ -4,10 +4,25 @@ title: Archives
 permalink: /archives/
 ---
 
-<h3>Blog Archive</h3>
-<ul>
-  {% for post in site.posts order: record_on %}
-    {{ post.record_on }}
-    <a href="{{ post.url }}">{{ post.title }}</a><br />
-  {% endfor %}
-</ul>
+{% for post in site.posts order: record_on %}
+  {% capture current_year %}{{ post.record_on | date: "%Y" }}{% endcapture %}
+  {% capture previous_year %}{{ post.previous.record_on | date: "%Y" }}{% endcapture %}
+
+  {% if forloop.first %}
+    <h3>{{current_year}}</h3>
+    <ul>
+  {% endif %}
+
+  <li>{{ post.record_on }} <a href="{{ post.url }}">{{ post.title }}</a></li>
+
+  {% if forloop.last %}
+    </ul>
+  {% else %}
+    {% if current_year != previous_year %}
+      </ul>
+      <h3>{{previous_year}}</h3>
+      <ul>
+    {% endif %}
+  {% endif %}
+
+{% endfor %}
