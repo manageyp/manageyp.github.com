@@ -1,0 +1,81 @@
+---
+layout: post
+title: Ruby Object Initialize
+description: Ruby Object Initialize
+categories: Ruby
+tags: Ruby
+record_on: 2013-05-18
+---
+
+<p>
+  最近对 Ruby 的一个类（Class）实例化一个对象（Object）有些疑问。
+  所以，做了一些测试，记录如下。
+  <br />
+  首先，定义一个 Foo 类，为了得到一个 Foo 类的对象。
+  我们调用 Foo 的 new 方法。
+  对象在初始化的时候，会调用 initialize 方法。
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    $ irb
+    > class Foo
+    >   def initialize
+    >     p "call initialize"
+    >   end
+    > end
+     => nil
+
+    > foo_one = Foo.new
+    "call initialize"
+
+    # 如果直接调用 initialize，则得到下面的错误提示。
+    > foo_two = Foo.initialize
+    NoMethodError: private method `initialize' called for Foo:Class
+  </pre>
+</p>
+
+<p>
+  以上说明：new 和 initialize 方法，有很大的不同。
+  找到 Ruby 源代码中 object.c 文件。
+  <pre class="prettyprint lang-html">
+    # ruby/object.c
+
+    /* *  call-seq:
+     *     class.new(args, ...)    ->  obj
+     *
+     *  Calls allocate to create a new object of class's class,
+     *  then invokes that object's initialize method, passing it args.
+     *  This is the method that ends up getting called whenever
+     *  an object is constructed using .new.
+     *
+     */
+
+    VALUE
+    rb_class_new_instance(int argc, VALUE *argv, VALUE klass)
+    {
+        VALUE obj;
+
+        obj = rb_obj_alloc(klass);
+        rb_obj_call_init(obj, argc, argv);
+
+        return obj;
+    }
+  </pre>
+  
+  <pre>
+  从源代码上知道：类调用 new 方法时，首先创建一个对象，为对象分配内存地址。
+  然后，会调用类中定义的  initialize 方法，进行初始化设置。
+
+  【知识点】
+     *  Classes in Ruby are first-class objects---each is an instance of class Class.
+     *  在 Ruby 中，每个类都是类 Class 的一个实例。每个类都是对象。
+
+     *  When a new class is created, an object of type Class is initialized and assigned to a global constant.
+     *  当定义一个新类时，即生成了一个 Class 类型的对象，并且分配给全局常量
+
+     *  When new is called to create a new object, the new method in Class is run by default.
+     *  当调用 new 方法，创建一个新的对象时，默认调用 Class 的 new 方法。
+        因此，new 方法是 Class 类的一个实例方法。
+  </pre>
+</p>
