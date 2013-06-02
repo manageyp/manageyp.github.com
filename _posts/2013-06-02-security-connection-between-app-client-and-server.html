@@ -108,7 +108,49 @@ b. token:
 传输的数据是密文；
 只对请求的数据部分做加解密处理，资源开销较小；
 获取数据，有证书，即可解密。
+
+基于 “RSA公钥加密算法” 的 Ruby 代码示例如下：
 </pre> 
+<pre class="prettyprint lang-html">
+
+require "openssl"
+require 'base64'
+require 'cgi'
+
+class RsaSignatureUtil
+
+  PRIVATE_KEY = "your_private_key"
+  PUBLIC_KEY = "your_public_key"
+
+  class << self
+    def sign(content)
+      rsa_private_key = OpenSSL::PKey::RSA.new(PRIVATE_KEY)
+      CGI.escape(Base64.encode64(rsa_private_key.sign(OpenSSL::Digest::SHA1.new, content)))
+    end
+
+    def verify(content, sign)
+      rsa_public_key = OpenSSL::PKey::RSA.new(PUBLIC_KEY)
+      rsa_public_key.verify(OpenSSL::Digest::SHA1.new, Base64.decode64(URI.unescape(sign)), content)
+    end
+  end
+
+end
+
+# 签名
+parameters = "name='henry'&password='123'"
+
+sign = RsaSignatureUtil.sign(parameters)
+parameters << "&sign_type='RSA'"
+parameters << "&sign='#{sign}'"
+
+url = "http://api_host/blogs?#{parameters}"
+
+# 验签
+content = "notify_data=#{params[:notify_data]}"
+sign = params[:sign]
+RsaSignatureUtil.sign(content, sign)
+
+</pre>
 </p>
 
 <h3>三、防止篡改</h3>
