@@ -1,0 +1,169 @@
+---
+layout: post
+title: RSpec Tutorials Models Test
+description: RSpec Tutorials Models  
+categories: RSpec Test
+tags: RSpec Test
+record_on: 2013-06-12
+---
+
+<p>
+  上一篇博客介绍了测试的相关概念，软件开发过程中，要对测试有足够的重视。
+  而且对于 Ruby 开发的项目，测试更是极其重要。<br />
+  下面，将总结一下在 Rails 项目中如何引入 RSpec，并对代码进行充分的测试。
+</p>
+
+<h3>RSpec 介绍</h3>
+
+<p>
+  <pre>
+    RSpec is testing tool for the Ruby programming language. 
+    Born under the banner of Behaviour-Driven Development, it is designed to 
+    make Test-Driven Development a productive and enjoyable experience.
+
+    However we use FactoryGirl to set up Ruby objects as test data.
+    It support for multiple build strategies (saved instances, unsaved instances,
+    attribute hashes, and stubbed objects), and support for multiple factories for
+    the same class (user, admin_user, and so on), including factory inheritance.
+
+    If we want to use factory_girl with Rails, we need to include factory_girl_rails.
+  </pre>
+  我们将结合 FactoryGirl 以及 factory_girl，来取代 Test::Unit 和 Fixture。
+</p>
+
+<h3>开发记录</h3>
+<p>
+  1. 新建一个项目 rspec_tutorials.<br />
+  项目源代码 Github 地址：<a href="https://github.com/manageyp/rspec_tutorials" target="_blank">rspec_tutorials</a><br />
+
+  2. 在 Gemfile 中引入一下gems<br />
+  <pre class="prettyprint lang-html">
+    group :test, :development do
+      gem "rspec-rails"
+      gem "factory_girl"
+      gem "factory_girl_rails"
+    end
+  </pre>
+
+  3. 安装 RSpec<br />
+  执行以下两个命令
+  <pre class="prettyprint lang-html">
+    bundle install
+    rails generate rspec:install
+  </pre>
+  以上命令将安装 RSpec 依赖的gems，并且在项目下创建 spec 目录以及创建 spec_helper.rb 文件。<br /><br />
+
+  4. 创建模型<br />
+  创建一个 User 模型，包含姓名:name, 年龄:age, 性别:gender。
+  <pre class="prettyprint lang-html">
+    rails g model user name:string age:integer gender:string
+  </pre>
+
+  5. 准备数据库<br />
+  在 development 数据库中，创建 users 表；将 development 数据库表结构 clone 至 test 数据库。
+  <pre class="prettyprint lang-html">
+    rake db:create
+    rake db:migrate
+  </pre>
+
+  6. 编写 User 模型相关代码<br />
+  <pre class="prettyprint lang-html">
+    # app/models/user.rb
+
+    class User < ActiveRecord::Base
+      extend Enumerize
+
+      enumerize :gender, in: [:male, :female]
+
+      attr_accessible :age, :name, :gender
+
+      def youngster?
+        self.age.present? && self.age < 18
+      end
+
+    end
+  </pre>
+
+  7. 编写 User 模型 factories 数据示例<br />
+  <pre class="prettyprint lang-html">
+    # spec/factories/users.rb
+
+    FactoryGirl.define do
+      factory :man, :class => 'User' do
+        name "Henry"
+        age 25
+        gender 'male'
+      end
+
+      factory :woman, :class => 'User' do
+        name "Alice"
+        age 12
+        gender 'female'
+      end
+    end
+  </pre>
+
+  8. 编写 User 模型 RSpec 测试代码<br />
+  <pre class="prettyprint lang-html">
+    # spec/models/user_spec.rb
+
+    require 'spec_helper'
+
+    describe User do
+      let(:man) { FactoryGirl.create(:man) }
+      let(:woman) { FactoryGirl.create(:woman) }
+
+      describe "man" do
+        it "should be male" do
+          man.gender.male?.should be_true
+        end
+
+        it "should not be a youngster" do
+          man.youngster?.should be_false
+        end
+      end
+
+      describe "woman" do
+        it "should be female" do
+          woman.gender.female?.should be_true
+        end
+
+        it "should be a youngster" do
+          woman.youngster?.should be_true
+        end
+      end
+    end
+  </pre>
+
+  9. 命令行运行测试<br />
+  <pre class="prettyprint lang-html">
+    1. run all tests
+      rake spec
+
+    2. run all modles tests
+      rake spec:models
+
+    3. run single test file
+      rspec spec/models/user_spec.rb
+
+    4. run single test method within a test file
+      rspec file_path:line_no
+
+      The line_no is the method location in your test file. Such as:
+
+      rspec spec/models/user_spec.rb:10
+  </pre>
+
+  10. 测试执行结果<br />
+  <pre class="prettyprint lang-html">
+    $ rake spec
+    /Users/leehenry/.rvm/rubies/ruby-1.9.3-p125/bin/ruby -S rspec ./spec/models/user_spec.rb
+    ....
+
+    Finished in 0.04613 seconds
+    4 examples, 0 failures
+
+    Randomized with seed 33203
+  </pre>
+
+</p>
