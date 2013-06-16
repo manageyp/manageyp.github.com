@@ -1,0 +1,64 @@
+---
+layout: post
+title: MySQL Index
+description: MySQL Index
+categories: MySQL
+tags: MySQL
+record_on: 2012-09-07
+---
+
+<p>
+索引是加速 MySQL 查询的主要手段之一。<br />
+特别是涉及到多表查询，以及表的数据量巨大的情况，加索引和不加索引的查询速度相差成百上千倍。
+</p>
+
+<h3>Mysql 索引分类</h3>
+<p>
+  1. 普通索引<br />
+  为那些最经常出现在查询条件（WHERE column=）或排序条件（ORDER BY column）中的数据列(column)创建索引。应该选择一个数据最整齐、最紧凑的数据列（如name）来创建索引。
+</p>
+
+<p>
+  2. 唯一索引<br />
+  普通索引允许被索引的数据列包含重复的值。比如说，因为人有可能同名（name），所以同一个姓名在同一个“员工个人资料”数据表里可能出现两次或更多次。<br />
+  如果要求某个数据列将只包含彼此各不相同的值（如 email），在为这个数据列创建索引的时候就应该用关键字UNIQUE把它定义为一个唯一索引。<br />
+  这么做的好处：<br />
+  一是简化了 MySQL 对这个索引的管理工作，这个索引也因此而变得更有效率；<br />
+  二是 MySQL 会在有新记录插入数据表时，自动检查新记录的这个字段的值，是否已经在某个记录的这个字段里出现过了；如果是，MySQL 将拒绝插入那条新记录。也就是说，唯一索引可以保证数据记录的唯一性。<br />
+  事实上，在许多场合，创建唯一索引的目的往往只是为了避免数据出现重复，同时提高了数据访问速度。
+</p>
+
+<p>
+  3. 主索引<br />
+  一个表的主键字段必须创建为一个索引，这个索引就是所谓的“主索引”。主索引与唯一索引的唯一区别是：前者在定义时使用的关键字是 PRIMARY 而不是 UNIQUE。
+</p>
+
+<p>
+  4. 外键索引<br />
+  如果为某个外键字段定义了一个外键约束条件，MySQL 就会定义一个内部索引，以最有效率的方式去管理和使用外键约束条件。如果，该外键的值要求唯一，则应该使用唯一索引。
+</p>
+
+<p>
+  5. 复合索引<br />
+  上面提到的索引均为单一数据列的索引。索引可以覆盖多个数据列，如像INDEX（columnA，columnB）索引。<br />
+  这种索引的特点是 MySQL 可以有选择地使用一个这样的索引。<br />
+  如果查询操作不只需要用到 columnA 数据列上的一个索引，就可以使用复合索引 INDEX（columnA,columnB）。<br />
+  不过，这种用法仅适用于在复合索引中排列在前的数据列组合。<br />
+  比如说，INDEX（A，B，C）可以当做A或（A,B）的索引来使用，但不能当做B、C或（B，C）的索引来使用。
+</p>
+
+<p>
+  Rails Migration demo
+  <pre class="prettyprint lang-html">
+  create_table :users do |t|
+     t.string :nick_name, :null => false
+     t.string :email, :null => false
+     t.string :city
+     t.string :province
+  end
+
+  add_index :users, :nick_name
+  add_index :users, :email, :unique => true
+  add_index :users, [:province, :city]
+  </pre>
+</p>
