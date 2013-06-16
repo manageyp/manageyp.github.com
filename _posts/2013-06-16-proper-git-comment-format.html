@@ -1,0 +1,51 @@
+---
+layout: post
+title: Proper Git Comment Format
+description: Proper Git Comment Format
+categories: Git
+tags: Git
+record_on: 2013-06-16
+---
+
+<p>
+工作中几乎所有的项目，都会使用到代码版本管理工具，如：SVN，Git等。<br />
+原因在于方便项目源代码的集中管理，团队协作开发，以及代码变化的跟踪。<br />
+在项目开发过程中，任何一次代码的变更，都需要提交到版本管理服务器。
+而且，每一次提交代码，都需要适当的文字注释，用来说明本次提交的意图。
+</p>
+
+<p>
+  中等的项目，一般由5人左右的团队，开发周期1~3个月。下面说明一下代码提交注释的重要性。
+  <pre>
+  提交代码的注释，一方面是方便自己理解以及日后的查阅，更重要的是便于队友查看。
+
+  一个队友的某次代码提交，将会引起其他成员的代码冲突。
+  其他成员将主要依据：队友提交的注释，同时结合代码的改动，
+  来理解队友本次修改的意图。
+
+  可能某次业务的调整，将会引起代码的回滚。
+  此时势必会查看代码提交的历史，良好的注释将很容易确定提交的节点。
+  </pre>
+</p>
+<p>
+  以 Git 为例，推荐以下提交代码的注释格式规范。
+  <pre class="prettyprint lang-html">
+  # 修改功能
+  git commit -m "[Change] ..."
+
+  # 添加新功能
+  git commit -m "[NewFeature] ..."
+
+  # 删除功能
+  git commit -m "[Remove] ..."
+
+  # 重构代码
+  git commit -m "[Refactor] ..."
+
+  # Bug 修正 
+  git commit -m "[BugFix] ..."
+
+  # 分支代码合并
+  git commit -m "[MergeBranch] ..."
+  </pre>
+</p>
