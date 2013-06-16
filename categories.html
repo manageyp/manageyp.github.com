@@ -4,9 +4,9 @@ title: Categories
 permalink: /categories/
 ---
 
-{% for category in site.categories %}
-<a name="{{ category | first }}"><h2>{{ category | first }}</h2></a>
+{% for tag in site.tags %}
+<a name="{{ tag | first }}"><h2>{{ tag | first }}</h2></a>
 <ul>
-    {% for post in category.last %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}
+    {% for post in site.tags[tag.first] %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}
 </ul>
 {% endfor %}
