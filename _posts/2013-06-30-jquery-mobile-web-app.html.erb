@@ -1,0 +1,105 @@
+---
+layout: post
+title: jQuery Mobile Web App
+description: jQuery Mobile Web App
+categories: jQuery-Mobile
+tags: jQuery-Mobile
+record_on: 2013-06-30
+---
+
+<p>
+最近，两周的时间，将一款纯 Native 的 iPhone App，移植到了 Web 端，简称 Web App。
+iPhone App 下载地址：<a href="https://itunes.apple.com/cn/app/id653491282" target="_blank">银联微点 </a>
+Web App 的目标要能够支持各种智能设备的各种浏览器。
+个人 JavaScript 方面，长期使用 jQuery，于是很自然的想到使用 jQuery Mobile 来搭建页面。<br />
+实践中，开发比较顺利，使用了以下几个组件：
+Navbar，Collapsibles，Dialogs，Listviews，Buttons；
+
+另外，引入了地图（Google Map），图片轮播(photo sliders)，弹窗(Popup)等插件。<br />
+简要记录一下：
+</p>
+
+<p>
+  1. Meta 标签设置<br />
+  可以从苹果的开发者文档里，了解下面配置的意义：<a href="http://developer.apple.com/library/safari/#documentation/appleapplications/reference/safariwebcontent/configuringwebapplications/configuringwebapplications.html" target="_blank">safariwebcontent</a><br />
+  <pre class="prettyprint lang-html">
+    < meta content='text/html; charset=UTF-8' http-equiv='content-type'>
+    < meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0,height=device-height,width=device-width,user-scalable=no' name='viewport'>
+    < meta content='upsmart' name='apple-mobile-web-app-title'>
+    < meta content='yes' name='apple-mobile-web-app-capable'>
+    < meta content='black' name='apple-mobile-web-app-status-bar-style'>
+  </pre>
+</p>
+
+<p>
+  2. 模版内容部分，加上 data-role="page"<br />
+  可以避免 JM 重复加载 render 的页面内容
+  <pre class="prettyprint lang-html">
+    < body>
+      < article data-role="page">
+        < %= yield %>
+      < /article>
+    < /body>
+  </pre>
+</p>
+
+<p>
+  3. Navbar 的头部和尾部 Fixed <br />
+
+  <pre class="prettyprint lang-html">
+    < div data-role="header" data-theme="b" data-position="fixed" data-tap-toggle="false">
+      < a href="#" id="search_btn" data-icon="search">搜索< /a>
+      < h1>热门品牌< /h1>
+      < a href="#" id="setting_btn" data-icon="gear">设置< /a>
+    < /div>
+  </pre>
+  截图如下：<br />
+  <img src="/images/posts/web_app_home.png">
+</p>
+
+<p>
+  4. Google Map<br />
+  <pre class="prettyprint lang-html">
+    < script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+  </pre>
+  截图如下：<br />
+  <img src="/images/posts/web_app_map.png">
+</p>
+
+<p>
+  5. 图片轮播<br />
+  使用了下面这个图片轮盘的插件：
+  <a href="http://www.idangero.us/sliders/swiper/" target="_blank">网址</a>
+  <pre class="prettyprint lang-html">
+      var mySwiper = $('.swiper-container').swiper({
+        autoPlay: 1000,
+        mode:'horizontal',
+        pagination:'.pagination-sd',
+        slidesPerSlide : 1,
+        loop: true
+      });
+  </pre>
+  截图如下：<br />
+  <img src="/images/posts/web_app_slider.png">
+</p>
+
+<p>
+  6. 弹窗<br />
+  引入 jQuery Mobile SimpleDialog：
+  <a href="https://github.com/jtsage/jquery-mobile-simpledialog" target="_blank">SimpleDialog</a>
+  <br />
+  截图 1 如下：<br />
+  <img src="/images/posts/web_app_dialog.png"><br />
+  截图 2 如下：<br />
+  <img src="/images/posts/web_app_opacity.png">
+
+</p>
+
+<p>
+  待优化问题：<br />
+  <pre class="prettyprint">
+    1. 页面加载较慢，性能差的手机使用不流畅
+    2. 页面晃动：页面组件加载后，需要执行 JS 来渲染，
+       因此页面会出现晃动的效果（不是有意设计的^_^）
+  </pre>
+</p>
