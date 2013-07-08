@@ -1,0 +1,138 @@
+---
+layout: post
+title: Rails Unicorn Nginx Guide
+description: Ruby-on-Rails Unicorn Nginx Guide
+categories: Ruby-on-Rails Unicorn Nginx
+tags: Ruby-on-Rails Unicorn Nginx
+record_on: 2013-07-08
+---
+
+<p>
+目前，基于 Rails 框架搭建 Web 服务，比较成熟的技术路线是使用 Nginx 和 Unicorn。
+前者为 Web Server, 或者为 Rails Server。淘汰 Apache 和 Passenger。<br />
+下面介绍一下三者如何配置, 更详细的配置请参考：
+<a href="https://github.com/manageyp/my_colleges" target="_blank">My Colleges Project</a>
+</p>
+
+<p>
+  1. Rails Gemfile 配置<br />
+  <pre class="prettyprint lang-html">
+    gem 'unicorn'
+
+    group :development do
+      gem 'capistrano'
+    end
+  </pre><br />
+  2. Unicorn 配置<br />
+  新建文件：/app/config/unicorn.rb
+  <pre class="prettyprint lang-html">
+    module Rails
+      class << self
+        def root
+          File.expand_path(__FILE__).split('/')[0..-3].join('/')
+        end
+      end
+    end
+    rails_env = ENV["RAILS_ENV"] || "development"
+
+    preload_app true
+    working_directory Rails.root
+    pid "#{Rails.root}/tmp/pids/unicorn.pid"
+    stderr_path "#{Rails.root}/log/unicorn.log"
+    stdout_path "#{Rails.root}/log/unicorn.log"
+
+    listen 5000, :tcp_nopush => false
+
+    if rails_env == "production"
+      worker_processes 4
+    else
+      worker_processes 1
+    end  
+    timeout 120
+
+    if GC.respond_to?(:copy_on_write_friendly=)
+      GC.copy_on_write_friendly = true
+    end
+
+    before_exec do |server|
+      ENV['BUNDLE_GEMFILE'] = "#{Rails.root}/Gemfile"
+    end
+
+    before_fork do |server, worker|
+      # the following is highly recomended for Rails + "preload_app true"
+      # as there's no need for the master process to hold a connection
+      if defined?(ActiveRecord::Base)
+        ActiveRecord::Base.connection.disconnect!
+      end
+
+      old_pid = "#{Rails.root}/tmp/pids/unicorn.pid.oldbin"
+      if File.exists?(old_pid) && server.pid != old_pid
+        begin
+          Process.kill("QUIT", File.read(old_pid).to_i)
+        rescue Errno::ENOENT, Errno::ESRCH
+          puts "Send 'QUIT' signal to unicorn error!"
+        end
+      end
+    end
+
+    after_fork do |server, worker|
+      # the following is *required* for Rails + "preload_app true",
+      if defined?(ActiveRecord::Base)
+        ActiveRecord::Base.establish_connection
+      end
+
+      # if preload_app is true, then you may also want to check and
+      # restart any other shared sockets/descriptors such as Memcached,
+      # and Redis.  TokyoCabinet file handles are safe to reuse
+      # between any number of forked children (assuming your kernel
+      # correctly implements pread()/pwrite() system calls)
+    end
+  </pre>
+  3. Capistrano 配置<br />
+  文件目录：/app/config/deploy.rb
+  <pre class="prettyprint lang-html">
+    # unicorn.rb 路径
+    set :unicorn_path, "#{deploy_to}/current/config/unicorn.rb"
+
+    namespace :deploy do
+      task :start, :roles => :app do
+        run "cd #{deploy_to}/current/; RAILS_ENV=production bundle exec unicorn_rails -c #{unicorn_path} -D"
+      end
+
+      task :stop, :roles => :app do
+        run "kill -QUIT `cat #{deploy_to}/current/tmp/pids/unicorn.pid`"
+      end
+
+      desc "Restart Application"
+      task :restart, :roles => :app do
+        run "kill -USR2 `cat #{deploy_to}/current/tmp/pids/unicorn.pid`"
+      end
+    end
+  </pre>
+  4. Nginx 配置<br />
+  文件目录：/path/nginx/conf/nginx.conf
+  <pre class="prettyprint lang-html">
+   server {
+     listen 80;
+     server_name www.mycollege.com;
+
+     location ~* .(jpg|png|bmp|gif)$ {
+      root /path/public;
+     }
+
+       location / {
+          proxy_redirect     off;
+          proxy_set_header   Host             $host;
+          proxy_set_header   X-Forwarded-Host $host;
+          proxy_set_header   X-Forwarded-Server $host;
+          proxy_set_header   X-Real-IP        $remote_addr;
+          proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+          proxy_buffering    on;
+          proxy_pass  http://host:5000;
+          access_log logs/access.log combined;
+       }
+   }
+  </pre>
+  5. 启动脚本<br />
+  参考网上 Shell 大牛写的脚本 unicorn.sh，方便操作 unicorn 进程，对其进行： start, restart, stop.
+</p>
