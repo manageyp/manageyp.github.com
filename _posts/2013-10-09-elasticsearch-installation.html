@@ -1,0 +1,70 @@
+---
+layout: post
+title: ElasticSearch Installation
+description: ElasticSearch Installation
+categories: ElasticSearch
+tags: ElasticSearch
+record_on: 2013-10-09
+---
+
+<p>
+本篇将详细记录 ElasticSearch 的安装和配置步骤。同时，介绍一下 ES 的基本概念。
+以下安装配置步骤在 Mac OS X 上正常，Linux 应该也适用。
+</p>
+
+<h3>安装和配置</h3>
+<p>
+  . 切换到下载目录<br />
+  cd ~/Downloads/<br />
+
+  . 下载 ES 安装文件<br />
+  sudo wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-0.90.5.tar.gz<br />
+
+  . 解压文件<br />
+  tar -zxvf elasticsearch-0.90.5.tar.gz<br />
+
+  . 重命名文件夹<br />
+  mv elasticsearch-0.90.5 elasticsearch<br />
+
+  . 下载 ES service shell 管理脚本<br />
+  git clone https://github.com/elasticsearch/elasticsearch-servicewrapper.git<br />
+  cd elasticsearch-servicewrapper<br />
+
+  . 拷贝 service 至 ES bin 目录下<br />
+  mv service /Users/leehenry/Downloads/elasticsearch/bin<br />
+  cd ../<br />
+
+  . 修改文件权限<br />
+  sudo chown -R root:wheel elasticsearch<br />
+
+  . 修改默认配置，主要关闭 ES 自动发现节点<br />
+  cd  elasticsearch<br />
+  vim config/elasticsearch.yml<br />
+  <pre class="prettyprint lang-html">
+    # 1. Disable multicast discovery (enabled by default):
+    #
+    discovery.zen.ping.multicast.enabled: false
+  </pre>
+
+  . 启动 ES 服务<br />
+  sudo bin/service/elasticsearch start<br />
+
+  . 浏览器访问，确认服务运行正常<br />
+  http://localhost:9200<br />
+  <pre class="prettyprint lang-html">
+    {
+      ok: true,
+      status: 200,
+      name: "Maximoff, Pietro",
+      version: {
+      number: "0.90.5",
+      build_hash: "c8714e8e0620b62638f660f6144831792b9dedee",
+      build_timestamp: "2013-09-17T12:50:20Z",
+      build_snapshot: false,
+      lucene_version: "4.4"
+      },
+      tagline: "You Know, for Search"
+    }
+  </pre>
+
+</p>
