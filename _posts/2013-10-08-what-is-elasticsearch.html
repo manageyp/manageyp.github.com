@@ -1,0 +1,92 @@
+---
+layout: post
+title: What is ElasticSearch
+description: ElasticSearch Introduction
+categories: ElasticSearch
+tags: ElasticSearch
+record_on: 2013-10-08
+---
+
+<h3>ElasticSearch 简介</h3>
+<p>
+随着，互联网应用业务越来越复杂、越来越个性化，
+反应在数据层面上，也都是非结构化的数据，存储分散。
+因此，构建这一类应用之上的搜索功能，再也不是一条 SQL 语句可以搞定的了。<br />
+
+幸运的是，很多开源和商业平台，都致力于解决对可插拔搜索技术的需求，
+这些平台包括 Lucene, Sphinx, Solr, Amazon 的 CloudSearch 和 Xapian。
+而 <a href="http://www.elasticsearch.org/" target="_blank">ElasticSearch</a>  是开源搜索平台领域的一个新成员。<br />
+
+ElasticSearch（简称 ES） 是一个基于 Lucene 构建的开源，分布式，RESTful 搜索引擎。
+设计用于云计算中，能够达到搜索实时、稳定、可靠和快速，并且安装使用方便。
+支持通过 HTTP 请求，使用 JSON 进行数据索引。<br />
+
+接下来，介绍一下 ES 特点，以及如何快速安装和配置，介绍它的基本概念。
+下一篇博客，将在 Rails 项目中对接 ES 搜索服务。
+</p>
+
+<h3>特点和优势</h3>
+<p>
+  <b>1. Open Source & Apache Lucene</b><br />
+  开源才是王道啊，开源有益于 ES 的传播和发展。<br />
+  Lucene 是基于 Java 编写的高性能，全文检索引擎。在 Lucene 之上搭建的搜索服务，功能和性能都有保障。
+  <br />
+  <b>2. RESTful API</b><br />
+  Almost any action can be performed using a simple RESTful API using JSON over HTTP. <br />
+  RESTful 架构基本概念：
+  <pre class="prettyprint lang-html">
+　　（1）每一个URI代表一种资源；
+　　（2）客户端和服务器之间，传递这种资源的某种表现层；
+　　（3）客户端通过四个HTTP动词，对服务器端资源进行操作，实现"表现层状态转化"。
+  </pre>
+  RESTful 的架构已经成为业界普遍认可的标准。
+  RESTful API使得从命令行中，直接对数据进行测试及验证变得更方便了。开发者可以简单的使用 Lucene 通用的语法，或者使用基于 JSON 格式 QueryDSL（DSL：领域特定语言）
+  来构造搜索各种请求。非常灵活方便的构造复杂查询。
+  <br /><br />
+  <b>3. JSON format</b><br />
+  ES 的模型基于 JSON。事实上，JSON 在近些年已经成为数据呈现的一个标准。
+  此外，通过 JSON 可以非常简单的表示半结构化的数据，同样的，大多数编程语言都会优先支持 JSON 数据的解析。
+  <br /><br />
+  <b>4. Schema Free & Document Oriented</b><br />
+  模式自由可以轻松的改变现有的索引结构，增强了应用对未来需求变化的适应性。<br />
+  ES 所保存的是“文档”，这是一种类似 JSON 对象的结构化数据类型。
+  每个文档都是一系列的键与值，键是字符串类型，而值则可以支持多种数据类型，比如字符串、数字、日期及列表。<br />
+  以目前 nosql 的发展趋势来看，ES 所采用的模式自由，以及数据库是面向文档的设计，来构建应用程序，已经被证明是非常高效的。
+  <br /><br />
+  <b>5. Real Time Data & Analytics</b><br />
+  ES 分布式特性，可以满足实时同步更新和查询，在保证高性能的同时，不会错失任何新内容。<br />
+  ES percolation 功能是：当更新的新内容满足设定的 filters 时，会唤醒你的应用。这种功能替代了：为了监听更新内容而做的持续轮循操作。<br />
+  以上两个特性，使得实时索引，实时分析检索的功能得到了保障。
+  <br /><br />
+  <b>6. Distributed</b><br />
+  ES 的一个最主要的功能就是对分布式的支持，索引能够分拆为多个分片，
+  每个分片可以有0个或者多个副本，集群中的每个数据节点，都可以承载一个或者多个分片，
+  并且充当协调和处理各种操作分发到合适的分片上去。
+  再平衡（Rebalancing）和路由（routing）这一切都是自动进行的。
+  <br /><br />
+  <b>7. High Availability</b><br />
+  ES 集群自动检测和移除失败的节点，然后重组剩余节点。
+  <br /><br />
+  <b>8. 其他特性</b><br />
+  multi-tenancy<br />
+  full text search<br />
+  conflict management<br />
+  per-operation persistence<br />
+</p>
+
+<h3>推荐阅读</h3>
+<p>
+  <b>1. 业界资讯</b><br />
+  GitHub searches 20TB of data using Elasticsearch, including 1.3 billion files and 130 billion lines of code.<br />
+  Fog Creek Software 如何使用 Elasticsearch 使Kiln的搜索速度提升了1000倍。
+  <a href="http://www.infoq.com/cn/articles/kiln-elasticsearch/" target="_blank">原文链接</a>  
+  <br />
+  <b>2. 性能对比</b><br />
+  <a href="http://solr-vs-elasticsearch.com/" target="_blank">Apache Solr vs ElasticSearch</a>
+  <br />
+  <a href="http://blog.socialcast.com/realtime-search-solr-vs-elasticsearch/" target="_blank">Realtime Search: Solr vs Elasticsearch</a>
+  <br />
+  性能对比测试后，结论：<br />
+  在数据不变的情况下，建立完索引之后进行搜索，Solr 确实很快，耗时比 ES 缩减2倍。<br />
+  在数据经常变更，需要实时搜索的场景下，ES 的搜索性能将是 Solr 望尘莫及的。
+</p>
