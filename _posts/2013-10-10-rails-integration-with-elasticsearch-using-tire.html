@@ -1,0 +1,172 @@
+---
+layout: post
+title: Rails Integration With ElasticSearch Using Tire
+description: Rails Integration With ElasticSearch Using Tire
+categories: ElasticSearch Ruby-on-Rails
+tags: ElasticSearch Ruby-on-Rails
+record_on: 2013-10-10
+---
+
+<p>
+<a href="https://github.com/karmi/retire" target="_blank">Tire</a> is a rich Ruby API and DSL for the Elasticsearch search engine.<br />
+It exposes easy-to-use domain specific language for fluent communication with Elasticsearch.<br />
+It easily blends with your ActiveModel/ActiveRecord classes for convenient usage in Rails applications.
+</p>
+
+<h3>实例讲解</h3>
+<p>
+  下面是一个商户模型，它有名称，地址，坐标等属性。
+
+  首先，在模型中引入 Tire::Model::Search。
+  <pre class="prettyprint lang-html">
+    # By including this module, you'll provide the model with facilities to
+    # perform searches against index, define index settings and mappings,
+    # access the index object, etc.
+  </pre>
+
+  设置用于搜索的索引。
+  关于 ES 索引的配置，可以参考这篇文章：<a href="http://obtao.com/blog/2013/10/efficient-elasticsearch-indexing-configuration/" target="_blank">Efficient Elasticsearch indexing configuration</a>。
+  <pre class="prettyprint lang-html">
+    mapping do
+      indexes :id, :type => 'integer', :index => 'not_analyzed'
+      indexes :name, :boost =>  100, analyzer: "snowball"
+      indexes :address, :boost  => 5, analyzer: "snowball"
+      indexes :location, :type  => 'geo_point'
+    end
+  </pre>
+
+  运行任务，读取数据，建立索引。
+  rake merchant:build_indexes <br />
+  详细 Rake 任务代码如下：
+  <pre class="prettyprint lang-html">
+    namespace :merchant do
+
+      desc "build merchant indexes"
+      task :build_indexes => :environment do
+        puts "Start build indexes"
+
+        Merchant.where(status: 'active').find_in_batches do |batches|
+          Merchant.index.import batches
+        end
+
+        puts "End build indexes"
+      end
+
+    end
+  </pre>
+
+  查看索引结构，可以在浏览器中，输入：
+  <pre class="prettyprint lang-html">
+    http://localhost:9200/_mapping
+  </pre>
+  如需重建，可以在命令行执行 curl 命令，先删除索引（非常迅速）。
+  然后，再次执行建立索引的任务。
+  <pre class="prettyprint lang-html">
+    curl -XDELETE http://localhost:9200/merchants
+  </pre>
+
+  实现搜索方法。基于用户输入的关键词，针对建立的索引，做全文检索。
+  如果，客户端获取到了用户的地理坐标数据，则对搜索结构做地理位置排序，否则不排序。
+  <pre class="prettyprint lang-html">
+    def self.search(params)
+      longitude = params[:lng].to_f
+      latitude = params[:lat].to_f
+      params[:page] ||= 1
+      params[:per_page] ||= 20
+      tire.search(page: params[:page], per_page: params[:per_page], load: true) do
+        query do
+          boolean do
+            must { string params[:keyword], default_operator: "AND" } if params[:keyword].present?
+          end
+        end
+        if latitude != 0 && longitude != 0
+          sort do
+            by :_geo_distance, { location: [longitude, latitude], order: "asc", unit: 'km' }
+          end
+        end
+      end
+    end
+  </pre>
+
+  更新索引。当商户数据变更时，如：名称调整，或者商户下家。则需要实时的同步更新索引。
+  <pre class="prettyprint lang-html">
+    after_save do
+      if self.active?
+        tire.update_index
+      else
+        self.index.remove self
+      end
+    end
+  </pre>
+  <br />
+  <h3>完整代码</h3>
+  <pre class="prettyprint lang-html">
+  class Merchant < ActiveRecord::Base
+    include Tire::Model::Search
+
+    attr_accessor :location
+    attr_accessible :name, :address, :latitude, :longitude
+
+    state_machine :status, initial: :active do
+      state :active
+      state :deleted
+      event :set_active do
+        transition all => :active
+      end
+      event :set_deleted do
+        transition all => :deleted
+      end
+    end
+
+    after_save do
+      if self.active?
+        tire.update_index
+      else
+        self.index.remove self
+      end
+    end
+
+    def self.search(params)
+      longitude = params[:lng].to_f
+      latitude = params[:lat].to_f
+      params[:page] ||= 1
+      params[:per_page] ||= 20
+      tire.search(page: params[:page], per_page: params[:per_page], load: true) do
+        query do
+          boolean do
+            must { string params[:keyword], default_operator: "AND" } if params[:keyword].present?
+          end
+        end
+        if latitude != 0 && longitude != 0
+          sort do
+            by :_geo_distance, { location: [longitude, latitude], order: "asc", unit: 'km' }
+          end
+        end
+      end
+    end
+
+    def location
+      { longitude: longitude.to_f, latitude: latitude.to_f }
+    end
+
+    self.include_root_in_json = false
+    def to_indexed_json
+      { id: id,
+        name: name,
+        address: address,
+        location: location
+      }.to_json
+    end
+
+    mapping do
+      indexes :id, :type => 'integer', :index => 'not_analyzed'
+      indexes :name, :boost =>  100, analyzer: "snowball"
+      indexes :address, :boost  => 5, analyzer: "snowball"
+      indexes :location, :type  => 'geo_point'
+    end
+  end
+  </pre>
+  <h3>参考资料</h3>
+  <a href="https://github.com/karmi/retire/issues/169" target="_blank">Location sorting</a><br />
+  <a href="http://railscasts.com/episodes/306-elasticsearch-part-1" target="_blank">RailsCasts ElasticSearch Part 1</a>
+</p>
