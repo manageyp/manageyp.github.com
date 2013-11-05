@@ -15,7 +15,7 @@ It easily blends with your ActiveModel/ActiveRecord classes for convenient usage
 
 <h3>实例讲解</h3>
 <p>
-  下面是一个商户模型，它有名称，地址，坐标等属性。
+  下面是一个学校模型，它有名称，别名，坐标等属性。
 
   首先，在模型中引入 Tire::Model::Search。
   <pre class="prettyprint lang-html">
@@ -30,26 +30,26 @@ It easily blends with your ActiveModel/ActiveRecord classes for convenient usage
     mapping do
       indexes :id, :type => 'integer', :index => 'not_analyzed'
       indexes :name, :boost =>  100, analyzer: "snowball"
-      indexes :address, :boost  => 5, analyzer: "snowball"
+      indexes :nick_name, :boost  => 50, analyzer: "snowball"
       indexes :location, :type  => 'geo_point'
     end
   </pre>
 
   运行任务，读取数据，建立索引。
-  rake merchant:build_indexes <br />
+  rake school:build_indexes <br />
   详细 Rake 任务代码如下：
   <pre class="prettyprint lang-html">
-    namespace :merchant do
+    namespace :school do
 
-      desc "build merchant indexes"
+      desc "build school indexes"
       task :build_indexes => :environment do
-        puts "Start build indexes"
+        puts "Start build school indexes"
 
-        Merchant.where(status: 'active').find_in_batches do |batches|
-          Merchant.index.import batches
+        School.where(status: 'active').find_in_batches do |batches|
+          School.index.import batches
         end
 
-        puts "End build indexes"
+        puts "End build school indexes"
       end
 
     end
@@ -62,7 +62,7 @@ It easily blends with your ActiveModel/ActiveRecord classes for convenient usage
   如需重建，可以在命令行执行 curl 命令，先删除索引（非常迅速）。
   然后，再次执行建立索引的任务。
   <pre class="prettyprint lang-html">
-    curl -XDELETE http://localhost:9200/merchants
+    curl -XDELETE http://localhost:9200/schools
   </pre>
 
   实现搜索方法。基于用户输入的关键词，针对建立的索引，做全文检索。
@@ -98,77 +98,8 @@ It easily blends with your ActiveModel/ActiveRecord classes for convenient usage
       end
     end
   </pre>
-  <br />
-  <h3>完整代码</h3>
-  同样可以参考这里的源代码
-  <a href="https://github.com/manageyp/grape_demo/blob/master/app/models/school.rb" target="_blank">Github Demo</a>
-  <pre class="prettyprint lang-html">
-  class Merchant < ActiveRecord::Base
-    include Tire::Model::Search
-
-    attr_accessor :location
-    attr_accessible :name, :address, :latitude, :longitude
-
-    state_machine :status, initial: :active do
-      state :active
-      state :deleted
-      event :set_active do
-        transition all => :active
-      end
-      event :set_deleted do
-        transition all => :deleted
-      end
-    end
-
-    after_save do
-      if self.active?
-        tire.update_index
-      else
-        self.index.remove self
-      end
-    end
-
-    def self.search(params)
-      longitude = params[:lng].to_f
-      latitude = params[:lat].to_f
-      params[:page] ||= 1
-      params[:per_page] ||= 20
-      tire.search(page: params[:page], per_page: params[:per_page], load: true) do
-        query do
-          boolean do
-            must { string params[:keyword], default_operator: "AND" } if params[:keyword].present?
-          end
-        end
-        if latitude != 0 && longitude != 0
-          sort do
-            by :_geo_distance, { location: [longitude, latitude], order: "asc", unit: 'km' }
-          end
-        end
-      end
-    end
-
-    def location
-      { longitude: longitude.to_f, latitude: latitude.to_f }
-    end
-
-    self.include_root_in_json = false
-    def to_indexed_json
-      { id: id,
-        name: name,
-        address: address,
-        location: location
-      }.to_json
-    end
-
-    mapping do
-      indexes :id, :type => 'integer', :index => 'not_analyzed'
-      indexes :name, :boost =>  100, analyzer: "snowball"
-      indexes :address, :boost  => 5, analyzer: "snowball"
-      indexes :location, :type  => 'geo_point'
-    end
-  end
-  </pre>
   <h3>参考资料</h3>
+  <a href="https://github.com/manageyp/grape_demo/blob/master/app/models/school.rb" target="_blank">Github 完整源代码</a><br />
   <a href="https://github.com/karmi/retire/issues/169" target="_blank">Location sorting</a><br />
   <a href="http://railscasts.com/episodes/306-elasticsearch-part-1" target="_blank">RailsCasts ElasticSearch Part 1</a>
 </p>
