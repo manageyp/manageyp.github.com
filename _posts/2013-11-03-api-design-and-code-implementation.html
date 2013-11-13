@@ -1,0 +1,145 @@
+---
+layout: post
+title: API Design And Code Implementation
+description: API Design And Code Implementation
+categories: API App Design
+tags: API App Design
+record_on: 2013-11-03
+---
+<p>
+作为一名 Ruby 程序员，在工作中，除了开发 Web 网站类项目。
+最近一年多的时间，有机会和前端工程师（iOS和Android）一起配合开发了几款 APP 产品。
+</p>
+
+<p>
+做服务端 API 设计和实现与 Web 开发有很大的不同。
+从最开始的不知所措，到现在已经摸索出一条，比较清晰的设计和实现思路。
+之前总结过一篇博客，讲的的是 Web API 设计最佳实践：
+<a href="http://manageyp.github.io/api/app/2013/03/31/web-api-design-best-practices.html" target="_blank"> Web API Design - Best Practices </a> 里面的很多观点，现在看来还是很实用。但是当时没有讲解具体的设计和代码实现。
+</p>
+
+<p>
+首先，做 API 的设计和开发，主要是为前端提供展示需要的数据，以及辅助前端完成业务的逻辑实现。</br>
+看似很简单的一个事情，但是实际的项目开发过程中：每个版本的迭代，在业务需求，交互，UI 界面上都有较大的变更。
+因此，每个版本的 API 在业务实现，以及返回参数上，势必存在很大的差异。
+然而，每个新版本的发布，后端都需要兼容，之前所有发布的版本。
+</p>
+
+<p>
+解决思路是采用<b>版本隔离</b>和<b>分层设计</b>。</br>
+<b>版本隔离：</b>即在业务有重大调整时，将接口版本号由 v1 升级到 v2，在保证 v1 所有接口和功能稳定的情况下，
+v2 接口可以自由的开发实现。</br>
+<b>分层设计：</b>分层的目的是为了将复杂的、集中的程序实现，拆分成多个、细小的模块，
+每个模块各自实现独立的功能，组合起来完成一个事情。
+分层可以将复杂问题简单化，单一职责的程序更容易理解、实现、维护和测试。
+</p>
+
+<h3>分层设计</h3>
+
+<p>
+最近一个项目中的 API 设计如下图（画的比较简陋）。</br>
+<img src="/images/posts/api-design.jpg">
+</p>
+
+<h3>具体实现</h3>
+
+<p>
+  <b>1. API 层</b></br>
+  实现接口版本控制，接口请求参数处理和验证，接口返回数据处理。实例代码如下：
+  <pre class="prettyprint lang-html">
+    module V1
+      class SchoolApi < BaseApi
+        resource :schools do
+
+          desc "获取学校列表接口"
+          params do
+            optional :page, :type => Integer, :desc => "Page number"
+          end
+
+          get do
+            authentication
+            content = V1::SchoolService.list(params[:page])
+            render_json content
+          end
+
+        end
+      end
+    end
+  </pre>
+</p>
+
+<p>
+  <b>2. Service 层</b></br>
+  实现接口的业务逻辑。实例代码如下：
+  <pre class="prettyprint lang-html">
+    module V1
+      class SchoolService
+
+        class << self
+
+          def list(page)
+            schools = School.paginate(page)
+            V1::SchoolWrapper.schools_info(schools)
+          end
+
+        end
+      end
+    end
+  </pre>
+</p>
+
+<p>
+  <b>3. Wrapper 层</b></br>
+  封装接口返回的具体数据。实例代码如下：
+  <pre class="prettyprint lang-html">
+    module V1
+      class SchoolWrapper < BaseWrapper
+
+        class << self
+
+          def schools_info(schools)
+            ret = { content: {} }
+            if has_size?(schools)
+              ret[:content][:schools] = []
+              schools.each do |school|
+                ret[:content][:schools] << detail(school)
+              end
+            end
+            ret
+          end
+
+          def detail(school)
+            {
+              id: school.id,
+              name: school.real_name
+            }
+          end
+
+        end
+      end
+    end
+  </pre>
+</p>
+
+<p>
+  <b>4. 其他</b></br>
+  其他主要包括 Model, Utils, Gems，以及发邮件短信等项目基础组件。
+</p>
+
+<p>
+  总结以上的 API 设计和实现。</br>
+  <b>优势：</b>每个版本的 API 接口，有很好的隔离；每个版本的业务逻辑，独立实现，不易产生冲突，易于维护；
+  因为独立实现，所以对需求变更的适应性强</br>
+  <b>劣势：</b>程序文件和代码量会增加。
+</p>
+
+<p>
+BTW 项目里引入 Grape 有几点考虑：RESTful APIs；版本管理；接口参数管理；路由管理</br>
+用 Rails 开发久了，比较习惯用 Controller 里的 before_filter 之类的过滤器。
+但是 Grape 是没有过滤器的，所以开发的时候，这一点比较别扭。
+</p>
+
+<h3>参考资料</h3>
+<a href="https://http://manageyp.github.com/API/App/Design/2013/11/03/api-design-and-code-implementation.html" target="_blank">Github 源代码</a><br />
+<a href="" target="_blank">博客原文</a><br />
+<a href="https://github.com/intridea/grape" target="_blank">Grape</a>
