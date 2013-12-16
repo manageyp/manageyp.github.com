@@ -1,0 +1,82 @@
+---
+layout: post
+title: What is Python
+description: Python Introduction & Features
+categories: Python
+tags: Python
+record_on: 2013-11-20
+---
+
+<h3>多问为什么</h3>
+<p>
+经常见到网友讨论 Python VS Ruby，谁更牛，谁性能更好，谁更适合创业项目，
+谁开发效率更高等等，各种观点，各种争论，百家争艳。<br />
+
+撇开 Python 与 Ruby，Java，PHP等语言的比较，我想搞明白下面几个问题：
+Python 是什么，有什么特点，可以做什么，谁在使用？
+</p>
+
+<h3>介绍</h3>
+<p>
+Guido van Rossum，1989年，创立了Python。1991年初，发布了第一个公开发行版。<br />
+1989年圣诞节期间，在阿姆斯特丹，Guido为了打发圣诞节的无趣，决心开发一个新的脚本解释程序，做为ABC语言的一种继承。
+之所以选中Python（大蟒蛇的意思）作为程序的名字，是因为他是一个叫Monty Python的喜剧团体的爱好者。<br />
+不能将 Python 粗略地分类为脚本语言，它是一门<b>解释型、面向对象、动态数据类型的高级动态编程语言</b>。
+</p>
+
+<h3>用途</h3>
+<p>
+Python 被广泛的应用于处理系统管理任务、科学计算和Web编程等。<br />
+<b>1. 系统管理任务</b><br />
+作为系统管理员，可以摒弃受到各种限制的 Shell 脚本，而使用 Python 这样功能齐备的语言，将管理用户、磁盘、进程等复杂任务变得简单。Python 提供了诸如：文件操作、进程管理等模块。<br />
+<b>2. 科学计算</b><br />
+NumPy、SciPy和matplotlib扩展库，为Python提供了快速数组处理、数值运算以及绘图功能。<br />
+<b>3. Web编程</b><br />
+基于 Python 的 Web 开发框架非常多，例如：Django、Flask、Web.py，开发 Web 类站点、API 服务非常高效。
+</p>
+
+<h3>使用者</h3>
+<p>
+Google 内部有很多应用使用 Python 语言开发，如：Google App Engine；
+Dropbox 是基于 Python 写的文件分享的网站；
+NASA 使用 Python 进行科学技术、图像处理；<br />
+Sublime Text 是一款基于 Python 编写的 IDE，非常简洁高效；<br />
+豆瓣内部主要使用 Python 作为开发语言；
+点评内部招聘系统使用 Python 开发。
+</p>
+
+<h3>特点</h3>
+<p>
+<b>1. 解释型</b><br />
+所谓的编译型语言是指源文件必须得先编译成编译文件才能在目标机器上执行，
+如C、C++等，好处是性能好，因为在执行时少了编译这个步骤，但坏处是无法跨平台执行，
+因为编译文件和具体平台相关。<br />
+
+<b>2. 动态类型</b><br />
+在编译的时候，Python 不会检查对象是否拥有被调用的方法或者属性，而是直至运行时，才做出检查。<br />
+
+<b>3. 面向对象</b><br />
+Python是完全面向对象的语言。函数、模块、数字、字符串都是对象。
+并且完全支持继承、重载、派生、多继承，有益于增强源代码的复用性。
+Python支持重载运算符和动态类型。<br />
+
+<b>4. 可扩展</b><br />
+Python 提供了丰富的API和工具，以便程序员能够轻松地使用C语言、C++、Cython来编写扩充模块。
+Python 编译器本身也可以被集成到其它需要脚本语言的程序内。<br />
+Google 使用 Python 的格言：Python where we can, C++ where we must。
+在操控硬件的场合使用 C++，在快速开发时候使用 Python。
+</p>
+
+<p>
+下面的特点也值得一提。<br />
+<b>5. 强制缩进</b><br />
+利用缩进表示语句块的开始和退出，4个空格来表示每级缩进。
+强制缩进可以改掉不好的编程习惯，是代码更加清晰和美观。<br />
+
+<b>6. 强数据类型</b><br />
+禁止没有明确定义的操作，比如数字加字符串。可以规避动态语言类型灵活，带来的运行时计算诡异的问题<br />
+
+<b>7. 编译执行</b><br />
+Python 在执行时，首先会将.py文件中的源代码编译成 Python 的byte code（字节码），
+然后再由Python Virtual Machine（Python虚拟机）来执行这些编译好的byte code。
+</p>
