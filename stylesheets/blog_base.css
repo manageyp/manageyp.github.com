@@ -1,0 +1,20 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+#header-title {
+    line-height: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sub-title {
+    font-weight: bold;
+    background-color: #88BFFE;
+}
+
+.sub-item {
+    background-color: #F1FBFD;
+}
+
