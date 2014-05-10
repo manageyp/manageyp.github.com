@@ -3,6 +3,14 @@ body {
   padding-bottom: 40px;
 }
 
+#books_table  td {
+    text-align: center;
+}
+
+#books_table  img {
+     height: 138px;
+}
+
 #header-title {
     line-height: 20px;
     font-weight: bold;
