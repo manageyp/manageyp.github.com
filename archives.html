@@ -4,25 +4,70 @@ title: Archives
 permalink: /archives/
 ---
 
-{% for post in site.posts order: record_on %}
-  {% capture current_year %}{{ post.record_on | date: "%Y" }}{% endcapture %}
-  {% capture previous_year %}{{ post.previous.record_on | date: "%Y" }}{% endcapture %}
+<div class="tabbable tabs-right row-fluid">
+  <ul class="nav nav-tabs" id="archives-nav">
+    {% for post in site.posts order: record_on %}
+      {% capture current_year %}{{ post.record_on | date: "%Y" }}{% endcapture %}
+      {% capture previous_year %}{{ post.previous.record_on | date: "%Y" }}{% endcapture %}
 
-  {% if forloop.first %}
-    <h3>{{current_year}}</h3>
-    <ul>
-  {% endif %}
+      {% if forloop.first %}
+        <li>
+          <a href="#{{ current_year }}-ref" data-toggle="tab">
+            {{current_year}} 年
+          </a>
+        </li>
+      {% else %}
+        {% if previous_year != '' And previous_year != nil %}
+          {% if current_year != previous_year %}
+            <li>
+              <a href="#{{ previous_year }}-ref" data-toggle="tab">
+                {{previous_year}} 年
+              </a>
+            </li>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </ul>
 
-  <li>{{ post.record_on }} <a href="{{ post.url }}">{{ post.title }}</a></li>
 
-  {% if forloop.last %}
-    </ul>
-  {% else %}
-    {% if current_year != previous_year %}
-      </ul>
-      <h3>{{previous_year}}</h3>
-      <ul>
-    {% endif %}
-  {% endif %}
+  <div class="tab-content">
+    {% for post in site.posts order: record_on %}
+      {% capture current_year %}{{ post.record_on | date: "%Y" }}{% endcapture %}
+      {% capture previous_year %}{{ post.previous.record_on | date: "%Y" }}{% endcapture %}
 
-{% endfor %}
+      {% if forloop.first %}
+        <div class="tab-pane" id="{{ current_year }}-ref">
+          <ul class="posts-list">
+      {% endif %}
+
+        <li>
+          <span class="category-archive">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+          </span>
+          <span class="post-right-info pull-right">
+            {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}
+          </span>
+        </li>
+
+      {% if forloop.last %}
+          </ul>
+        </div>
+      {% else %}
+        {% if current_year != previous_year %}
+            </ul>
+          </div>
+          <div class="tab-pane" id="{{ previous_year }}-ref">
+            <ul class="posts-list">
+        {% endif %}
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+
+<script>
+  $(function () {
+    $('#archives-nav a:first').tab('show');
+  })
+</script>

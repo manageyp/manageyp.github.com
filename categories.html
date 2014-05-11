@@ -1,12 +1,42 @@
 ---
-layout: page
+layout: default
 title: Categories
 permalink: /categories/
 ---
 
-{% for tag in site.tags %}
-<a name="{{ tag | first }}"><h2>{{ tag | first }}</h2></a>
-<ul>
-    {% for post in site.tags[tag.first] %}<li><a href="{{ post.url }}">{{ post.title }}</a></li>{% endfor %}
-</ul>
-{% endfor %}
+<div class="tabbable tabs-right row-fluid">
+  <ul class="nav nav-tabs" id="categories-nav">
+    {% for tag in site.tags %}
+      <li>
+        <a href="#{{ tag | first }}-ref" data-toggle="tab">
+          {{ tag | first }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content">
+    {% for tag in site.tags %}
+    <div class="tab-pane" id="{{ tag | first }}-ref">
+      <ul class="posts-list">
+        {% for post in site.tags[tag.first] %}
+          <li>
+            <span class="category-archive">
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            </span>
+            <span class="post-right-info pull-right">
+              {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  $(function () {
+    $('#categories-nav a:first').tab('show');
+  })
+</script>
