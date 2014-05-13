@@ -1,0 +1,120 @@
+---
+layout: post
+title: Introducing Python Strings
+description: Introducing Python Strings
+categories: Python
+tags: Python
+record_on: 2014-05-13
+---
+
+<p>
+Python 对象具有三个特性：身份、类型、值。三特性在对象创建时被赋值。只有值可以改变，其他只读。
+类型本身也是对象。<br />
+下面来全面学习一下 Python 内置的 <b>Strings</b> 类型，及其常用操作符、表达式等。
+</p>
+
+<h3>Hello world.</h3>
+<p>一切新编程语言的学习，都以 Hello world 开始。哈哈</p>
+
+<pre class="prettyprint lang-html">
+    $ python
+    Python 2.7.5 (default, Aug 25 2013, 00:04:04)
+    [GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> fool = "Hello world."
+    >>> print fool
+    Hello world.
+    >>>
+</pre>
+
+<h3>Operators</h3>
+<pre class="prettyprint lang-html">
+# 取单个坐标值
+>>> fool[0]
+'H'
+>>> fool[-1]
+'.'
+
+# 取坐标范围值
+>>> fool[0:5]
+'Hello'
+>>> fool[6:-1]
+'world'
+
+# +/合并运算
+>>> "Say " + fool
+'Say Hello world.'
+
+# 重复/复制字符串
+>>> fool * 2
+'Hello world.Hello world.'
+
+# in/not in 操作
+>>> 'H' in fool
+True
+>>> 'a' in fool
+False
+>>> 'a' not in fool
+True
+
+# format 操作
+>>> print "Say %s to Python" % fool
+Say Hello world. to Python
+</pre>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+>>> fool
+'Hello world.'
+
+# 计算字符串长度
+>>> len(fool)
+12
+
+# 查找字符索引
+>>> fool.find('H')
+0
+
+# 判断字符串是否全为小写
+>>> fool.islower()
+False
+
+# 将字符串转换为小写
+>>> fool.lower()
+'hello world.'
+
+# 将字符串切分为数组
+>>> fool.split(' ')
+['Hello', 'world.']
+
+# 去除字符串两头空白字符
+>>> fool_space = "python \n space \r\n"
+>>> fool_space
+'python \n space \r\n'
+>>> fool_space.strip()
+'python \n space'
+</pre>
+
+<h3>Help Tips</h3>
+<p>
+有时候，需要查询当前对象，具有哪些方法。 <b>dir()</b> 是 Python 的一个内置方法。
+用于列出对象，在当前作用域内，可以调用的所有方法名。</br>
+<b>help()</b> 方法可以查询方法的详细定义。请看示例：
+</p>
+<pre class="prettyprint lang-html">
+>>> fool
+'Hello world.'
+
+>>> dir(fool)
+['__add__', '__class__', '__contains__', '__delattr__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__getslice__', '__gt__', '__hash__', '__init__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '_formatter_field_name_split', '_formatter_parser', 'capitalize', 'center', 'count', 'decode', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'index', 'isalnum', 'isalpha', 'isdigit', 'islower', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']
+
+>>> help(fool.join)
+Help on built-in function join:
+
+join(...)
+    S.join(iterable) -> string
+
+    Return a string which is the concatenation of the strings in the
+    iterable.  The separator between elements is S.
+(END)
+</pre>
