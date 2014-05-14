@@ -1,0 +1,140 @@
+---
+layout: post
+title: Introducing Python Lists
+description: Introducing Python Lists
+categories: Python
+tags: Python
+record_on: 2014-05-14
+---
+
+<p>
+Python List 对象是最常用的序列类型，其值可以包含多种类型，是可变的，有序的序列。<br />
+下面来通过实例学习一下 Python 内置的 <b>Lists</b> 类型，及其常用操作符、表达式等。
+</p>
+
+<h3>Operators</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Aug 25 2013, 00:04:04)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+# 空 list
+>>> empty_list = []
+>>> empty_list
+[]
+
+# 非空 list
+>>> colors = ["red", "yellow", "blue"]
+>>> colors
+['red', 'yellow', 'blue']
+
+# 计算长度
+>>> len(colors)
+3
+
+# 索引操作
+>>> colors[0]
+'red'
+>>> colors[-1]
+'blue'
+>>> colors[0:2]
+['red', 'yellow']
+>>> colors[0] = 'black'
+>>> colors
+['black', 'yellow', 'blue']
+
+# 合并
+>>> colors + ['white']
+['black', 'yellow', 'blue', 'white']
+</pre>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+>>> colors
+['black', 'yellow', 'blue']
+
+# 追加 value
+>>> colors.append('white')
+>>> colors
+['black', 'yellow', 'blue', 'white']
+
+# 计算 value 出现次数
+>>> colors.count('red')
+0
+>>> colors.count('black')
+1
+
+# 扩展 list
+>>> colors.extend(['gray'])
+>>> colors
+['black', 'yellow', 'blue', 'white', 'gray']
+
+# 计算 index 索引
+>>> colors.index('blue')
+2
+
+# 插入数据到指定 index
+>>> colors.insert(0, 'red')
+>>> colors
+['red', 'black', 'yellow', 'blue', 'white', 'gray']
+
+# 取出数据
+>>> colors.pop()
+'gray'
+>>> colors
+['red', 'black', 'yellow', 'blue', 'white']
+>>> colors.pop(1)
+'black'
+>>> colors
+['red', 'yellow', 'blue', 'white']
+
+# 删除数据
+>>> colors.remove('white')
+>>> colors
+['red', 'yellow', 'blue']
+
+# 排序
+>>> colors.sort()
+>>> colors
+['blue', 'red', 'yellow']
+
+# 倒序
+>>> colors.reverse()
+>>> colors
+['yellow', 'red', 'blue']
+</pre>
+
+<h3>List in Action</h3>
+<p>
+下面记录了 Python List 的一些实用操作。请看示例：
+</p>
+<pre class="prettyprint lang-html">
+# iterate list
+colors = ["red", "yellow", "blue"]
+>>> for color in colors:
+...   print color
+...
+red
+yellow
+blue
+
+# iterate list with index
+>>> for index, color in enumerate(colors):
+...   print color, index
+...
+red 0
+yellow 1
+blue 2
+
+# 合并为字符串
+>>> ','.join(colors)
+'red,yellow,blue'
+
+# change sort order
+>>> colors.sort(key=str.lower)
+>>> colors
+['blue', 'red', 'yellow']
+>>> colors.sort(key=str.lower, reverse=True)
+>>> colors
+['yellow', 'red', 'blue']
+</pre>
