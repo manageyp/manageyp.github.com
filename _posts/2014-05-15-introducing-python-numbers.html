@@ -1,0 +1,154 @@
+---
+layout: post
+title: Introducing Python Numbers
+description: Introducing Python Numbers
+categories: Python
+tags: Python
+record_on: 2014-05-15
+---
+
+<p>
+    下面来通过实例学习一下 Python 内置的 <b>Numbers</b> 类型，及其常用操作符、表达式等。以及随机数的操作。
+</p>
+
+<h3>Operators</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Aug 25 2013, 00:04:04)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+# 整数
+>>> 2
+2
+>>> -3
+-3
+>>> int(-12.3)
+-12
+
+# 浮点数
+>>> 2.0
+2.0
+>>> float(3)
+3.0
+>>> float(-3)
+-3.0
+
+# 求和
+>>> 2 + 3
+5
+
+# 差值
+>>> 2 - 3
+-1
+
+# 相除
+>>> 1 / 2
+0
+>>> 1.0 / 2.0
+0.5
+
+# 整除
+>>> 10.0 // 2.0
+5.0
+>>> 10.0 // 5.0
+2.0
+>>> 10.0 // 15.0
+0.0
+
+# 取余
+>>> 3 % 2
+1
+>>> 3 % 5
+3
+>>> 3.0 % 2.0
+1.0
+
+# 乘方
+>>> 2 ** 2
+4
+>>> (-3) ** 2
+9
+</pre>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+# 取绝对值
+>>> abs(-2)
+2
+
+# 取整四舍五入
+>>> round(3.23)
+3.0
+>>> round(3.53)
+4.0
+
+# 乘方 x**y
+>>> pow(2,2)
+4
+>>> pow(-3,2)
+9
+
+# math 函数
+>>> import math
+
+# the largest integer not greater than x
+>>> math.floor(1.23)
+1.0
+
+#the smallest integer not less than x
+>>> math.ceil(1.23)
+2.0
+
+# 开方
+>>> math.sqrt(4)
+2.0
+</pre>
+
+
+<h3>Random Number Functions</h3>
+<pre class="prettyprint lang-html">
+>>> import random
+
+# 随机生成六位短信验证码
+>>> random.randint(100000, 999999)
+195220
+>>> random.randint(100000, 999999)
+410185
+
+
+# 随机生成八位小写字母的字符串
+>>> import string
+>>> ''.join(random.choice(string.ascii_lowercase) for x in range(8))
+'danwkfzk'
+
+
+# 从 list 中随机选择一个数据
+>>> user_ids = [100, 200, 300, 400, 500, 600]
+>>> user_ids
+[100, 200, 300, 400, 500, 600]
+>>> random.choice(user_ids)
+200
+>>> random.choice(user_ids)
+100
+
+
+# 随机选择 3~5 个 list 中的数据
+>>> fake_user_ids = []
+>>> loop_count = random.randint(3, 5)
+>>> loop_count
+4
+>>> while(loop_count > 0):
+...   user_id = random.choice(user_ids)
+...   if user_id not in fake_user_ids:
+...     print user_id
+...     fake_user_ids.append(user_id)
+...     loop_count -= 1
+...
+500
+200
+600
+100
+>>> fake_user_ids
+[500, 200, 600, 100]
+</pre>
