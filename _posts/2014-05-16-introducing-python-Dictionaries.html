@@ -1,0 +1,99 @@
+---
+layout: post
+title: Introducing Python Dictionaries
+description: Introducing Python Dictionaries
+categories: Python
+tags: Python
+record_on: 2014-05-16
+---
+
+<p>
+    下面来通过实例学习一下 Python 内置的 <b>Dictionaries</b> 类型，及其常用操作符、表达式等。以及随机数的操作。
+</p>
+
+<h3>Operators</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Aug 25 2013, 00:04:04)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+# 空 dict
+>>> books = {}
+
+# 赋值
+>>> books['Ruby'] = 'Matz'
+>>> books['Python'] = 'Guido'
+>>> books['Java'] = 'James'
+>>> books
+{'Python': 'Guido', 'Java': 'James', 'Ruby': 'Matz'}
+</pre>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+>>> books = {'Python': 'Guido', 'Java': 'James', 'Ruby': 'Matz'}
+>>> books
+{'Python': 'Guido', 'Java': 'James', 'Ruby': 'Matz'}
+
+# 获取 dict keys
+>>> books.keys()
+['Python', 'Java', 'Ruby']
+
+# 获取 dict values
+>>> books.values()
+['Guido', 'James', 'Matz']
+
+# 判断 key 是否存在
+>>> books.has_key('ruby')
+False
+>>> books.has_key('Ruby')
+True
+>>> books.has_key('C')
+False
+
+# 读取 key 对应的 value
+>>> books["Ruby"]
+'Matz'
+>>> books.get('Ruby')
+'Matz'
+>>> print books.get('C')
+None
+>>> books["C"]
+Traceback (most recent call last):
+  File "< stdin >", line 1, in < module >
+KeyError: 'C'
+
+# 删除 key 对应的 value
+>>> print books.pop('Ruby')
+Matz
+>>> books
+{'Python': 'Guido', 'Java': 'James'}
+>>> del(books['Java'])
+>>> books
+{'Python': 'Guido'}
+
+
+# 遍历 dict
+>>> for key,value in books.iteritems():
+...   print "Book name %s and author %s" %(key, value)
+...
+Book name Python and author Guido
+Book name Java and author James
+Book name Ruby and author Matz
+</pre>
+
+
+<h3>Tips</h3>
+<pre class="prettyprint lang-html">
+# 对 dict 进行字典排序
+>>> provinces = [{"pinyin": "SHANGHAI"},
+...     {"pinyin": "JIANGSU"},
+...     {"pinyin": "FUJIAN"},
+...     {"pinyin": "HEILONGJIANG"},
+...     {"pinyin": "ANHUI"}]
+>>> provinces
+[{'pinyin': 'SHANGHAI'}, {'pinyin': 'JIANGSU'}, {'pinyin': 'FUJIAN'}, {'pinyin': 'HEILONGJIANG'}, {'pinyin': 'ANHUI'}]
+>>> sorted_provinces = sorted(provinces, key=lambda k: k['pinyin'])
+>>> sorted_provinces
+[{'pinyin': 'ANHUI'}, {'pinyin': 'FUJIAN'}, {'pinyin': 'HEILONGJIANG'}, {'pinyin': 'JIANGSU'}, {'pinyin': 'SHANGHAI'}]
+</pre>
