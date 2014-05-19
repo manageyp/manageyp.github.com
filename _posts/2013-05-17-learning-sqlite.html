@@ -2,8 +2,8 @@
 layout: post
 title: Learning SQLite & Command Line
 description: Learning SQLite & Command Line
-categories: SQLite
-tags: SQLite
+categories: Database
+tags: Database
 record_on: 2013-05-17
 ---
 
@@ -50,11 +50,11 @@ SQLite 中的每个表的数据存储，使用B叉树结构. 其中，每个表�
   常用命令行记录：
   <pre class="prettyprint lang-html">
     # 创建数据库: 若数据库文件存在则打开，否则生成新的文件
-    $ sqlite3 colleges.sqlite 
+    $ sqlite3 colleges.sqlite
     SQLite version 3.7.12 2012-05-14 01:41:23
     Enter ".help" for instructions
     Enter SQL statements terminated with a ";"
-    sqlite> 
+    sqlite>
 
     # 创建表
     sqlite> create table schools(name varchar(200));
@@ -73,16 +73,16 @@ SQLite 中的每个表的数据存储，使用B叉树结构. 其中，每个表�
     # 查找表中数据
     sqlite> select *from schools;
     school one
-    sqlite> 
+    sqlite>
 
     # 设置查找结果的展示
     sqlite> .mode column
     sqlite> .header on
     sqlite> select *from schools;
-    name      
+    name
     ----------
     school one
- 
+
     # 退出命令行
     sqlite> .quit
   </pre>

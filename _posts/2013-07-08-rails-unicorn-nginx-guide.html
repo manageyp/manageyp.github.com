@@ -2,8 +2,8 @@
 layout: post
 title: Rails Unicorn Nginx Guide
 description: Ruby-on-Rails Unicorn Nginx Guide
-categories: Ruby-on-Rails Unicorn Nginx
-tags: Ruby-on-Rails Unicorn Nginx
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
 record_on: 2013-07-08
 ---
 
@@ -47,7 +47,7 @@ record_on: 2013-07-08
       worker_processes 4
     else
       worker_processes 1
-    end  
+    end
     timeout 120
 
     if GC.respond_to?(:copy_on_write_friendly=)

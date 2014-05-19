@@ -2,8 +2,8 @@
 layout: post
 title: Security Connection Between App Client and Server
 description: Security Connection Between App Client and Server
-categories: Security App
-tags: Security App
+categories: App-API
+tags: App-API
 record_on: 2013-06-02
 ---
 
@@ -56,7 +56,7 @@ a. user_key
   SecureRandom.uuid
 </pre>
 <pre>
-b. token: 
+b. token:
   用户登录成功后的唯一标记，等同于用户名+密码。
   将为每一个 token 设置一个过期时间，时长可以根据需求来定，如 30 天。
 
@@ -72,7 +72,7 @@ b. token:
   SecureRandom.base64(length).tr('+/=lIO0', 'htdskrq')
 
   # 我们将容易混淆的“lIO0”这类字符进行了替换。
-  # 同时，对于 “+/=” 该字符，在 HTTP 请求的 URL 中会引起错乱，也进行了替换。  
+  # 同时，对于 “+/=” 该字符，在 HTTP 请求的 URL 中会引起错乱，也进行了替换。
 </pre>
 </p>
 
@@ -104,13 +104,13 @@ b. token:
 <p>
   2. 基于证书<br />
   客户端和服务端基于证书，对需要传输的数据，进行加解密。特点：
-<pre> 
+<pre>
 传输的数据是密文；
 只对请求的数据部分做加解密处理，资源开销较小；
 获取数据，有证书，即可解密。
 
 基于 “RSA公钥加密算法” 的 Ruby 代码示例如下：
-</pre> 
+</pre>
 <pre class="prettyprint lang-html">
 
 require "openssl"
@@ -188,4 +188,3 @@ RsaSignatureUtil.sign(content, sign)
 
 
 
- 

@@ -2,8 +2,8 @@
 layout: post
 title: Ruby on Rails Bugs
 description: Ruby on Rails Bugs
-categories: Ruby-on-Rails Bugs
-tags: Ruby-on-Rails Bugs
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
 record_on: 2013-01-13
 ---
 <p>列举一下 Rails 框架内部程序问题。前两个是我个人的亲身体会，后面两个，相信大家现在都很熟悉了。</p>
@@ -15,7 +15,7 @@ record_on: 2013-01-13
 否则，报如下错误：</p>
 <pre class="prettyprint lang-html">
 ArgumentError in FoolController#index
-wrong number of arguments (2 for 1)actionpack (3.0.6) 
+wrong number of arguments (2 for 1)actionpack (3.0.6)
 lib/abstract_controller/layouts.rb:272:in `template_exists?'
 </pre>
 <p><a href="https://github.com/rails/rails/blob/3-0-stable/actionpack/lib/abstract_controller/layouts.rb" target="_blank"> Rails 源代码 </a>，第272行。</p>
@@ -37,7 +37,7 @@ Rails 3.0 automatic loading for helper :all。<a href="https://rails.lighthousea
 
 <h3>3. Mass assignment vulnerability</h3>
 <p>黑客，可以很容易的篡改表单提交的数据，而且，程序会真实保存。<a href="https://github.com/rails/rails/issues/5228" target="_blank">原文链接。</a><br/>
-Rails 3.2 已经完善，需要显示在 model 中声明 attr_accessible , 才能对其赋值， 
+Rails 3.2 已经完善，需要显示在 model 中声明 attr_accessible , 才能对其赋值，
 提高了项目的安全性。
 </p>
 
