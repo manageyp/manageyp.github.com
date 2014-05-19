@@ -1,0 +1,133 @@
+---
+layout: post
+title: Introducing Python Tuples
+description: Introducing Python Tuples
+categories: Python
+tags: Python
+record_on: 2014-05-19
+---
+<p>
+    Python 内置的 <b>Tuples</b> 类型，是一个比较特殊的数据类型，兼有 <b>List</b> 和
+    <b>String</b> 的特性：可以包含多种类型，是不可变的序列。正是由于它是不可变的序列，
+    在 <b>Django</b> 中，常用作 settings 的配置。
+</p>
+
+<p>
+    下面来通过实例学习一下 Python 内置的 <b>Tuples</b> 类型，及其常用操作符、表达式等。以及随机数的操作。
+</p>
+
+
+<h3>Operators</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Aug 25 2013, 00:04:04)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+# 空 dict
+>>> empty_tuple = ()
+>>> empty_tuple
+()
+>>> empty_tuple.__class__
+< type 'tuple' >
+
+# 仅包含一个值，需要以 , 结尾
+>>> t = (1)
+>>> t
+1
+>>> t.__class__
+< type 'int' >
+>>> t = (1,)
+>>> t
+(1,)
+>>> t.__class__
+< type 'tuple' >
+
+# 赋值/取值操作
+>>> fool_tuple = (1, 'Api', False)
+>>> fool_tuple
+(1, 'Api', False)
+>>> fool_tuple.index('Api')
+1
+>>> fool_tuple[1]
+'Api'
+
+
+# 不能改变 value
+>>> fool_tuple[0] = 'a'
+Traceback (most recent call last):
+  File "< stdin >", line 1, in < module >
+TypeError: 'tuple' object does not support item assignment
+</pre>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+>>> fool_tuple = (1, 'Api', False)
+
+# 计算长度
+>>> len(fool_tuple)
+3
+
+# 计算 value 出现次数
+>>> fool_tuple.count('Api')
+1
+
+# 循环输出
+>>> for x in fool_tuple: print x,
+...
+1 Api False
+
+# 排序
+>>> sorted(fool_tuple)
+[False, 1, 'Api']
+
+# list 转换
+>>> fool_list = list(fool_tuple)
+>>> fool_list
+[1, 'Api', False]
+>>> tuple(fool_list)
+(1, 'Api', False)
+
+# dict 操作
+>>> student = dict(name='Henry', age=25, skills=['Ruby', 'Python'])
+>>> student
+{'skills': ['Ruby', 'Python'], 'age': 25, 'name': 'Henry'}
+>>> tuple(student.values())
+(['Ruby', 'Python'], 25, 'Henry')
+>>> tuple(student.items())
+(('skills', ['Ruby', 'Python']), ('age', 25), ('name', 'Henry'))
+>>> tuple(student.items())[0][0]
+'skills'
+</pre>
+
+
+<h3>Tips</h3>
+<p>
+    <b>Tuples</b> 在 <b>Django</b> 中的应用。
+</p>
+<pre class="prettyprint lang-html">
+# settings
+# Application definition
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'api',
+    'south',
+    'rest_framework',
+)
+
+# Model choices
+# requirements
+django-model-utils==2.0
+
+# Guide Model status field
+
+STATUS_CHOICES = Choices(
+    (0, 'pending', 'pending'),
+    (1, 'succeeded', 'succeeded'),
+    (2, 'failed', 'failed'),
+)
+
+status = models.IntegerField(choices=STATUS_CHOICES,
+    default=STATUS_CHOICES.pending)
+</pre>
