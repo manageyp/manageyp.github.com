@@ -66,4 +66,21 @@ True
 >>> foo.seek(0)
 >>> foo.read()
 'Tell me \nRuby and Python \nWhich one do you like best'
+
+# readline()
+>>> foo.seek(0)
+>>> foo.readline()
+'Tell me \n'
+
+# readlines()
+>>> foo.seek(0)
+>>>
+>>> for line in foo.readlines():
+...   print line
+...
+Tell me
+
+Ruby and Python
+
+Which one do you like best
 </pre>
