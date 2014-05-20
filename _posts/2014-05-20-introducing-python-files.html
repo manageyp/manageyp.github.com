@@ -1,0 +1,69 @@
+---
+layout: post
+title: Introducing Python Files
+description: Introducing Python Files
+categories: Python
+tags: Python
+record_on: 2014-05-20
+---
+<p>
+    本篇将介绍一下 Python 内置的 <b>Files</b> 类型，通过实例学习一下常用的文件操作。
+</p>
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Mar  9 2014, 22:15:05)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+# open txt file for both writing and reading
+>>> foo = open("/Users/leehenry/backup/fool.txt", "w+")
+>>> foo
+< open file 'fool.txt', mode 'w+' at 0x11003b780 >
+
+# get name of the file
+>>> foo.name
+'fool.txt'
+
+# access mode with which file was opened
+>>> foo.mode
+'w+'
+
+# true if file is closed, false otherwise
+>>> foo.closed
+False
+>>> foo.close()
+>>>
+>>> foo.closed
+True
+</pre>
+
+
+<h3>Tips</h3>
+<p>
+    <b>Files</b> 常用的文件操作。
+</p>
+<pre class="prettyprint lang-html">
+# open and write
+>>> foo = open("/Users/leehenry/backup/fool.txt", "wb")
+>>> foo.write("Tell me \nRuby and Python \nWhich one do you like best")
+>>> foo.close()
+
+# open and read
+>>> foo = open("/Users/leehenry/backup/fool.txt", "r")
+>>> foo.read()
+'Tell me \nRuby and Python \nWhich one do you like best'
+
+# File position important!
+# tell() method tells you the current position within the file
+>>> foo.tell()
+52
+>>> foo.read()
+''
+
+# seek(offset[, from]) method changes the current file position
+>>> foo.seek(0)
+>>> foo.read()
+'Tell me \nRuby and Python \nWhich one do you like best'
+</pre>
