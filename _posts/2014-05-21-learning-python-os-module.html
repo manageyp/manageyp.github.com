@@ -1,0 +1,100 @@
+---
+layout: post
+title: Learning Python os module
+description: Learning Python os module
+categories: Python
+tags: Python
+record_on: 2014-05-21
+---
+
+<p>
+    本篇将介绍一下 Python 内置的 <b>os</b> 模块，这个模块包含丰富的文件和文件夹的操作。而且，大部分方法兼容 Linux、Mac和Windows操作系统。</br>
+    下面，通过实例学习一下常用的操作。
+</p>
+
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+$ python
+Python 2.7.5 (default, Mar  9 2014, 22:15:05)
+[GCC 4.2.1 Compatible Apple LLVM 5.0 (clang-500.0.68)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+
+# 导入 os 模块
+>>> import os
+
+>>> test_path = '/Users/leehenry/backup/os_test'
+# 创建目录
+>>> os.mkdir(test_path)
+
+# 判断目录是否存在
+>>> os.path.exists(test_path)
+True
+
+# 是否为文件
+>>> os.path.isfile(test_path)
+False
+
+# 是否为文件夹
+>>> os.path.isdir(test_path)
+True
+
+# 获取路径的目录名和文件名
+>>> os.path.split(test_path)
+('/Users/leehenry/backup', 'os_test')
+
+# 拼接目录
+>>> os.path.join('/Users/leehenry/backup', 'os_test')
+'/Users/leehenry/backup/os_test'
+</pre>
+
+
+<h3>Tips</h3>
+<p>
+    <b>os</b> 方便的文件操作。
+</p>
+<pre class="prettyprint lang-html">
+>>> import os
+
+# 创建多层目录，父目录不存在的时候创建父目录
+>>> test_path = '/Users/leehenry/backup/os_test'
+>>> os.makedirs(test_path)
+
+# 重命名目录
+>>> os.rename('/Users/leehenry/backup/os_test', '/Users/leehenry/backup/os_test_new')
+
+# 复制目录
+os.link(old_path, new_path)
+
+# 删除目录，及其所有子目录和文件
+import shutil
+shutil.rmtree(test_path)
+
+# 压缩目录，及其所有子目录和文件
+import zipfile
+
+def _trim_path(parent_path, path):
+    """
+    Prepare the proper archive path by removing the useless absolute path.
+    """
+    path = path.replace(parent_path + os.path.sep, "", 1)
+    return os.path.normcase(path)
+
+def zip_folder(tile_path, output_file):
+    """
+    Zip the entire tile directory to a zip file.
+    """
+    def _write(root, filename):
+        abs_path = os.path.join(root, filename)
+        rel_path = _trim_path(tile_path, abs_path)
+        zip_file.write(abs_path, rel_path)
+
+    try:
+        zip_file = zipfile.ZipFile(output_file, 'w', zipfile.ZIP_DEFLATED)
+        for root, folders, files in os.walk(tile_path):
+            for filename in folders + files:
+                _write(root, filename)
+    finally:
+        zip_file.close()
+
+</pre>
