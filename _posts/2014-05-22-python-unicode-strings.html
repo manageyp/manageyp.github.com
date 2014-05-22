@@ -1,0 +1,63 @@
+---
+layout: post
+title: Python Unicode Strings
+description: Python Unicode Strings
+categories: Python
+tags: Python
+record_on: 2014-05-22
+---
+
+<p>
+    本篇将介绍一下 Python 的 <b>Unicode</b> 字符。</br>
+    Python 的 str 类型为 8-bit 数值，默认编码方式为 ASCII，unicode 类型则为 16-bit 或者 32-bit 的数值，每个数值代表一个 unicode 符号，是 Python 对国际化编码的支持。</br>
+    下面，通过实例学习一下 <b>Unicode</b> 常用的操作。
+</p>
+
+
+<h3>Methods</h3>
+<pre class="prettyprint lang-html">
+# -- coding: utf-8 --
+
+english = 'henry'
+chinese = '你好'
+u_chinese = u'\u6d77\u87ba\u58f3'
+
+print english
+print type(english)
+> henry
+> < type 'str' >
+
+
+print chinese
+print type(chinese)
+> 你好
+> < type 'str' >
+
+print u_chinese
+print type(u_chinese)
+> 海螺壳
+> < type 'unicode' >
+</pre>
+
+
+<h3>Tips</h3>
+<p>
+    <b>Unicode</b> 实用操作记录。
+</p>
+<pre class="prettyprint lang-html">
+# 短信验证码，内容模板
+code = "123456"
+message_template = u"验证码：{}（30分钟内有效），仅用于注册，不能重复使用，为了账号安全请勿告知他人。"
+content = message_template.replace("{}", unicode(code))
+
+# 不改变 MySQL ecoding, 处理 iPhone emoji 表情
+content = '\U0001f604\u5c3c\u739b'
+
+# 保存入 MySQL
+escaped_content = content.encode('unicode_escape').replace('\U', '[emoji]')
+> u'[emoji]0001f604\u5c3c\u739b'
+
+# 从 MySQL 取出显示
+content.replace('[emoji]', '\U').decode('unicode_escape')
+> u'\U0001f604\u5c3c\u739b'
+</pre>
