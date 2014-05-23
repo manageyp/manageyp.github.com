@@ -1,0 +1,50 @@
+---
+layout: post
+title: Python Regular Expressions
+description: Python Regular Expressions
+categories: Python
+tags: Python
+record_on: 2014-05-23
+---
+
+<p>
+    本篇将介绍一下 Python 的 <b>Regular Expressions</b>。通过实例学习一下常用正则表达式的操作。
+</p>
+
+<h3>Tips</h3>
+<p>
+    <b>Regular Expressions</b> 实用操作记录。
+</p>
+<pre class="prettyprint lang-html">
+import re
+
+# 判断国内手机号码
+def check_mobile(mobile):
+    pattern = re.compile(r'^1[3,4,5,8][0-9]{9}')
+    return pattern.match(mobile)
+
+>>> print check_mobile("123")
+None
+
+>>> print check_mobile("13888888888")
+<_sre.SRE_Match object at 0x10a7877e8>
+
+
+# 验证用户名，必须为：中英文、数字和下划线
+def check_username(username):
+    pattern = u'^[_a-zA-Z0-9\u4e00-\u9fa5]{2,16}$'
+    if not re.search(pattern, username):
+        print "用户名请使用2-16个：中英文、数字和下划线"
+    else:
+        print "用户名合法：", username
+
+check_username("abcd")
+check_username("123456")
+check_username("test_1234")
+check_username(u"阿赐test_1234")
+
+用户名合法： abcd
+用户名合法： 123456
+用户名合法： test_1234
+用户名合法： 阿赐test_1234
+</pre>
