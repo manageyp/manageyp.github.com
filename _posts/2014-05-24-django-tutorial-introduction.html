@@ -1,0 +1,58 @@
+---
+layout: post
+title: Django Tutorial Introduction
+description: Django Tutorial Introduction
+categories: Python
+tags: Python
+record_on: 2014-05-24
+---
+
+<p>
+    <b><a href="https://docs.djangoproject.com/en/1.6/">Django</a></b> 是基于 Python 编写的，开源的 Web 框架，遵循 MVC 架构设计。
+</p>
+
+<h3>组件介绍</h3>
+<p>
+   下面介绍一下 <b>Django</b> 的组件。
+</p>
+<pre class="prettyprint">
+核心组件
+Model：（M）模型层，关联DB，用于创建模型的对象关系映射
+View：（C）业务逻辑层，控制页面跳转，
+Template：（V）页面展示层，设计者友好的模板语言，用于内容展示
+URLconfs：路由管理
+
+其他组件
+Admin： 为最终用户设计的完美管理界面
+Cache： 缓存系统，采用 Memcache
+</pre>
+
+
+<h3>设计介绍</h3>
+<p>
+   <b>Django</b> 的主要目的是简便、快速的开发数据库驱动的网站。它强调代码复用,多个组件可以很方便的以“插件”形式服务于整个框架，<b>Django</b>有许多功能强大的第三方插件，你甚至可以很方便的开发出自己的工具包。这使得<b>Django</b>具有很强的可扩展性。它还强调快速开发和DRY(Do Not Repeat Yourself)原则。
+</p>
+
+<p>
+Django 基于 MVC 的设计十分优美：
+对象关系映射 (ORM,object-relational mapping)：以 Python 类形式定义你的数据模型，ORM 将模型与关系数据库连接起来，你将得到一个非常容易使用的数据库API，同时你也可以在 Django 中使用原始的 SQL 语句。
+URL 分派：使用正则表达式匹配 URL，你可以设计任意的 URL，没有框架的特定限定。像你喜欢的一样灵活
+模版系统：使用 Django 强大而可扩展的模板语言，可以分隔设计、内容和 Python 代码。并且具有可继承性。
+表单处理：你可以方便的生成各种表单模型，实现表单的有效性检验。可以方便的从你定义的模型实例生成相应的表单。
+Cache 系统：可以挂在内存缓冲或其它的框架实现超级缓冲 －－ 实现你所需要的粒度。
+会话(session)，用户登录与权限检查，快速开发用户会话功能。
+国际化：内置国际化系统，方便开发出多种语言的网站。
+自动化的管理界面：不需要你花大量的工作来创建人员管理和更新内容。Django 自带一个 ADMIN site,类似于内容管理系统。
+</p>
+
+
+<h3>工作原理</h3>
+<p>
+    1. 用 manage .py runserver 启动 Django 服务器时就载入了在同一目录下的 settings.py。该文件包含了项目中的配置信息，如前面讲的 URLConf 等，其中最重要的配置就是 ROOT_URLCONF，它告诉 Django 哪个 Python 模块应该用作本站的 URLConf，默认的是 urls.py
+    2. 当访问 url 的时候，Django 会根据 ROOT_URLCONF 的设置来装载 URLConf。
+    3. 然后按顺序逐个匹配 URLConf 里的 URLpatterns。如果找到则会调用相关联的视图函数，并把 HttpRequest 对象作为第一个参数(通常是request)
+    4. 最后该 view 函数负责返回一个 HttpResponse 对象。
+</p>
+<p>
+    <b>Django</b> 工作原理图，解析：<img src="/images/books/django-work.jpg" alt="Django 工作原理图">
+</p>
