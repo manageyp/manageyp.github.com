@@ -1,0 +1,40 @@
+---
+layout: post
+title: Mac Disable Spotlight
+description: Mac Disable Spotlight
+categories: Mac
+tags: Mac
+record_on: 2014-05-25
+---
+
+<p>
+    <b><a href="http://support.apple.com/kb/HT2531?viewlocale=zh_CN&locale=zh_CN">Spotlight</a></b> 是 Mac OS X 的一项快速搜寻、随打即显、系统内置的桌面搜寻特色，工作原理的概念类似 Windows 索引服务。
+</p>
+
+<h3>Spotlight 工作原理</h3>
+<p>
+    Spotlight 和传统搜寻主要的差异，在于 Spotlight 是使用索引（Index Search）的方式，而传统搜寻是传统的文件扫描方式；Spotlight 就像是电脑里面所有的档案建立一目录里面存放索引文件，而要搜寻的时候是去搜寻这个目录中的索引文件，所以减少了许多一个一个档案扫描的时间，而传统扫描则是把整个档案内容扫描过，所以 Spotlight 在理论上来说，还是无法取代传统搜寻功能的。
+</p>
+<p>
+    Spotlight 使用 Metadata 搜寻引擎，Spotlight 被设计为可以找到任何位于电脑中档案，包含文件、图片、音乐、应用程式、系统喜好设定控制台，也可以是文件或是 PDF 中指定的字。在Mac OS X v10.5中，在 Spotlight 直接打数学方程式，Spotlight 就会立即显示计算结果；打英文单字，便可出现定义。Spotlight 在使用者的硬盘中建立 metadata 关键字的数据库，一开始当Mac OS X 被安装后，就会持续在更新。
+</p>
+
+<p>
+   正是因为 Spotlight 为了能够正常工作，需要经常扫描文件，更新索引。导致 Mac 一开机，就会有多个 mdworder 进程，持续占用 CPU 超过75%的资源，直至文件扫描和索引建立完成。这个过程，在我本机上将持续5分钟左右。开机后系统超慢，而且键盘温度升高，风扇转个不停。
+   本人很少使用 Spotlight 的搜索服务，因此决定禁用这个功能。
+</p>
+
+
+<h3>禁用操作</h3>
+<pre class="prettyprint">
+    # 打开 iTerm，关闭整个 spotlight search 服务
+    # 这个是控制 spotlight 特性的服务，-a 代表指定所有分区， -i 代表index service， off 就是关闭了
+    sudo mdutil -a -i off
+    >> Indexing disabled.
+
+    # 删除菜单栏spotlight图标
+    cd /System/Library/CoreServices/
+    sudo mv Search.bundle/ Search2.bundle/
+
+    # 然后在活动监视器退出 SystemUIServer 进程
+</pre>
