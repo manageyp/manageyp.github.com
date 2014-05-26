@@ -1,0 +1,67 @@
+---
+layout: post
+title: Django Tutorial Model Schema
+description: Django Tutorial Model Schema
+categories: Python
+tags: Python
+record_on: 2014-05-26
+---
+
+<p>
+    学习 <b><a href="https://docs.djangoproject.com/en/1.6/">Django</a></b>，主要是熟悉他的 MVC 架构设计。所以，我们首先从 Django 的 Model 层开始学习。</br>
+    下面介绍申明一个 Model 需要做哪些事情，包括：基类继承、Field 申明、Meta 设置。
+</p>
+
+<p>
+    Django 中每一个 Model 都需要继承自 django.db.models.Model. 这个基类封装了必要的与数据库交互的方法。并且，提供了一套简洁的定义数据库字段的语法。
+    请看下面的实例代码。
+</p>
+
+<pre class="prettyprint lang-html">
+from django.db import models
+from model_utils import Choices
+
+
+class TimeStampedModel(models.Model):
+    class Meta:
+        abstract = True
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now_add=True, auto_now=True)
+
+
+class User(TimeStampedModel):
+    class Meta:
+        db_table = 'users'
+
+    GENDER_CHOICES = Choices(
+        (0, 'male', 'male'),
+        (1, 'female', 'female'),
+    )
+
+    username = models.CharField(max_length=255, db_index=True, unique=True)
+    birthday = models.DateField(blank=True, null=True)
+    gender = models.IntegerField(choices=GENDER_CHOICES, default=GENDER_CHOICES.male)
+
+
+class UserOpen(TimeStampedModel):
+    class Meta:
+        db_table = 'user_opens'
+        unique_together = ('opentype', 'openid')
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    opentype = models.CharField(max_length=255)
+    openid = models.CharField(max_length=255)
+</pre>
+
+<h3>实例讲解</h3>
+<p>
+    首先，我们引入了两个模块 models 是模型的基类，Choices 是一个 Django model_utils 工具包。更多信息可以看官方文档 <a href="https://github.com/carljm/django-model-utils">django-model-utils</a></br>
+
+    其次，我们定义了一个抽象的 TimeStampedModel 基类，他继承自 django.db.models.Model，定义了两个属性，用于自动基于 DB 数据的创建时间，修改时间。</br>
+
+    另外，我们定义了一个 User 模型。他继承自 TimeStampedModel，然后，增加了三个自有属性：用户名（设置唯一索引），生日（允许为空），性别（选择属性，默认为男）。</br>
+
+    最后，我们创建了一个 UserOpen 模型，原来记录用户关联的第三方账号，如：QQ，微博等。
+    并且，展示了联合索引的使用 unique_together。并且，该模型还外键关联至 User 模型。
+</p>
