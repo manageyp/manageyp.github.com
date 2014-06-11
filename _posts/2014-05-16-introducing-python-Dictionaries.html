@@ -88,9 +88,17 @@ s1 = dict.fromkeys(xrange(days))
 >>> s1
 {0: None, 1: None, 2: None}
 
-s2 = dict.fromkeys(xrange(days), [])
->>> s2
+>>> days = 3
+>>> value = []
+>>>
+>>> t = {day:list(value) for day in xrange(days)}
+>>> t
 {0: [], 1: [], 2: []}
+>>> t[0].append(0)
+>>> t[1].append(1)
+>>> t
+{0: [0], 1: [1], 2: []}
+>>>
 </pre>
 
 
