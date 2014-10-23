@@ -1,0 +1,63 @@
+---
+layout: post
+title: Rails Exception Notification
+description: Rails Exception Notification
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2014-10-20
+---
+
+<p>
+  Ruby 是一门动态脚本语言，为了保证项目的可用性、可靠性、稳定性，开发者必须写单元测试，用以保证代码的质量。</br>
+  单元测试不是万能的，项目在生产环境下，往往会遇到各种奇葩、离奇的问题，导致运行时，系统抛出异常。</br>
+  为了能够实时的监控系统的运行情况，在发生异常时，及时处理，修复系统。非常有必要对 Ruby 的项目，增加运行时，异常捕获的程序处理。
+</p>
+
+<h3>推荐组件</h3>
+<p>
+  Rails < 3 请使用<a href="https://github.com/defunkt/exception_logger" target="_blank">ExceptionLogger</a>
+  这个 Gem 将异常捕获，并写入 DB，在通过页面读取 DB，展示在网页上。比较直观，但是无法保证实时性。</br>
+  Rails 3.1 or greater，使用<a href="https://github.com/smartinez87/exception_notification" target="_blank">Exception Notification</a>
+  这个 Gem 灵活的多，可以将异常发送给邮件，发送到线上聊天室；发送通知的过程，可以方便的与异步进程集成。
+</p>
+
+<h3>与集成 Rails</h3>
+<p>
+  部分代码如下。
+</p>
+
+<pre class="prettyprint lang-html">
+  # 生成 config/initializers/exception_notification.rb
+  rails g exception_notification:install
+
+  require 'exception_notification/rails'
+
+  ExceptionNotification.configure do |config|
+    # Ignore additional exception types.
+    # ActiveRecord::RecordNotFound, AbstractController::ActionNotFound and ActionController::RoutingError are already added.
+    # config.ignored_exceptions += %w{ActionView::TemplateError CustomError}
+
+    config.add_notifier :email, {
+      :email_prefix         => "[Tibet.zou.cn ERROR] ",
+      :sender_address       => %{"Notifier" <manageyp@gmail.com>},
+      :exception_recipients => %w{manageyp@gmail.com}
+    }
+  end
+
+
+  # config environments.rb
+
+  config.action_mailer.raise_delivery_errors = false
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              'smtp.gmail.com',
+    port:                 587,
+    domain:               'tibt.zou.cn',
+    user_name:            'manageyp@gmail.com',
+    password:             'Your password',
+    authentication:       'plain',
+    enable_starttls_auto: true
+  }
+
+</pre>
