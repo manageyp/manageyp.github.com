@@ -1,0 +1,73 @@
+---
+layout: post
+title: jQuery Validate File Extension And Size
+description: jQuery Validate File Extension And Size
+categories: jQuery
+tags: jQuery
+record_on: 2014-10-26
+---
+
+<p>
+  本文列出一段基于 jQuery 写的 JS 脚本，用于验证客户端上传图片文件的格式，以及限制图片的大小。
+</p>
+
+<p>
+  JS 代码如下。
+</p>
+
+<pre class="prettyprint lang-html">
+  var validFilesTypes = ["jpg", "png"];
+
+  // File check extension
+  function CheckExtension(e) {
+    var file = e;
+    var path = file.value;
+
+    var ext = path.substring(path.lastIndexOf(".") + 1, path.length).toLowerCase();
+    var isValidFile = false;
+    for (var i = 0; i < validFilesTypes.length; i++) {
+      if (ext == validFilesTypes[i]) {
+        isValidFile = true;
+        break;
+      }
+    }
+    if (!isValidFile) {
+      e.value = null;
+      alert("合法的文件格式为：" + validFilesTypes.join(", "));
+    }
+    return isValidFile;
+  }
+
+  // File check size
+  function validateFileSize(e) {
+    var file = e;
+    var fileSize = file.files[0].size;
+    var isValidFile = false;
+    if (fileSize !== 0 && fileSize <= 1048000) {
+      isValidFile = true;
+    }
+    if (!isValidFile) {
+      e.value = null;
+      alert("文件大小要小于 1MB");
+    }
+    return isValidFile;
+  }
+
+  // Demo Init JS
+
+  $(document).ready(function () {
+    $('input[type="file"]').change(function () {
+      var isValidFile = CheckExtension(this);
+      if(isValidFile){
+        isValidFile = validateFileSize(this);
+      }
+
+      if(isValidFile){
+        $('button[type="submit"]').removeAttr('disabled');
+      }else{
+        $('button[type="submit"]').attr('disabled','disabled');
+      }
+    });
+  });
+
+</pre>
