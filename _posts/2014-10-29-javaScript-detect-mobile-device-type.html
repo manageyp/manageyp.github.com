@@ -1,0 +1,41 @@
+---
+layout: post
+title: JavaScript Detect Mobile Device Type
+description: JavaScript Detect Mobile Device Type
+categories: jQuery
+tags: jQuery
+record_on: 2014-10-29
+---
+
+<p>
+  本文列出一段基于 jQuery 写的 JS 脚本，用于检测客户端的类型是 iOS，还是 Android。
+</p>
+
+<p>
+  简单处理，识别到浏览器请求 UserAgent 包含 Android 的 JS 代码如下。
+</p>
+
+<pre class="prettyprint lang-html">
+  // 点击下载 APP
+  function downloadApp(){
+    var ua = navigator.userAgent.toLowerCase();
+    if(ua.match(/android/i)) {
+      window.location = "http://www.pgyer.com/tibet_android";
+    }else{
+      window.location = "http://www.pgyer.com/tibet";
+    }
+  }
+
+  < a href='javascript:void(0)' onclick="downloadApp()">下载APP< /a >
+
+</pre>
+
+<p>
+  精确判断是 iPhone，iPad，或者 iPod。
+</p>
+
+
+<pre class="prettyprint lang-html">
+  var ua = navigator.userAgent.toLowerCase();
+  var isIosDevice = ua.match(/iphone/i) || ua.match(/ipod/i) || ua.match(/ipad/i);
+</pre>
