@@ -68,3 +68,29 @@ body {
 #header-nav li:nth-child(3) a { color: #DABB1E; }
 #header-nav li:nth-child(4) a { color: #E86A03; }
 #header-nav li:nth-child(5) a { color: #B066ED; }
+
+#rocket {
+  display: block;
+  position: fixed;
+  z-index: 99;
+  _position: absolute;
+}
+
+#rocket a {
+  display: block;
+  position: fixed;
+  bottom: 26px;
+  right: 30px;
+  width: 50px;
+  height: 73px;
+  background: url("../images/rocket.png") 0 0 no-repeat;
+}
+
+#rocket img {
+  display: none;
+  position: fixed;
+  bottom: 1px;
+  right: 45px;
+  width: 20px;
+  height: 30px;
+}
