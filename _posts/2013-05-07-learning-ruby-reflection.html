@@ -2,8 +2,8 @@
 layout: post
 title: Learning Ruby Reflection
 description: Learning Ruby Reflection
-categories: Ruby
-tags: Ruby
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
 record_on: 2013-05-07
 ---
 
@@ -34,7 +34,7 @@ Ruby 的反射功能包括：从对象查看类，查看类的基类，以及查
 
     puts
 
-    $ ruby reflection.rb 
+    $ ruby reflection.rb
     Fixnum < Integer < Numeric < Object < BasicObject
   </pre>
 </p>
@@ -72,14 +72,14 @@ Ruby 的反射功能包括：从对象查看类，查看类的基类，以及查
         print " #{ob} " if c.superclass == ob.superclass && c != ob
       end
       puts
-      
+
       c = c.superclass
       level += 1
     end
 
-    $ ruby objectspace.rb 
-    1: Fixnum Bignum 
-    2: Integer Complex  Rational  Float 
+    $ ruby objectspace.rb
+    1: Fixnum Bignum
+    2: Integer Complex  Rational  Float
     3: Numeric Fiber  Mutex  ThreadGroup  RubyVM::InstructionSequence
        Thread RubyVM::Env  RubyVM  Enumerator::Yielder  Proc  IO
        Enumerator::Generator  Enumerator Binding  UnboundMethod

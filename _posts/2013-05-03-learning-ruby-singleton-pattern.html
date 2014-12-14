@@ -2,8 +2,8 @@
 layout: post
 title: Learning Ruby Singleton Pattern
 description: Learning Ruby Singleton Pattern
-categories: Ruby Design
-tags: Ruby Design
+categories: Ruby-on-Rails Design
+tags: Ruby-on-Rails Design
 record_on: 2013-05-03
 ---
 
@@ -11,10 +11,10 @@ record_on: 2013-05-03
 <p>
 Singleton Pattern（单例模式），是用来保证某个类的实例只有一个。<br />
 参考下面的英文原文：<br />
-Singleton is a design pattern that restricts instantiation of a class to only one instance 
-that is globally available. 
-It is useful when you need that instance to be accessible in different parts of the application, 
-usually for logging functionality, communication with external systems, database access, etc. 
+Singleton is a design pattern that restricts instantiation of a class to only one instance
+that is globally available.
+It is useful when you need that instance to be accessible in different parts of the application,
+usually for logging functionality, communication with external systems, database access, etc.
 </p>
 
 <h3>2. 如何用 Ruby 实现 Singleton Pattern</h3>
@@ -33,8 +33,8 @@ usually for logging functionality, communication with external systems, database
     end
 
     ObjectSpace.each_object(Foo){}
-    => 0 
-     
+    => 0
+
     a,b = Foo.instance, Foo.instance
     => [#< Foo:0x007fcdf5234c20>, #< Foo:0x007fcdf5234c20>]
     # 对象所对应的内存地址都是一样的
@@ -43,7 +43,7 @@ usually for logging functionality, communication with external systems, database
     => true
 
     ObjectSpace.each_object(Foo){}
-    => 1 
+    => 1
   </pre>
 </p>
 
@@ -79,7 +79,7 @@ usually for logging functionality, communication with external systems, database
     #    ensure that the Singleton properties are kept
     #    when inherited and cloned.
     #
-    # *  Providing the Klass.instance() method that returns the 
+    # *  Providing the Klass.instance() method that returns the
     #    same object each time it is called.
     #
     # *  Overriding Klass._load(str) to call Klass.instance().
@@ -105,8 +105,8 @@ Ruby 把类作为对象来处理，在类或模块里定义一个方法，就是
     end
 
     ObjectSpace.each_object(Foo){}
-    => 0 
-     
+    => 0
+
     a,b = Foo.instance, Foo.instance
     => [#< Foo:0x007fcdf5234c20>, #< Foo:0x007fcdf5234c20>]
     # 对象所对应的内存地址都是一样的
@@ -115,7 +115,7 @@ Ruby 把类作为对象来处理，在类或模块里定义一个方法，就是
     => true
 
     ObjectSpace.each_object(Foo){}
-    => 1 
+    => 1
   </pre>
 </p>
 
@@ -129,10 +129,10 @@ Ruby 把类作为对象来处理，在类或模块里定义一个方法，就是
     end
 
     Foo.singleton_methods
-    => [] 
+    => []
 
     a,b = Foo.new, Foo.new
-    => [#< Foo:0x007f87cacaf478 >, #< Foo:0x007f87cacaf450 >] 
+    => [#< Foo:0x007f87cacaf478 >, #< Foo:0x007f87cacaf450 >]
 
     # 添加 Singleton 方法
     def a.greeting
@@ -141,10 +141,10 @@ Ruby 把类作为对象来处理，在类或模块里定义一个方法，就是
 
     # 未引起 Foo Class 的变化
     Foo.singleton_methods
-    => [] 
+    => []
 
     Foo.instance_methods.include?("greeting")
-    => false 
+    => false
 
 
     a.greeting
