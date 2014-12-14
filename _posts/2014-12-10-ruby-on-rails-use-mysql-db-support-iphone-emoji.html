@@ -1,0 +1,87 @@
+---
+layout: post
+title: Ruby on Rails Use MySQL DB Support iPhone emoji
+description: Ruby on Rails Use MySQL DB Support iPhone emoji
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2014-12-10
+---
+
+<p>
+Emoji 是一套起源于日本的 12x12 像素表情符号，最早在日本网络及手机用户中流行，自苹果公司在2011年底发布的iOS 5输入法中加入了 emoji 后，这种表情符号开始席卷全球，目前 emoji 已被大多数现代计算机系统所兼容的 Unicode 编码采纳，普遍应用于各种手机短信和社交网络中。
+</p>
+
+<h3>无一例外的错误</h3>
+<p>
+  默认情况下，我们使用 'mysql2' 的 Gem，并且配置为 utf8 编码。
+  <pre class="prettyprint lang-html">
+    default: &default
+      adapter: mysql2
+      encoding: utf8
+      pool: 5
+      timeout: 5000
+      username: root
+      password: 'password'
+  </pre>
+
+  假定我们有一个话题的模型 Talk，用户可以发布话题，只需要填写话题的标题（Title）、内容（Description）。如果用户在编写话题时，输入的 emoji 表情微笑
+  <img src="/images/posts/smile.png" style="width:20px;height:20px;" class="emoji" title=":smile:" alt=":smile:">
+  则会出现以下错误信息。
+  <pre class="prettyprint lang-html">
+   (0.1ms)  BEGIN
+  SQL (0.8ms)  INSERT INTO `talks` (`created_at`, `description`, `title`, `updated_at`, `user_id`) VALUES ('2014-12-14 20:58:00', '123abc😄', '123abc😄', '2014-12-14 20:58:00', 1)
+Mysql2::Error: Incorrect string value: '\xF0\x9F\x98\x84' for column 'description' at row 1: INSERT INTO `talks` (`created_at`, `description`, `title`, `updated_at`, `user_id`) VALUES ('2014-12-14 20:58:00', '123abc😄', '123abc😄', '2014-12-14 20:58:00', 1)
+   (0.1ms)  ROLLBACK
+  </pre>
+</p>
+
+
+<h3>MySQL 报错的原因</h3>
+<p>
+MYSQL 5.5 之前， UTF8 编码只支持1-3个字节，支持的 Unicode 编码区：0000～FFFF。而 emoji 表情符号占位是4个字节，如微笑的 Unicode 编码为 1F604。
+因此，MySQL 无法保存。<br />
+MySQL 5.5.3 版本之后，引入了 utf8mb4 字符集，最多能有4字节，所以能支持更多的字符集。<br />
+明确了报错的原因之后，有下面两种解决方案。
+</p>
+
+
+<h3>方案一：使用 rumoji 替换 emoji 编码</h3>
+<p>
+<b><a href="https://github.com/mwunsch/rumoji" target="_blank">rumoji</a></b>
+rumoji can encode and decode emoji unicode characters into emoji-cheat-sheet form.<br />
+根据 emoji <a href="http://www.emoji-cheat-sheet.com/" target="_blank">官方文档</a>，将 emoji 表情的 Unicode 编码，转换为字母编号，保存至 MySQL 数据库。
+读取展示数据时，再反响处理一遍。<br />
+如表情微笑的 Unicode 编码为 \u{1F604}, 字母编号为（:smile:）。
+  <pre class="prettyprint lang-html">
+    # unicode encode to string
+    Rumoji.encode(value.force_encoding("UTF-8"))
+
+    SQL (0.4ms)  INSERT INTO `talks` (`created_at`, `description`, `title`, `updated_at`, `user_id`) VALUES ('2014-12-14 21:31:20', '123abc:smile:', '123abc:smile:', '2014-12-14 21:31:20', 1)
+
+    # string decode to unicode
+    Rumoji.decode(value.force_encoding("UTF-8"))
+
+    "123abc😄"
+  </pre>
+</p>
+
+<p>
+<b>方案解读</b>：思路清晰，改动较繁琐，所有涉及用户输入的地方，都要 encode/decode 处理。
+</p>
+
+<h3>方案二：升级 MySQL 调整字符集为 utf8mb4 </h3>
+<p>
+升级 MySQL ，调整 MySQL 的字符集为 utf8mb4，并且对应的改动 Rails，请参考下列文档。<br />
+<a href="https://mathiasbynens.be/notes/mysql-utf8mb4" target="_blank">让MySQL数据库支持emoji(utf8mb4)的存储</a><br />
+<a href="http://mumaren.me/blog/2013/11/27/support-emoji-in-rails-3-dot-2-14/" target="_blank">How to support full Unicode in MySQL databases</a>
+</p>
+
+<p>
+<b>方案解读</b>：一劳永逸。但是对系统基础服务改动较大。如果，是线上已经运行的系统，MySQL 升级和数据迁移成本较高，工作量较大。处理不当将导致重要数据丢失。另外，字符集改动之后，还需要处理 MySQL index 767 个字节的限制问题。
+</p>
+
+
+<h3>最终处理</h3>
+<p>
+现有项目使用方案一，新项目一开始即采用方案二的设计。
+</p>
