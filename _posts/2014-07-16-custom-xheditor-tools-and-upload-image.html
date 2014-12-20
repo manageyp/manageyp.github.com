@@ -1,0 +1,62 @@
+---
+layout: post
+title: Custom xhEditor Tools and Upload Image
+description: Custom xhEditor Tools and Upload Image
+categories: jQuery Ruby-on-Rails
+tags: jQuery Ruby-on-Rails
+record_on: 2014-07-16
+---
+
+<p>
+  本文介绍一款基于 jQuery 编写的开源 HTML 富文本编辑器：
+  <b><a href="http://xheditor.com/" target="_blank">xhEditor</a></b>。<br/>
+  官方描述信息：xhEditor 是一个基于 jQuery 开发的简单迷你并且高效的可视化 HTML 编辑器，基于网络访问并且兼容 IE 6.0+,Firefox 3.0+,Opera 9.6+,Chrome 1.0+,Safari 3.22+。
+</p>
+
+<p>
+  首先，下载 xhEditor v1.1.14 稳定版。下载地址：<a href="http://xheditor.com/download" target="_blank">xhEditor v1.1.14</a>。<br/>
+  另外，由于 jQuery 开发团队在发布 jQuery 1.9 版本时，删除了 1.8 版本中的部分 API。因此，我们需要引入，jQuery 迁移插件 <a href="http://github.com/jquery/jquery-migrate/" target="_blank">jQuery Migrate</a>。
+</p>
+
+<pre class="prettyprint lang-html">
+  // 在页面顶端引入 JS 库
+  < script src="/assets/admin/jquery-migrate-1.2.1.js">< /script>
+  < script src="/assets/admin/xheditor-1.1.14-zh-cn.min.js">< /script>
+
+  // 初始化编辑器
+  < script type="text/javascript">
+      //< ![CDATA[
+      $(function(){
+        $("#content_id").xheditor({tools:'simple',width:'600',height:'600',skin:'nostyle',upImgUrl:"/admin/upload_images",upImgExt:"jpg,jpeg,gif,png",html5Upload: false});
+      });
+      //]]>
+  < /script>
+
+  // 定制图片文件上传
+
+  # config/routes.rb
+  namespace :admin do
+    resources :upload_images, only: [:create]
+  end
+
+  # app/controllers/admin/upload_images_controller.rb
+  module Admin
+    class UploadImagesController < BaseController
+      skip_filter :authentication
+
+      def create
+        attachment_url = UploadImage.upload_attachment(params[:filedata])
+        render text: attachment_url, status: 201
+      end
+
+    end
+  end
+</pre>
+
+<p>
+  xhEditor 的编辑器面板，提供几组简洁的设置项，如：mini, simple, full，也可以根据需要灵活定制。
+</p>
+<pre class="prettyprint lang-html">
+  # 定制编辑器工具栏
+  $("#content_id").xheditor({tools:'Blocktag,FontSize,Bold,Italic,Underline,Strikethrough,FontColor,BackColor,|,Align,List,|,Link,Img',width:'600',height:'600',skin:'nostyle',upImgUrl:"/admin/upload_images",upImgExt:"jpg,jpeg,gif,png",html5Upload: false});
+</pre>
