@@ -1,0 +1,120 @@
+---
+layout: post
+title: Admin User Roles and Permissions Management
+description: Admin User Roles and Permissions Management
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2014-11-08
+---
+
+<p>
+  本篇博客介绍后台用户角色分配，以及权限控制的策略。<br/>
+  假定一个内部用户只能拥有一个角色，简单灵活的管理策略，即为每一位用户分配一个角色，为该角色设置访问权限。<br/>
+  为了达到管理上的灵活性，权限管理的粒度，细分到每一个 Controller 的每一个 Action。
+</p>
+
+<h3>模型设计</h3>
+<p>
+  最小化设计需要四个模型：用户（User）、角色（Role）、用户角色分配（UserRole）、角色权限控制（Permission）。<br/>
+  详细模型和字段设计，以及测试数据如下：
+  <pre class="prettyprint lang-html">
+  1. 用户（User）模型
+  +----+-------+
+  | id | name  |
+  +----+-------+
+  |  1 | Henry |
+  |  2 | Alice |
+  |  3 | Davie |
+  +----+-------+
+
+  2. 角色（Role）模型
+  +----+--------------+----------------------+
+  | id | name         | description          |
+  +----+--------------+----------------------+
+  |  1 | 管理员        | 后台管理员             |
+  |  2 | 客服          | 客服人员              |
+  |  3 | 商务合作      | 商务合作--临时         |
+  +----+--------------+----------------------+
+
+  3. 用户角色分配（UserRole）模型
+  +----+---------+---------+
+  | id | user_id | role_id |
+  +----+---------+---------+
+  |  1 |       3 |       3 |
+  |  2 |       2 |       2 |
+  |  3 |       1 |       1 |
+  +----+---------+---------+
+
+  4. 角色权限控制（Permission）模型
+  +----+---------+-----------------+------------------------+
+  | id | role_id | controller_name | action_names           |
+  +----+---------+-----------------+------------------------+
+  |  1 |       1 | controllers     | all                    |
+  |  2 |       2 | schools         | index;edit;show;update |
+  |  3 |       2 | users           | index;edit;show;update |
+  |  4 |       3 | schools         | index;show             |
+  |  5 |       3 | users           | index;show             |
+  +----+---------+-----------------+------------------------+
+  </pre>
+</p>
+
+<h3>管理界面</h3>
+<p>
+  角色分配界面<br/>
+  <img src="/images/posts/admin-roles.png">
+</p>
+<p>
+  权限设置界面<br/>
+  <img src="/images/posts/admin-permissions.png">
+</p>
+
+<h3>核心代码</h3>
+<p>
+  1. 通过解析 Rails Route 路由的配置，来实现动态解析所有 Controllers 和 Actions 的设置。
+  <pre class="prettyprint lang-html">
+      def admin_routes(refresh=false)
+        # TODO use cache, and refresh cache manully
+        routes_to_display = Rails.application.routes.routes.collect do |route|
+          ActionDispatch::Routing::RouteWrapper.new(route)
+        end.reject do |route|
+          route.internal?
+        end.collect do |route|
+          route.reqs if route.reqs.index('admin/')
+        end.compact!.uniq!
+        collect_routes(routes_to_display)
+      end
+
+      def collect_routes(routes)
+        ret = {}
+        routes.each do |route|
+          slash = route.index('/')
+          number = route.index('#')
+          controller_name = route[slash + 1, number - slash - 1]
+          action_name = route[number + 1, route.size]
+          if ret.has_key?(controller_name)
+            ret[controller_name] << action_name
+          else
+            ret[controller_name] = [action_name]
+          end
+        end
+        ret
+      end
+  </pre>
+
+  2. 判断用户是否具有访问权限。
+  <pre class="prettyprint lang-html">
+    def permitted?(user, controller_name, action_name)
+      user_role = user.user_role
+      if user_role
+        permit_controller_action?(user_role.role_id, controller_name, action_name) ||
+        permit_all_actions?(user_role.role_id, controller_name) ||
+        permit_all_controllers?(user_role.role_id)
+      end
+    end
+  </pre>
+</p>
+
+<p>
+  更多实现的细节代码，以及提交到 Github，项目名：
+  <a href="https://github.com/manageyp/joydaxue" target="_blank">Joydaxue</a>
+</p>
