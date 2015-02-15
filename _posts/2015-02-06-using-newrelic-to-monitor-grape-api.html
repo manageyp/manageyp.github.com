@@ -1,0 +1,46 @@
+---
+layout: post
+title: Using NewRelic To Monitor Grape API
+description: Using NewRelic To Monitor Grape API
+categories: App-API
+tags: App-API
+record_on: 2015-02-06
+---
+
+<p>
+  本篇记录了，通过在项目中引入 <a href="http://newrelic.com/" target="_blank"> NewRelic </a>，监控 Rails 项目，以及 Grape API 的性能数据。
+</p>
+
+
+<h3>引入两个 Gem</h3>
+<p>
+  Gemfile
+  <pre class="prettyprint lang-html">
+    # New Relic Ruby Agent
+    gem 'newrelic_rpm', '3.9.6.257'
+    gem 'newrelic-grape', '2.0.0'
+  </pre>
+</p>
+
+<h3>创建配置文件，配置 Key</h3>
+<p>
+  config/newrelic.yml
+  <pre class="prettyprint lang-html">
+    license_key: 'LICENSE KEY '
+  </pre>
+</p>
+
+<h3>程序初始化</h3>
+<p>
+  config.ru
+  <pre class="prettyprint lang-html">
+  # You need to manually start NewRelic agent
+  NewRelic::Agent.manual_start
+  </pre>
+</p>
+
+<p>
+参考链接：<br />
+<a href="https://ruby-china.org/topics/22379" target="_blank">性能监控的好工具 - NewRelic 简介</a>
+</p>
+
