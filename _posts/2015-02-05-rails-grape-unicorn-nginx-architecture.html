@@ -1,0 +1,126 @@
+---
+layout: post
+title: Rails Grape Unicorn Nginx Architecture
+description: Rails Grape Unicorn Nginx Architecture
+categories: App-API
+tags: App-API
+record_on: 2015-02-05
+---
+
+<p>
+  最近，再次基于 <a href="https://github.com/intridea/grape" target="_blank">Grape</a>开发 APP API 后端。Grape 有很多优势：RESTful APIs；版本管理；接口参数管理；路由管理等。</br>
+  之前的博客里有对 Grape 的使用和设计，做了详细的介绍。
+  这一次，给同事们介绍一下：整个项目的后端架构，科普一下各个组件的特点。
+</p>
+
+<p>
+  首先，看一张架构图<br />
+  <img src="/images/posts/rails_grape_unicorn.png">
+</p>
+
+<h3>Nginx 介绍</h3>
+<p>
+  高性能的 HTTP 和 反向代理 服务器。特点是占用内存少，并发能力强。</br>
+  功能是：提供静态缓存服务，反向代理，将请求分发到 Rails 应用程序。
+</p>
+<p>
+  上一张 Nginx 官网公布的每秒处理请求，性能图<br />
+  <img src="/images/posts/nginx_requests_graph.jpg">
+</p>
+<p>
+  Nginx 并发连接数计算公式
+  <pre class="prettyprint lang-html">
+    Nginx 作为 http 服务器的时候：
+    max_clients = worker_processes * worker_connections
+    2 * 65535 = 131070
+
+    Nginx 作为 反向代理 服务器的时候：
+    max_clients = worker_processes * worker_connections/4
+    2 * 65535 / 4 = 32767
+  </pre>
+</p>
+
+
+<h3>Unicorn 介绍</h3>
+<p>
+  基于 Rack 应用程序设计的 HTTP Server。
+  特点是低延迟，高带宽连接，负载均衡，利用 Unix 的高级特性。</br>
+  功能：提供 Rails 应用程序请求和响应服务。实现低消耗情况下的热部署。
+</p>
+<p>
+  Unicorn 在 Ruby 环境下，可选的 Rack servers 中的性能数据<br />
+  <img src="/images/posts/unicorn_performance.png">
+</p>
+<p>
+  阿里云，单台，单核，2G 服务器，跑 Unicorn 数据
+  <pre class="prettyprint lang-html">
+    4 个 worker，单个 worker 占用 70MB
+    单个 worker 瞬时只能处理一个请求
+    AB ：并发10，60秒，8.73q/s，100% 处理，平均处理时长超1000ms
+  </pre>
+</p>
+
+
+<h3>Rails/Grape 介绍</h3>
+<p>
+  Rails ：基于 Ruby 语言实现的 Web MVC 框架。
+</p>
+<p>
+  Grape ：基于 Rack 的 REST API 框架。提供一套简洁的 DSL 编写 RESTful 风格的 API 接口，摒弃 Rails 的路由分发机制。
+</p>
+<p>
+  Rails/Grape 性能数据<br />
+  <img src="/images/posts/grape_rails.png">
+</p>
+
+
+<h3>Redis 介绍</h3>
+<p>
+  高性能的 key-value 内存数据库。</br>
+  功能：存储用户的未读消息数据；频繁读操作的数据缓存。
+</p>
+<p>
+  Redis 性能数据<br />
+  <img src="/images/posts/redis_connections_chart.png">
+</p>
+
+
+<h3>MySQL，阿里云 RDS 介绍</h3>
+<p>
+  MySQL 是一个开源的，关系型的数据库。</br>
+  特点：体积小、速度快、性能卓越、总体拥有成本低。
+</p>
+<p>
+  RDS 资源配置<br />
+  <img src="/images/posts/rds_data.png">
+</p>
+<p>
+  RDS 并发量测试<br />
+  <img src="/images/posts/rds_bingfa.png">
+</p>
+<p>
+  RDS 性能报告: QPS<br />
+  <img src="/images/posts/rds_qps.png">
+</p>
+
+
+
+<h3>性能测试监控指标</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  1. 请求响应时间、响应速度
+  对请求在服务器端耗时和响应速度有个整体印象
+  2. 访问量、吞吐量
+  了解应用访问量的分布时间段和对应的吞吐量
+  3. 接口的访问次数、处理时间
+  排序后找出最频繁访问的接口和最耗时的请求
+  4. CPU负载、内存消耗、带宽占用
+  找出系统的瓶颈，对未来的升级提供数据参考
+  </pre>
+</p>
+
+<p>
+参考链接：<br />
+<a href="http://www.madebymarket.com/blog/dev/ruby-web-benchmark-report.html" target="_blank">The Ruby Web Benchmark Report</a><br />
+<a href="http://help.aliyun.com/knowledge_detail.htm?knowledgeId=5973703" target="_blank">RDS for MySQL各规格性能测试报告</a>
+</p>
