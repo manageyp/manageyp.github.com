@@ -1,0 +1,185 @@
+---
+layout: post
+title: Aliyun RDS Change MySQL Charset From utf8 To utf8mb4
+description: Aliyun RDS Change MySQL Charset From utf8 To utf8mb4
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2015-03-05
+---
+
+<p>
+  本篇记录了，将一个线上 Rails 项目的 MySQL 数据库编码由 utf8 调整为 utf8mb4 的详细步骤。<br />
+  环境说明：Rails 版本为 4.1.2, 使用 mysql2 Gem, 版本为 0.3.16； <br />数据库使用的是阿里云 RDS MySQL，版本为 5.5.18；服务器系统 Centos。
+</p>
+
+
+<h3>为什么要使用 utf8mb4 编码</h3>
+
+<p>
+  最根本的原因在于，使后端的项目全面支持客户端输入的 Emoji 表情(占位是4个字节)。<br />
+  之前一篇博文有讲到 <a href="http://manageyp.github.com/ruby-on-rails/2014/12/10/ruby-on-rails-use-mysql-db-support-iphone-emoji.html">使用 rumoji 替换 emoji 编码</a>。<br />
+  但是，Emoji 表情毕竟会持续的更新，为了一劳永逸的支持 Emoji 表情，升级 MySQl 编码是最佳解决方案。<br />
+  备注：MySQL 5.5.3 版本之后，引入了 utf8mb4 字符集，最多能有4字节。
+</p>
+
+
+<h3>实施的步骤</h3>
+
+<p>
+  <b>1. 在阿里云 RDS 控制台，新建一个数据库 </b></br>
+  名称为：production_new</br>
+  字符集选择：utf8mb4
+</p>
+
+<p>
+  <b>2. 修改 database.yml 编码</b></br>
+  <pre class="prettyprint lang-html">
+    # config/database.yml
+    encoding: utf8mb4
+  </pre>
+</p>
+
+<p>
+  <b>3. Ruby 程序接收和返回 JSON 数据时，强制使用 UTF-8 编码</b></br>
+  <pre class="prettyprint lang-html">
+    "string".force_encoding("UTF-8")
+  </pre>
+</p>
+
+<p>
+  <b>4. 停止 Ruby 进程，停止队列等服务 </b>
+</p>
+
+<p>
+  <b>5. 部署项目报错 </b></br>
+  一开始信心满满的部署 Ruby 项目，执行的过程中，遇到下面的错误</br>
+  <pre class="prettyprint lang-html">
+  Character set 'utf8mb4' is not a compiled character set and is not specified in the '/usr/share/mysql/charsets/Index.xml' file
+  rake aborted!
+  Mysql2::Error: Can't initialize character set utf8mb4 (path: /usr/share/mysql/charsets/)
+  /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `connect'
+  /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `initialize'
+  </pre>
+  经过一番研究测试之后，发现当前机器上的 MySQL 客户端版本是 5.1 的</br>
+  <pre class="prettyprint lang-html">
+  rpm -qa | grep mysql
+  mysql-devel-5.1.73-3.el6_5.x86_64
+  mysql-5.1.73-3.el6_5.x86_64
+  mysql-libs-5.1.73-3.el6_5.x86_64
+  </pre>
+</p>
+
+<p>
+  <b>6. 重新安装 MySQL 客户端 </b></br>
+  移除现有的旧版本，重新安装 5.5 版本的客户端</br>
+  <pre class="prettyprint lang-html">
+  # 清理现有 mysql
+  yum list installed | grep -i mysql
+  yum remove mysql mysql-*
+
+  # 修改源
+  rpm -Uvh http://repo.webtatic.com/yum/el6/latest.rpm
+
+  # 安装最新的 mysql 客户端
+  yum install libmysqlclient16 --enablerepo=webtatic
+  yum install mysql55w mysql55w-libs mysql55w-devel --enablerepo=webtatic
+
+  # 备注，如果你需要 MySQL Server，请安装
+  yum install  mysql55w-server --enablerepo=webtatic
+  </pre>
+</p>
+
+<p>
+  <b>7. 重新安装 mysql2 Gem </b></br>
+  MySQL 5.5 客户端安装完毕之后，再次运行项目，同样出现上面的报错。
+  于是，决定重新安装一遍 mysql2 Gem</br>
+  <pre class="prettyprint lang-html">
+  # 重新安装 mysql2 Gem
+  gem uninstall mysql2
+  gem install mysql2 -v '0.3.16'
+  </pre>
+</p>
+
+<p>
+  <b>8. 备份和还原数据库 </b></br>
+  <pre class="prettyprint lang-html">
+  # 备份现有数据库
+  mysqldump -h host -u user -p production_old > production_old.sql
+
+  # 还原至新数据库
+  mysql -h host -u user -p production_new < production_old.sql
+  </pre>
+</p>
+
+<p>
+  <b>9. 执行 SQL 调整单个表(table) 的编码 </b></br>
+  <pre class="prettyprint lang-html">
+  # 备份现有数据库
+  mysql -h host -u user -p production_new < db/sql/utf8mb4_encoding.sql
+  </pre>
+</p>
+<p>
+  SQL 文件内容，举例说明如下:</br>
+  通常只需要修改 table 的编码，若该 table 内有字段(column)是 VARCHAR，或者 TEXT
+  MySQL 将自动调整字段的编码，与 table 的默认编码保持一致</br>
+  <pre class="prettyprint lang-html">
+  ALTER TABLE `versions` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  </pre>
+</p>
+
+<p>
+  <b>MySQL 索引长度的限制错误</b></br>
+  在执行 SQL 文件时，发现有些 table 更改编码时报错，信息如下：</br>
+  <pre class="prettyprint lang-html">
+  # ERROR 1071 (42000): Specified key was too long; max key length is 767 bytes
+  </pre>
+</p>
+
+<p>
+  原因在于：MySQL Innodb 的索引长度限制为 767 字节，UTF8mb4 字符集是 4 字节字符集，</br>
+  则 767字节 / 4 字节每字符 = 191字符（即默认的索引最大长度）</br>
+  因此在 varchar(255) 类型字段上，创建索引会失败，提示最大索引长度为767字节。</br>
+  实践中发现，只有 Unique 的索引，或者联合索引，才会报错。</br>
+  普通索引，Rails 的 Migration 会自动对 Index 的长度增加一个 191 的限制。</br>
+  <b>处理思路：先移除索引，然后修改表的编码，修改成功之后。
+  调整字段的长度为 191，最后再次创建索引。</b>
+  <pre class="prettyprint lang-html">
+  ALTER TABLE `users` DROP INDEX index_users_on_email;
+  ALTER TABLE `users` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  ALTER TABLE `users` MODIFY `email` VARCHAR(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+  ALTER TABLE  `users` ADD UNIQUE index_users_on_email (email);
+
+  # 查看一下最新的表结构
+  SHOW CREATE TABLE `users`;
+  </pre>
+</p>
+
+<p>
+  <b>10. 再次启动服务 </b></br>
+</p>
+
+<p>
+  <b>备注：使用 Migration 迁移 Table 编码 </b></br>
+  如果没有索引的问题，可以使用下面的代码修改表的编码，简洁许多。</br>
+  我是使用下面的代码，打印 SQL 语句到 .sql 文件的。</br>
+  然后，对引起 Index 错误的 Table 单独增加 SQL 语句处理。</br>
+  <pre class="prettyprint lang-html">
+  def up
+    char_set = 'utf8mb4'
+    collation = 'utf8mb4_unicode_ci'
+    table_names = ActiveRecord::Base.connection.tables
+    table_names.each do |table_name|
+      execute "ALTER DATABASE `#{db_name}` CHARACTER SET #{char_set} COLLATE #{collation};"
+    end
+  end
+  </pre>
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://mumaren.me/blog/2013/11/27/support-emoji-in-rails-3-dot-2-14/" target="_blank">Support Emoji in Rails 3.2.14</a><br />
+  <a href="http://tech.taskrabbit.com/blog/2014/04/24/active-record-mysql-and-emoji/" target="_blank">active_record, MySQL, and emoji</a><br />
+  <a href="http://stackoverflow.com/questions/9361720/update-mysql-version-from-5-1-to-5-5-in-centos-6-2" target="_blank">update MySQL version from 5.1 to 5.5 in CentOS 6.2</a><br />
+</p>
+
