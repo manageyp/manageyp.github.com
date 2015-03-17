@@ -8,7 +8,7 @@ record_on: 2015-03-05
 ---
 
 <p>
-  本篇记录了，将部署在阿里云上的 Rails 项目，使用的 RDS MySQL 数据库编码，由 utf8 调整为 utf8mb4 的详细步骤。<br />
+  本篇记录了，将一个部署在阿里云上的 Rails 项目，连接 MySQL 数据库的编码，由 utf8 调整为 utf8mb4。的详细步骤。<br />
   <b>环境说明：</b><br />
   服务器系统 Centos，版本为 6.5；<br />
   数据库使用的是阿里云 RDS MySQL，版本为 5.5.18；<br />
@@ -42,8 +42,8 @@ record_on: 2015-03-05
     | utf8mb4 | UTF-8 Unicode | utf8mb4_general_ci |      4 |
     +---------+---------------+--------------------+--------+
   </pre>
-  另外，排序规则（collation） 选择默认的 utf8mb4_general_ci，还是 utf8mb4_unicode_ci。<br />
-  请参见 Stack Overflow 的介绍：<a href="http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci">What's the difference between utf8_general_ci and utf8_unicode_ci</a></br>
+  至于排序规则（collation） 选择默认的 utf8mb4_general_ci，还是 utf8mb4_unicode_ci。<br />
+  请参考下面文章的介绍：<a href="http://infopotato.com/blog/index/mysql_character_set_and_collation">Character Set & Collation In MySQL</a></br>
   我们选用的是 <b>utf8mb4_unicode_ci</b> 。
 </p>
 
@@ -207,6 +207,7 @@ record_on: 2015-03-05
   <a href="http://mumaren.me/blog/2013/11/27/support-emoji-in-rails-3-dot-2-14/" target="_blank">Support Emoji in Rails 3.2.14</a><br />
   <a href="http://tech.taskrabbit.com/blog/2014/04/24/active-record-mysql-and-emoji/" target="_blank">active_record, MySQL, and emoji</a><br />
   <a href="http://stackoverflow.com/questions/9361720/update-mysql-version-from-5-1-to-5-5-in-centos-6-2" target="_blank">update MySQL version from 5.1 to 5.5 in CentOS 6.2</a><br />
+  <a href="http://infopotato.com/blog/index/mysql_character_set_and_collation">Character Set & Collation In MySQL</a><br />
   <a href="http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci">What's the difference between utf8_general_ci and utf8_unicode_ci</a>
 </p>
 
