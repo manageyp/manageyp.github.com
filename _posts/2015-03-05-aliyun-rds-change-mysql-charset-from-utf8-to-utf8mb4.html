@@ -10,8 +10,8 @@ record_on: 2015-03-05
 <p>
   本篇记录了，将部署在阿里云上的 Rails 项目，使用的 RDS MySQL 数据库编码，由 utf8 调整为 utf8mb4 的详细步骤。<br />
   <b>环境说明：</b><br />
-  服务器系统 Centos；<br />
-  数据库使用的是阿里云 MySQL RDS，版本为 5.5.18；<br />
+  服务器系统 Centos，版本为 6.5；<br />
+  数据库使用的是阿里云 RDS MySQL，版本为 5.5.18；<br />
   Rails 版本为 4.1.2；<br />
   mysql2 Gem, 版本为 0.3.16。<br />
 </p>
@@ -24,7 +24,7 @@ record_on: 2015-03-05
   为了使后端的项目，全面支持客户端输入的 Emoji 表情，升级编码为 utf8mb4 是最佳解决方案。<br />
   之前一篇博文有讲到 <a href="http://manageyp.github.com/ruby-on-rails/2014/12/10/ruby-on-rails-use-mysql-db-support-iphone-emoji.html">使用 rumoji 替换 emoji 编码</a>。<br />
   但是，Emoji 表情毕竟会持续的更新，rumoji 库如果没有及时更新，输入新的表情，同样会报错。<br />
-  另外，rumoji 对用户输入的字符，做正则匹配解析，增加了系统的开销。
+  另外，使用 rumoji 对用户输入的字符，做正则匹配解析，也增加了系统的开销，降低了性能。
 </p>
 
 <p>
@@ -38,7 +38,6 @@ record_on: 2015-03-05
     | utf8    | UTF-8 Unicode | utf8_general_ci    |      3 |
     | utf8mb4 | UTF-8 Unicode | utf8mb4_general_ci |      4 |
     +---------+---------------+--------------------+--------+
-    2 rows in set (0.00 sec)
   </pre>
   另外，排序规则（collation） 选择默认的 utf8mb4_general_ci，还是 utf8mb4_unicode_ci。<br />
   请参见 Stack Overflow 的介绍：<a href="http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci">What's the difference between utf8_general_ci and utf8_unicode_ci</a></br>
@@ -83,7 +82,7 @@ record_on: 2015-03-05
   /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `connect'
   /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `initialize'
   </pre>
-  经过一番研究测试之后，发现当前机器上的 MySQL 客户端版本是 5.1 的</br>
+  经过一番研究测试之后，发现当前机器上的 MySQL 客户端版本过低导致。</br>
   <pre class="prettyprint lang-html">
   # 列出所有被安装的 mysql 包
   rpm -qa | grep mysql
@@ -94,14 +93,13 @@ record_on: 2015-03-05
 </p>
 
 <p>
-  <b>6. 重新安装 MySQL 客户端 </b></br>
-  移除现有的旧版本，重新安装 5.5 版本的客户端</br>
+  <b>6. 移除现有的旧版本，重新安装 5.5 版本的客户端 </b></br>
   <pre class="prettyprint lang-html">
   # 清理现有 mysql
   yum list installed | grep -i mysql
   yum remove mysql mysql-*
 
-  # 修改安装源
+  # 修改安装源，不修改源，重新安装的仍然是 5.1 的版本
   rpm -Uvh http://repo.webtatic.com/yum/el6/latest.rpm
 
   # 安装最新的 mysql 客户端
@@ -138,7 +136,6 @@ record_on: 2015-03-05
 <p>
   <b>9. 执行 SQL 调整单个表(table)的编码 </b></br>
   <pre class="prettyprint lang-html">
-  # 备份现有数据库
   mysql -h host -u user -p production_new < db/sql/utf8mb4_encoding.sql
   </pre>
 </p>
@@ -160,12 +157,12 @@ record_on: 2015-03-05
 </p>
 
 <p>
-  原因在于：MySQL Innodb 的索引长度限制为 767 字节，UTF8mb4 字符集是 4 字节字符集，</br>
-  <b>767 字节 / 4 字节每字符 = 191字符（即默认的索引最大长度）</b></br>
+  报错原因在于：MySQL Innodb 的索引长度限制为 767 字节，UTF8mb4 字符集是 4 个字节，</br>
+  <b>767 字节 / 4 字节每字符 = 191 字符（即默认的索引最大长度）</b></br>
   因此在 varchar(255) 类型字段上，创建索引会失败，提示最大索引长度为767字节。</br>
   实践中发现，MySQL 5.5.x 的版本，只有 Unique 的索引，或者联合索引，才会报错。</br>
-  普通索引，Rails 的 Migration 会自动对 Index 的长度增加一个 191 的限制。</br>
-  而 MySQL 5.6.x 的版本，及时普通索引也会报错。</br>
+  普通索引，Rails 的 Migration 会自动对索引 Index 的长度增加一个 191 的限制。</br>
+  而 MySQL 5.6.x 的版本，即使普通索引也会报错。</br>
   <b>处理思路：先移除索引，然后修改表的编码，修改成功之后。
   调整索引对应字段的长度为 191，最后再次创建索引。</b>
   <pre class="prettyprint lang-html">
@@ -187,7 +184,7 @@ record_on: 2015-03-05
   <b>备注：使用 Migration 迁移 Table 编码 </b></br>
   如果没有索引的问题，可以使用下面的代码修改表的编码，简洁许多。</br>
   也可以使用下面的代码，打印 SQL 语句到 .sql 文件的。</br>
-  然后，对引起 Index 错误的 Table 单独增加索引处理的 SQL 语句。</br>
+  然后，对引起索引 Index 错误的 Table 单独增加处理的 SQL 语句。</br>
   <pre class="prettyprint lang-html">
   def up
     char_set = 'utf8mb4'
