@@ -22,17 +22,19 @@ record_on: 2015-03-05
 <p>
   根本的原因在于，采用 utf8 编码的 MySQL 无法保存 占位是4个字节的 Emoji 表情。<br />
   为了使后端的项目，全面支持客户端输入的 Emoji 表情，升级编码为 utf8mb4 是最佳解决方案。<br />
-  之前一篇博文有讲到，不调整 MySQL 编码，使用 rumoji 替换 Emoji 表情为字母编号。<a href="http://manageyp.github.com/ruby-on-rails/2014/12/10/ruby-on-rails-use-mysql-db-support-iphone-emoji.html">Ruby on Rails Use MySQL DB Support iPhone emoji</a>。<br />
-  但是，这样处理至少有两个问题：<br />
+  之前一篇博文有讲到，不调整 MySQL 编码，使用 rumoji 替换 Emoji 表情为字母编号。<br /><a href="http://manageyp.github.com/ruby-on-rails/2014/12/10/ruby-on-rails-use-mysql-db-support-iphone-emoji.html">Ruby on Rails Use MySQL DB Support iPhone emoji</a>。<br />
+  这样处理至少有两个问题：<br />
   1. Emoji 表情会持续的更新，rumoji 库如果没有及时更新，输入新的表情，则会报错。<br />
-  2. 使用 rumoji 对用户输入的字符，做正则匹配解析，增加了系统的开销，降低了性能。
+  2. 使用 rumoji 对用户输入的字符，做正则匹配解析，增加了系统的开销，降低了性能。<br />
+
+  另外，看到很多网友建议，迁移 MySQL 至 PostgreSQL、MongoDB 等，迁移成本不小，我们的项目暂时不考虑。
 </p>
 
 <p>
   <b>备注：MySQL 5.5.3 版本之后，引入了 utf8mb4 字符集。</b></br>
-  在 mysql client 端，输入，以下命令，确认 mysql server 是否支持 utf8mb4 编码。
+  在 mysql client 端，输入以下命令，确认 mysql server 是否支持 utf8mb4 编码。
   <pre class="prettyprint lang-html">
-    mysql> show char set where Charset like "%utf8%";
+    mysql> SHOW CHAR SET WHERE Charset LIKE "%utf8%";
     +---------+---------------+--------------------+--------+
     | Charset | Description   | Default collation  | Maxlen |
     +---------+---------------+--------------------+--------+
@@ -75,7 +77,8 @@ record_on: 2015-03-05
 
 <p>
   <b>5. 部署项目报错 </b></br>
-  一开始信心满满的部署 Ruby 项目，执行的过程中，遇到下面的错误</br>
+  一开始信心满满的部署 Ruby 项目，执行的过程中，遇到下面的错误。</br>
+  当然，在正式版部署之前，有在本地和 Staging 做过测试。</br>
   <pre class="prettyprint lang-html">
   Character set 'utf8mb4' is not a compiled character set and is not specified in the '/usr/share/mysql/charsets/Index.xml' file
   rake aborted!
@@ -83,7 +86,7 @@ record_on: 2015-03-05
   /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `connect'
   /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `initialize'
   </pre>
-  经过一番研究测试之后，发现当前机器上的 MySQL 客户端版本过低导致。</br>
+  经过一番检查后发现，错误是由于当前系统上的 MySQL 客户端版本过低导致。</br>
   <pre class="prettyprint lang-html">
   # 列出所有被安装的 mysql 包
   rpm -qa | grep mysql
@@ -103,11 +106,11 @@ record_on: 2015-03-05
   # 修改安装源，不修改源，重新安装的仍然是 5.1 的版本
   rpm -Uvh http://repo.webtatic.com/yum/el6/latest.rpm
 
-  # 安装最新的 mysql 客户端
+  # 安装 5.5 版本的 mysql client
   yum install libmysqlclient16 --enablerepo=webtatic
   yum install mysql55w mysql55w-libs mysql55w-devel --enablerepo=webtatic
 
-  # 如果你需要 mysql server，请安装
+  # 如果你需要安装 mysql server，请执行
   yum install  mysql55w-server --enablerepo=webtatic
   </pre>
 </p>
@@ -135,15 +138,15 @@ record_on: 2015-03-05
 </p>
 
 <p>
-  <b>9. 执行 SQL 调整单个表(table)的编码 </b></br>
+  <b>9. 执行调整单个表(table)编码的 SQL 文件 </b></br>
   <pre class="prettyprint lang-html">
-  mysql -h host -u user -p production_new < db/sql/utf8mb4_encoding.sql
+  mysql -h host -u user -p production_new < db/sql/utf8mb4_charset.sql
   </pre>
 </p>
 <p>
-  SQL 文件内容，举例说明如下:</br>
+  SQL 文件的内容，举例说明如下:</br>
   通常只需要修改 table 的编码，若该 table 内有字段(column)是 VARCHAR，或者 TEXT，
-  MySQL 将自动调整字段的编码，与 table 的默认编码保持一致</br>
+  MySQL 将自动调整该字段的编码，与 table 的默认编码保持一致</br>
   <pre class="prettyprint lang-html">
   ALTER TABLE `versions` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
   </pre>
@@ -183,8 +186,8 @@ record_on: 2015-03-05
 
 <p>
   <b>备注：使用 Migration 迁移 Table 编码 </b></br>
-  如果没有索引的问题，可以使用下面的代码修改表的编码，简洁许多。</br>
-  也可以使用下面的代码，打印 SQL 语句到 .sql 文件的。</br>
+  如果没有索引的问题，可以使用下面的代码，修改表的编码，简洁许多。</br>
+  也可以使用下面的代码，打印 SQL 语句到 .sql 文件。</br>
   然后，对引起索引 Index 错误的 Table 单独增加处理的 SQL 语句。</br>
   <pre class="prettyprint lang-html">
   def up
