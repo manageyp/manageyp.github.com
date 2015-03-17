@@ -23,7 +23,8 @@ record_on: 2015-03-05
   根本的原因在于，采用 utf8 编码的 MySQL 无法保存 占位是4个字节的 Emoji 表情。<br />
   为了使后端的项目，全面支持客户端输入的 Emoji 表情，升级编码为 utf8mb4 是最佳解决方案。<br />
   之前一篇博文有讲到 <a href="http://manageyp.github.com/ruby-on-rails/2014/12/10/ruby-on-rails-use-mysql-db-support-iphone-emoji.html">使用 rumoji 替换 emoji 编码</a>。<br />
-  但是，Emoji 表情毕竟会持续的更新，rumoji 库如果没有及时更新，输入新的表情，则会报错。
+  但是，Emoji 表情毕竟会持续的更新，rumoji 库如果没有及时更新，输入新的表情，同样会报错。<br />
+  另外，rumoji 对用户输入的字符，做正则匹配解析，增加了系统的开销。
 </p>
 
 <p>
