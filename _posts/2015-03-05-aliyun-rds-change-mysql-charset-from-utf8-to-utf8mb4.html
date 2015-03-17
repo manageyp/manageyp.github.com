@@ -77,14 +77,14 @@ record_on: 2015-03-05
 
 <p>
   <b>5. 部署项目报错 </b></br>
-  一开始信心满满的部署 Ruby 项目，执行的过程中，遇到下面的错误。</br>
-  当然，在正式版部署之前，有在本地和 Staging 做过测试。</br>
+  正式版部署之前，有在本地和 Staging 做过测试。</br>
+  信心满满的在正式版部署 Ruby 项目，执行的过程中，遇到下面的错误：</br>
   <pre class="prettyprint lang-html">
   Character set 'utf8mb4' is not a compiled character set and is not specified in the '/usr/share/mysql/charsets/Index.xml' file
   rake aborted!
-  Mysql2::Error: Can't initialize character set utf8mb4 (path: /usr/share/mysql/charsets/)
-  /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `connect'
-  /home/deploy/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `initialize'
+  Mysql2::Error: Can't initialize character set utf8mb4 (path: /path/mysql/charsets/)
+  /path/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `connect'
+  /path/.rvm/gems/ruby-2.0.0-p598/gems/mysql2-0.3.16/lib/mysql2/client.rb:70:in `initialize'
   </pre>
   经过一番检查后发现，错误是由于当前系统上的 MySQL 客户端版本过低导致。</br>
   <pre class="prettyprint lang-html">
