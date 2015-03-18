@@ -195,7 +195,7 @@ record_on: 2015-03-05
     collation = 'utf8mb4_unicode_ci'
     table_names = ActiveRecord::Base.connection.tables
     table_names.each do |table_name|
-      execute "ALTER DATABASE `#{db_name}` CHARACTER SET #{char_set} COLLATE #{collation};"
+      execute "ALTER TABLE `#{table_name}` CONVERT TO CHARACTER SET #{char_set} COLLATE #{collation};"
     end
   end
   </pre>
