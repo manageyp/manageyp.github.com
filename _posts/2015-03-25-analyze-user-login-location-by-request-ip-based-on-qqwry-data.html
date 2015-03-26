@@ -1,0 +1,182 @@
+---
+layout: post
+title: Analyze User Login Location By Request IP Based On QQwry Data
+description: Analyze User Login Location By Request IP Based On QQwry Data
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2015-03-25
+---
+
+<p>
+本篇博文讲解如何获取客户端请求的 IP，结合 QQwry 纯真 IP 数据库，分析出用户使用的网络、所在城市地区的信息。<br />
+这些信息，将有助于运营同事们日常的工作，并且，在未来为产品同事提供用户地区分布的数据。
+</p>
+
+<h3>QQwry 纯真 IP 数据库介绍</h3>
+<p>
+纯真版 IP 地址数据库是当前网络上最权威、地址最精确、IP 记录以及网吧数据最多的 IP 地址数据库。<br />
+收集了包括中国电信、中国移动、中国联通、铁通、长城宽带等各 ISP 的最新准确 IP 地址数据。<br />
+通过大家的共同努力打造一个没有未知数据，没有错误数据的 QQ IP。IP 数据库每5天更新一次。<br />
+<a href="http://www.cz88.net/">纯真官网</a>
+</p>
+
+
+<h3>1. 下载纯真 IP 数据包</h3>
+<p>
+  从纯真官网下载数据包之后，解压安装后，打开“纯真IP地址数据库”，在打开的界面上，再次点击解压，将得到一个 txt 文件。<br />
+  文件内的数据格式为
+  <pre class="prettyprint lang-html">
+    # 下载日期为 2015-03-05，445135 条 IP 记录
+    # 其中一行数据
+    1.61.128.0   1.61.146.255   黑龙江省齐齐哈尔市   联通
+  </pre>
+</p>
+
+
+<h3>2. 导入 MySQL 数据库</h3>
+<p>
+  新建一个数据表：qqwry_ips，用于存储 txt 文件中的每一条 IP 记录。<br />
+  为了方便，未来定位一个 IP 归属的范围，我们将 IP 的值，转换为对应的 Long 整形数。
+</p>
+<p>
+  模型 QqwryIp 的 Migration 定义如下
+  <pre class="prettyprint lang-html">
+  def change
+    create_table :qqwry_ips do |t|
+      t.string :start_long
+      t.string :end_long
+      t.string :country
+      t.string :location
+      t.string :start_ip
+      t.string :end_ip
+
+      t.timestamps
+    end
+
+    add_index :qqwry_ips, :start_long
+    add_index :qqwry_ips, :end_long
+  end
+  </pre>
+</p>
+<p>
+  读取 txt 文件内容，导入数据库的 rake task 代码如下：
+  <pre class="prettyprint lang-html">
+  namespace :qqwry_ip do
+
+    desc "import qqwry ips data"
+    task :import => :environment do
+      puts "start import ip txt file."
+
+      total_count = 0
+      file = "#{Rails.root}/tmp/cn88.net.ip20150305.txt"
+      File.readlines(file).each_with_index do |line, index|
+
+        if line.present?
+          data = line.split(' ')
+          if QqwryIp.build_qqwry_ip(data[0], data[1], data[2], data[3])
+            total_count += 1
+            puts "success line: #{index}, start_ip: #{data[0]}, end_ip: #{data[1]}"
+          end
+        end
+
+        if index % 2000 == 0
+          sleep(1)
+        end
+
+      end
+
+      puts "finished, total_count: #{total_count}"
+      puts "end import ip txt file."
+    end
+
+  end
+  </pre>
+</p>
+<p>
+  模型 QqwryIp 中计算 IP 对应的 Long 整形数值的方法：
+  <pre class="prettyprint lang-html">
+  def build_qqwry_ip(start_ip, end_ip, country, location)
+    create(start_long: ip2long(start_ip),
+      end_long: ip2long(end_ip),
+      country: country,
+      location: location,
+      start_ip: start_ip,
+      end_ip: end_ip)
+  end
+
+  def ip2long(value)
+    long = 0
+    value.split(/\./).each_with_index do |b, i|
+      long += b.to_i << 8*(3-i)
+    end
+    long
+  end
+  </pre>
+</p>
+
+
+<h3>3. 获取客户端请求的 IP</h3>
+<p>
+  由于项目的架构为： Nginx，Unicorn，Grape，为了在 Grape API 中，顺利取得客户端请求携带的 IP 数据。<br />
+  需要对 Nginx 做如下的配置：
+  <pre class="prettyprint lang-html">
+    server {
+       listen 80;
+       client_max_body_size 10m;
+       keepalive_timeout 5;
+       server_name www.servername.com;
+       root /path/tibet/public;
+
+       location / {
+          proxy_buffering    on;
+          proxy_set_header  X-Forwarded-Host $host;
+          proxy_set_header  X-Forwarded-Server $host;
+          proxy_set_header  X-Real-IP        $remote_addr;
+          proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+          proxy_set_header  Host             $host;
+          proxy_redirect    off;
+          proxy_pass        http://127.0.0.1:3000;
+       }
+    }
+  </pre>
+</p>
+<p>
+  Grape API 获取客户端请求的 IP 代码：
+  <pre class="prettyprint lang-html">
+  params[:request_real_ip] = request.env['HTTP_X_REAL_IP']
+  </pre>
+</p>
+
+
+<h3>4. 解析 IP 对应的地区信息</h3>
+<p>
+  模型 QqwryIp 中读取 IP 地区信息的方法如下
+  <pre class="prettyprint lang-html">
+    def search_ip(ip)
+      ret = ["未知地区", ""]
+      return ret if ip.blank?
+      return ["来自本地", ""] if ip == "127.0.0.1"
+
+      longip = ip2long(ip)
+      record = select('country,location').where("? > start_long AND ? < end_long",
+        longip, longip).first
+      ret = [record.country, record.location] if record.present?
+      ret
+    end
+  </pre>
+</p>
+
+
+<h3>5. 异步处理</h3>
+<p>
+  在用户登录，注册等需要监控的操作，完成之后。<br />
+  将获取到的客户端 IP，交由 Sidekiq 异步去解析 IP 所在地区，并记录到数据库中。
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.cz88.net/">纯真官网</a><br />
+  <a href="http://www.cnblogs.com/varlxj/archive/2011/10/08/2202311.html" target="_blank">使用ruby解析纯真IP库（qqwry.dat)</a><br />
+  <a href="http://blog.csdn.net/maochencw/article/details/7178306" target="_blank">利用纯真IP库建立mysql ip数据库</a>
+</p>
