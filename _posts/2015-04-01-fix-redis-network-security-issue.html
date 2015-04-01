@@ -1,0 +1,102 @@
+---
+layout: post
+title: Fix Redis Network Security Issue
+description: Fix Redis Network Security Issue
+categories: Database
+tags: Database
+record_on: 2015-04-01
+---
+
+<p>
+Redis 是高性能的 key-value 内存数据库。<br />
+是 nosql 数据库中非常热门的技术，支持主从同步，支持数据持久化。<br />
+提供多种存储类型： 字符串(strings), 哈希(hashes), 列表(lists), 集合(sets) 和 有序集合(sorted sets)等类型。<br />
+目前，在我们几个 Ruby 项目中，都有使用。
+</p>
+
+<h3>Redis 的设计哲学</h3>
+<p>
+  Redis 在设计支持，着重考虑的是性能，而不是安全。<br />
+  使用者，应该将 Redis 部署在可靠的环境下，供信任的客户端调用。
+  原文如下：
+  <pre class="prettyprint lang-html">
+  Redis is designed to be accessed by trusted clients inside trusted environments....
+  In general, Redis is not optimized for maximum security but for maximum performance and simplicity...
+  </pre>
+</p>
+
+<h3>Redis 网络安全问题</h3>
+<p>
+  1. Redis 安装后的默认配置<br />
+  <pre class="prettyprint lang-html">
+  # /etc/redis.conf
+
+  # If you want you can bind a single interface, if the bind option is not
+  # specified all the interfaces will listen for incoming connections.
+  #
+  # bind 127.0.0.1
+
+  # Require clients to issue AUTH < PASSWORD > before processing any other
+  # commands.  This might be useful in environments in which you do not trust
+  # others with access to the host running redis-server.
+  #
+  # This should stay commented out for backward compatibility and because most
+  ...skipping...
+  # 150k passwords per second against a good box. This means that you should
+  # use a very strong password otherwise it will be very easy to break.
+  #
+  # requirepass foobared
+  </pre>
+</p>
+
+<p>
+  2. 默认配置带来的安全隐患<br />
+  如果已知的一个服务，使用了 Redis，并且没有做绑定 IP，也没有设置连接密码，将可以轻松的建立连接，查询 Redis 内部数据，调用 Redis 命令修改或删除数据，非常危险。
+  <pre class="prettyprint lang-html">
+  $ redis-cli -h known-host.com
+  redis tibet.zou.cn:6379> info
+  # Server
+  redis_version:2.8.19
+  </pre>
+</p>
+
+<p>
+  3. 解决方法一：绑定 IP<br />
+  首先，我们将 Redis 绑定 127.0.0.1，简单有效。重启 Redis 服务之后，再次尝试连接，情况如下：
+  <pre class="prettyprint lang-html">
+   $ redis-cli -h known-host.com
+  Could not connect to Redis at known-host.com:6379: Connection refused
+  not connected>
+  </pre>
+</p>
+
+<p>
+  4. 解决方法二：开启访问密码<br />
+  设置好 Redis requirepass 密码后，重启 Redis。
+  <pre class="prettyprint lang-html">
+  # /etc/redis.conf
+
+  requirepass foopassword
+  </pre>
+</p>
+
+<p>
+  Rails 配置 Redis 连接。
+  <pre class="prettyprint lang-html">
+  # config/redis.yml
+
+  development:
+    host: 127.0.0.1
+    port: 6379
+    db: 0
+    password: foopassword
+    timeout: 10
+
+
+  # config/initializers/setup_redis.rb
+
+  require "redis"
+
+  $redis = Redis.new(YAML.load(ERB.new(File.read('config/redis.yml')).result)[Rails.env])
+  </pre>
+</p>
