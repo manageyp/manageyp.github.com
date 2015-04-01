@@ -8,15 +8,15 @@ record_on: 2015-04-01
 ---
 
 <p>
-Redis 是高性能的 key-value 内存数据库。<br />
+Redis 是高性能的 key-value 内存数据库。
 是 nosql 数据库中非常热门的技术，支持主从同步，支持数据持久化。<br />
 目前，在我们几个 Ruby 项目中，都有使用。
 </p>
 
 <h3>Redis 的设计哲学</h3>
 <p>
-  Redis 在设计之初，着重考虑的是性能，而不是安全。<br />
-  因此使用者，应该将 Redis 部署在可靠的环境下，供信任的客户端调用。
+  Redis 在设计之初，着重考虑的是性能，而不是安全。
+  因此使用者，应该将 Redis 部署在可靠的环境下，供信任的客户端调用。<br />
   原文如下：
   <pre class="prettyprint lang-html">
   Redis is designed to be accessed by trusted clients inside trusted environments....
@@ -26,7 +26,7 @@ Redis 是高性能的 key-value 内存数据库。<br />
 
 <h3>Redis 网络安全问题</h3>
 <p>
-  1. Redis 安装后的默认配置<br />
+  1. Redis 安装后的<b>默认配置</b><br />
   <pre class="prettyprint lang-html">
   # /etc/redis.conf
 
@@ -49,7 +49,7 @@ Redis 是高性能的 key-value 内存数据库。<br />
 </p>
 
 <p>
-  2. 默认配置带来的安全隐患<br />
+  2. 默认配置带来的<b>安全隐患</b><br />
   如果已知的一个服务，使用了 Redis，并且没有做绑定 IP，也没有设置连接密码，将可以轻松的建立连接，查询 Redis 内部数据，调用 Redis 命令修改或删除数据，非常危险。
   <pre class="prettyprint lang-html">
   $ redis-cli -h known-host.com
@@ -60,7 +60,7 @@ Redis 是高性能的 key-value 内存数据库。<br />
 </p>
 
 <p>
-  3. 解决方法一：绑定 IP<br />
+  3. 解决方法一：<b>绑定 IP</b><br />
   首先，我们将 Redis 绑定 127.0.0.1，简单有效。重启 Redis 服务之后，再次尝试连接，情况如下：
   <pre class="prettyprint lang-html">
   # restart redis-server
@@ -73,7 +73,7 @@ Redis 是高性能的 key-value 内存数据库。<br />
 </p>
 
 <p>
-  4. 解决方法二：开启访问密码<br />
+  4. 解决方法二：<b>开启访问密码</b><br />
   设置好 Redis requirepass 密码后，重启 Redis。
   <pre class="prettyprint lang-html">
   # /etc/redis.conf
