@@ -10,14 +10,13 @@ record_on: 2015-04-01
 <p>
 Redis 是高性能的 key-value 内存数据库。<br />
 是 nosql 数据库中非常热门的技术，支持主从同步，支持数据持久化。<br />
-提供多种存储类型： 字符串(strings), 哈希(hashes), 列表(lists), 集合(sets) 和 有序集合(sorted sets)等类型。<br />
 目前，在我们几个 Ruby 项目中，都有使用。
 </p>
 
 <h3>Redis 的设计哲学</h3>
 <p>
-  Redis 在设计支持，着重考虑的是性能，而不是安全。<br />
-  使用者，应该将 Redis 部署在可靠的环境下，供信任的客户端调用。
+  Redis 在设计之初，着重考虑的是性能，而不是安全。<br />
+  因此使用者，应该将 Redis 部署在可靠的环境下，供信任的客户端调用。
   原文如下：
   <pre class="prettyprint lang-html">
   Redis is designed to be accessed by trusted clients inside trusted environments....
