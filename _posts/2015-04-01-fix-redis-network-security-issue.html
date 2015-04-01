@@ -10,7 +10,7 @@ record_on: 2015-04-01
 <p>
 Redis 是高性能的 key-value 内存数据库。
 是 nosql 数据库中非常热门的技术，支持主从同步，支持数据持久化。<br />
-目前，在我们几个 Ruby 项目中，都有使用。
+目前，我们在几个线上的 Ruby 项目中，都有使用。
 </p>
 
 <h3>Redis 的设计哲学</h3>
@@ -59,8 +59,9 @@ Redis 是高性能的 key-value 内存数据库。
   </pre>
 </p>
 
+<h3>解决方法</h3>
 <p>
-  3. 解决方法一：<b>绑定 IP</b><br />
+  1. <b>绑定 IP</b><br />
   首先，我们将 Redis 绑定 127.0.0.1，简单有效。重启 Redis 服务之后，再次尝试连接，情况如下：
   <pre class="prettyprint lang-html">
   # restart redis-server
@@ -73,7 +74,7 @@ Redis 是高性能的 key-value 内存数据库。
 </p>
 
 <p>
-  4. 解决方法二：<b>开启访问密码</b><br />
+  2. <b>开启访问密码</b><br />
   设置好 Redis requirepass 密码后，重启 Redis。
   <pre class="prettyprint lang-html">
   # /etc/redis.conf
