@@ -1,0 +1,186 @@
+---
+layout: post
+title: Introducing Redis String And Set
+description: Introducing Redis String And Set
+categories: Database
+tags: Database
+record_on: 2015-04-02
+---
+
+<p>
+最近看了《Redis 设计与实现》，机械工业出版社，黄健宏著。<br />
+阅读之后，虽然没有很好的理解 Redis 底层数据结构的设计和实现。<br />
+但是，还是加深了对 Redis 性能高效方面的认识。<br />
+</p>
+
+<p>
+Redis 内部实现的主要数据结构有：<b>简单动态字符串（SDS）、双端链表、字典、压缩列表、整数集合等等。</b><br />
+Redis 没有直接使用这些数据结构，来实现键值对数据库，而是基于这些数据结构，创建了一个对象系统。<br />
+包含：<b>字符串对象(strings), 哈希对象(hashes), 列表对象(lists), 集合对象(sets) 和 有序集合对象(sorted sets)。</b><br />
+</p>
+
+<p>
+通过这五种不同类型的对象，Redis 在执行命令之前，根据对象的类型来判断一个对象，是否可以执行给定的命令。<br />
+另一个好处在于，使用者针对不同的使用场景，选用最佳的数据对象，从而优化系统的使用效率。<br />
+最后总结一下，目前在项目中使用到的 strings 和 sets 的特性和用法。
+</p>
+
+<h3>字符串对象的特性和用法</h3>
+
+<p>
+  1. String 的特性<br />
+  Redis 中一个字符串对象，包含两个对象：一个对象用作键值对的键，一个对象用作键值对的值。<br />
+  字符串对象值的编码可以是：int、raw 或者 embstr，因此，支持保存：整数、浮点数和字符串。<br />
+  如果，字符串对象保存的值为整数，则可以调用 加、减法的计数方法。
+</p>
+
+<p>
+  2. String 的方法<br />
+
+  <b>GET key</b><br />
+  返回 key 所关联的字符串值。<br />
+
+  如果 key 不存在则返回特殊值 nil。<br />
+
+  时间复杂度：O(1)
+</p>
+
+<p>
+  <b>SETEX key seconds value</b><br />
+  将值 value 关联到 key，并将 key 的生存时间设为 seconds (以秒为单位)。<br />
+  如果 key 已经存在，SETEX 命令将覆写旧值。<br />
+
+  这个命令类似于以下两个命令：
+  <pre class="prettyprint lang-html">
+  SET key value
+  EXPIRE key seconds  # 设置生存时间
+  </pre>
+
+  不同之处是，SETEX 是一个原子性(atomic)操作，关联值和设置生存时间两个动作会在同一时间内完成，该命令在 Redis 用作缓存时，非常实用。<br />
+
+  时间复杂度：O(1)
+</p>
+
+<p>
+  3. String 的案例<br />
+  <span style="color:red"><b>统计商品当日积分兑换的次数</b></span><br />
+  特点：该数值，只保存一天，默认值为 0；被兑换一次，则增一。
+  <pre class="prettyprint lang-html">
+  # 设置 key
+  def merchant_exchange_key(merchant_id)
+    "merchant:exchange:count:#{merchant_id}:#{Date.today.strftime("%m%d")}"
+  end
+
+  # 读取商品当日兑换的次数
+  def current_exchange_count(merchant_id)
+    key = merchant_exchange_key(merchant_id)
+    get_count(key)
+  end
+
+  # 设置商品当日兑换的次数
+  def increase_exchange_count(merchant_id)
+    key = merchant_exchange_key(merchant_id)
+    increase_count(key)
+  end
+
+  def get_count(key)
+    $redis.get(key).to_i
+  end
+
+  def set_count(key, count, ttl = 24*3600)
+    $redis.setex(key, ttl, count)
+  end
+
+  def increase_count(key)
+    num = $redis.get(key).to_i
+    if num == 0
+      set_count(key, 1)
+    else
+      $redis.incr(key)
+    end
+  end
+  </pre>
+</p>
+
+
+<h3>集合对象的特性和用法</h3>
+
+<p>
+  1. Set 的特性<br />
+  Set 是一组没有序列的字符串的集合体。
+  同样包含两个对象：键对象用作键值对的键，值对象用作键值对的值。<br />
+  值的编码可以是：intset 或者 hashtable，因此，可以保存：整数和字典，而字典里存储的是字符串。<br />
+  集合对象的值是唯一的，重复的值将被覆盖。
+</p>
+
+<p>
+  2. Set 的方法<br />
+
+  <b>SADD key member [member ...]</b><br />
+  将一个或多个 member 元素加入到集合 key 当中，已经存在于集合的 member 元素将被忽略。<br />
+
+  假如 key 不存在，则创建一个只包含 member 元素作成员的集合。<br />
+
+  时间复杂度：O(N)，N是被添加的元素的数量。
+</p>
+
+<p>
+  <b>SMEMBERS key</b><br />
+  返回集合 key 中的所有成员。<br />
+  不存在的 key 视为空集合，返回值为 0 。<br />
+
+  时间复杂度：O(N)，N为集合的基数。
+</p>
+
+<p>
+  <b>SREM key member [member ...]</b><br />
+  移除集合 key 中的一个或多个 member 元素，不存在的 member 元素会被忽略。<br />
+
+  当 key 不是集合类型，返回一个错误。<br />
+
+  时间复杂度：O(N)，N为给定member元素的数量。
+</p>
+<p>
+  3. Set 的案例<br />
+  <span style="color:red"><b>统计用户加入的结伴小组</b></span><br />
+  特点：默认值为 0，即没有加入任何小组；成功加入小组，则将小组 ID 加入 Set；若用户退出小组，则将小组 ID 移除 Set。
+  <pre class="prettyprint lang-html">
+
+  def user_members_key(user_id)
+    "user:members:#{user_id}"
+  end
+
+  # 读取用户当前加入的小组
+  def get_active_members(user_id)
+    smembers(user_members_key(user_id)).map{|t| t.to_i }
+  end
+
+  # 添加用户当前加入的小组
+  def add_active_member(member)
+    sadd(user_members_key(member.user_id), member.companion_id)
+  end
+
+  # 移除用户当前加入的小组
+  def remove_active_member(member)
+    srem(user_members_key(member.user_id), member.companion_id)
+  end
+
+  def sadd(key, value)
+    $redis.sadd(key, value)
+  end
+
+  def smembers(key)
+    $redis.smembers(key)
+  end
+
+  def srem(key, value)
+    $redis.srem(key, value)
+  end
+  </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://redis.io/">Redis 官网</a><br />
+  <a href="http://redis.readthedocs.org/en/2.4/index.html" target="_blank">Redis命令参考简体中文版</a>
+</p>
