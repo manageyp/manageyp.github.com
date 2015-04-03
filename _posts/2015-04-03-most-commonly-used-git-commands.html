@@ -1,0 +1,103 @@
+---
+layout: post
+title: Most Commonly Used Git Commands
+description: Most Commonly Used Git Commands
+categories: Git
+tags: Git
+record_on: 2015-04-03
+---
+
+<p>
+此篇博客将记述在日常工作中，常用的 Git 命令。会持续的更新。
+</p>
+
+<p>
+  配置 Git 账号信息。
+  <pre class="prettyprint lang-html">
+  git config --global user.email "manageyp@gmail.com"
+  git config --global user.name "Henry Lee"
+  </pre>
+</p>
+
+<p>
+  配置 Git 命令缩写，少敲几个键盘，节省点力气用来思考。
+  <pre class="prettyprint lang-html">
+  git config --global --add alias.a 'add'
+  git config --global --add alias.c 'commit'
+
+  git config --global --add alias.d 'diff'
+  git config --global --add alias.s 'status'
+
+  git config --global --add alias.chk 'checkout'
+
+  git config --global --add alias.plm 'pull origin master'
+  git config --global --add alias.psm 'push origin master'
+  </pre>
+</p>
+
+<p>
+  首次创建 Git 仓库。
+  <pre class="prettyprint lang-html">
+  cd project
+
+  git init
+  git add .
+
+  git commit -m "[New Feature] first init git"
+
+  git remote set-url origin git@github.com:manageyp/project.git
+  git push origin master
+  </pre>
+</p>
+
+<p>
+  拉取 Git 仓库。
+  <pre class="prettyprint lang-html">
+  git clone git@github.com:manageyp/project.git
+  cd project
+
+  git fetch
+  git checkout branch_name
+  </pre>
+</p>
+
+<p>
+  删除，撤销 Git。
+  <pre class="prettyprint lang-html">
+  git remote -v
+  git branch -la
+
+  # 删除分支
+  git push origin --delete branch_name
+
+  # 撤销已经提交到远程的动作，已经拉取代码的，需要重新 clone
+  git reset --hard dae217b
+  git push -f
+
+  # 重命名分支名称
+  git branch -m old_name new_name
+
+  # If you want to rename the current branch, you can simply do:
+  git branch -m new_name
+  </pre>
+</p>
+
+<p>
+  临时 Git 仓库 Stash。
+  <pre class="prettyprint lang-html">
+  # 将当期操作区内变更放入暂存栈内
+  git stash
+
+  # 将暂存栈内的信息取出
+  git stash pop
+
+  # 显示 Git 栈内的所有备份，可以利用这个列表来决定从那个地方恢复。
+  git stash list
+
+  # 就可以将你指定版本号为 stash@{1} 的工作取出来，
+  git stash apply stash@{1}
+
+  # 将栈内数据清空
+  git stash clear
+  </pre>
+</p>
