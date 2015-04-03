@@ -67,6 +67,9 @@ record_on: 2015-04-03
   git remote -v
   git branch -la
 
+  # 删除文件
+  git rm file_name
+
   # 删除分支
   git push origin --delete branch_name
 
@@ -79,6 +82,9 @@ record_on: 2015-04-03
 
   # If you want to rename the current branch, you can simply do:
   git branch -m new_name
+
+  # 日志查看
+  git log --stat
   </pre>
 </p>
 
@@ -100,4 +106,33 @@ record_on: 2015-04-03
   # 将栈内数据清空
   git stash clear
   </pre>
+</p>
+
+<p>
+  分支 Branch 操作。
+  <pre class="prettyprint lang-html">
+  # 创建分支
+  git branch new_branch
+
+  # 切换分支
+  git checkout new_branch
+
+  # 合并分支，加 --no-ff 会有 merge commit
+  git merge fake_data --no-ff
+  </pre>
+</p>
+
+<p>
+  Tag 标签操作。
+  <pre class="prettyprint lang-html">
+  git tag v0.1.1
+  git push origin master --tag
+  </pre>
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://zensheno.blog.51cto.com/2712776/490748">Git 常用命令解说</a>
+
 </p>
