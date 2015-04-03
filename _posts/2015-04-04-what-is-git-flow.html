@@ -1,0 +1,64 @@
+---
+layout: post
+title: What Is Git Flow
+description: What Is Git Flow
+categories: Git
+tags: Git
+record_on: 2015-04-04
+---
+
+<p>
+Git Flow 是一套管理 Git 分支的最佳实践，可以大幅降低无谓的分支合并，
+非常适合代码部署非常频繁的团队和项目。
+</p>
+
+<p>
+  一张图阐述 Git Flow 的工作流。</br>
+  <img src="/images/posts/git_flow.png" alt="Git Flow 的工作流">
+</p>
+
+<p>
+<b>主要分支</b></br>
+master : 永远处于可以发布的状态</br>
+develop : 最新的开发状态</br>
+
+<b>辅助分支</b></br>
+Feature : 新功能开发分支，由 develop 分支出来，开发完成后合并回 develop 分支</br>
+Release : 准备 release 的版本，只修 bugs。由 develop 分支出來，完成后合并回 master 和 develop</br>
+Hotfix : 线上紧急修复 Bug 分支，由 master 出来。完成后合并回 master 和 develop
+</p>
+
+<p>
+  常用命令如下：
+  <pre class="prettyprint lang-html">
+    # 初始
+    git flow init
+
+    git push origin develop
+    git push origin master
+
+    # Feature 分支操作
+    git flow feature start feature_name
+    git flow feature finish feature_name
+
+    # Release 分支操作
+    git flow release start release_v1
+    git flow release finish release_v1
+
+    # Hotfix 分支操作
+    git flow hotfix start fix_name
+    git flow hotfix finish fix_name
+
+    # 发布一个 feature 分支到远程
+    git flow feature publish feature_name
+
+    # 拉取一个远程的 feature 分支
+    git flow feature track feature_name
+  </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://ihower.tw/blog/archives/5140">Git flow 開發流程</a><br />
+  <a href="http://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a>
+</p>
