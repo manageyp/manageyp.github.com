@@ -1,0 +1,57 @@
+---
+layout: post
+title: Useful Commands For Linux Newbies
+description: Useful Commands For Linux Newbies
+categories: Linux-Mac
+tags: Linux-Mac
+record_on: 2015-04-10
+---
+
+<p>
+本篇记录了 Linux 常用的命令和功能介绍，对于我这样的 Linux 新手特别有用。
+</p>
+
+<p>
+<b>系统监控命令</b></br>
+  <pre class="prettyprint lang-html">
+    # 查看系统当前进程运行情况，CPU，内存使用情况
+    top
+
+    # 内存使用情况，单位为 MB
+    free -m
+
+    # 查看服务器的 CPU 使用率，内存使用，虚拟内存交换情况，IO 读写情况
+    vmstat
+
+    # 监视系统对磁盘操作的情况
+    iostat
+
+    # 查看系统运行多久、当前有多少的用户登录、最近的系统平均负载
+    uptime
+
+    # 系统性能分析工具，从多方面对系统的活动进行报告
+    # 包括：文件的读写情况、系统调用的使用情况、磁盘I/O、CPU效率、内存使用状况、进程活动及IPC有关的活动等
+    sar
+
+    # 显示各种网络相关信息，端口占用情况
+    netstat -tulpn
+    netstat -tulpn | grep 8080
+  </pre>
+</p>
+
+<p>
+<b>文件和磁盘操作命令</b></br>
+  <pre class="prettyprint lang-html">
+  # 文件系统空间和占用情况
+  df -hl
+
+  # 根据文件名，查找系统内的文件，
+  find / -name mysql
+
+  # 查看当前文件目录，文件大小
+  du -sh *
+
+  # 查看隐藏文件大小
+  du -sch .[!.]* *
+  </pre>
+</p>
