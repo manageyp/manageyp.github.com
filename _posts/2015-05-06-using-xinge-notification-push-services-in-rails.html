@@ -1,0 +1,190 @@
+---
+layout: post
+title: Using Xinge Notification Push Services In Rails
+description: Using Xinge Notification Push Services In Rails
+categories: App-API Ruby-on-Rails
+tags: App-API Ruby-on-Rails
+record_on: 2015-05-06
+---
+
+<p>
+  为了配合移动 APP 产品方面的设计，先考虑在 APP 功能上，增加消息推送的功能。</br>
+  能够做到即时消息的提醒，提升用户的活跃度和使用 APP 的粘性。</br>
+  本篇介绍一下，在 Rails 后端项目中，如何对接信鸽的推送服务。
+</p>
+
+<h3>1. 信鸽介绍</h3>
+<p>
+  <a href="http://xg.qq.com/" target="_blank">信鸽</a>（XG Push）是一款专业的免费移动 App 推送平台，支持百亿级的通知/消息推送，秒级触达移动用户，现已全面支持 Android 和 iOS 两大主流平台。</br> 信鸽推送平台是腾讯旗下的一个产品，相信在并发，可靠性和稳定性方面，经得住考验。
+</p>
+
+<h3>2. 注册信鸽账号，制作证书</h3>
+<p>
+  使用 QQ 号可以直接登录信鸽管理平台，相当于注册。登录后，可以创建应用，选择 iOS 还是 Android 平台。</br>
+  目前，我们只做 iOS 平台，信鸽区分开发环境和测试环境，因此，需要创建两个应用。</br>
+  应用创建完成之后，将开发相关同事的 QQ 号，添加进应用的管理员，这样其他人登录信鸽后，可以直接查看到应用了。</br>
+  为了实现消息的推送，需要 iOS 开发者，制作证书，并上传至信鸽平台，
+  交由信鸽托管，以此来对接苹果的消息中心。</br>
+  证书制作，请参考：<a href="http://developer.xg.qq.com/index.php/IOS_%E8%AF%81%E4%B9%A6%E8%AE%BE%E7%BD%AE%E6%8C%87%E5%8D%97" target="_blank">iOS 证书设置指南</a>
+</p>
+
+<h3>3. 下载，编译 SDK</h3>
+<p>
+  iOS 证书上传，并验证通过后，可以下载信鸽<a href="http://xg.qq.com/xg/help/ctr_help/download" target="_blank"> iOS 客户端 SDK</a>。</br>
+  参考 <a href="http://developer.xg.qq.com/index.php/IOS_SDK" target="_blank">iOS SDK 指南 </a>，编译 SDK 以嵌入应用。注册设备信息后，将设备的 Device Token，添加到信鸽里的测试设备 Token。
+</p>
+
+<h3>4. 配置 Access ID, Secret Key</h3>
+<p>
+  以上准备工作完成之后，将信鸽内创建的应用配置信息：Access ID 和 Secret Key，放入 Rails 的配置项内。
+</p>
+<pre class="prettyprint lang-html">
+  development:
+    xinge_access_id: access_id
+    xinge_secret_key: secret_key
+
+
+  production:
+    xinge_access_id: access_id
+    xinge_secret_key: secret_key
+</pre>
+
+<h3>5. 对接信鸽接口，给设备 Push 消息通知</h3>
+<p>下面列举几段代码，给单个设备 Push 消息通知。</p>
+<p>Xinge 模块的 <b>Base 基类</b>，实现了对接信鸽接口的：配置和具体 API 的功能。</p>
+<pre class="prettyprint lang-html">
+module Xinge
+  class Base
+
+    XINGE_HOST = 'openapi.xg.qq.com'
+    XINGE_HOST_URI = 'http://openapi.xg.qq.com'
+    XINGE_API_VERSION = 'v2'
+    XINGE_ACCESS_ID = Settings.xinge_access_id
+    XINGE_SECRET_KEY = Settings.xinge_secret_key
+    XINGE_MESSAGE_TYPE = 1
+
+    class << self
+
+      # push 消息（包括通知和透传消息）给单个设备
+      def push_single_device(device_token, message, params = {})
+        params.merge!({
+          device_token: device_token,
+          message: message,
+          message_type: XINGE_MESSAGE_TYPE
+          })
+        send_request('push', 'single_device', params)
+      end
+
+      protected
+
+      def send_request(type, method, params = {})
+        request_path = get_request_url(type, method)
+        params.merge!({access_id: XINGE_ACCESS_ID, timestamp: Time.now.to_i})
+
+        # sort params and calculate sign
+        params_string = params.sort.map{ |h| h.join('=') }.join
+        sign_str = "POST#{XINGE_HOST}#{request_path}#{params_string}#{XINGE_SECRET_KEY}"
+        sign = Digest::MD5.hexdigest(sign_str)
+        params.merge!({ sign: sign })
+
+        begin
+          request_url = "#{XINGE_HOST_URI}#{request_path}"
+          reuqest_header = {'Content-Type' => 'application/x-www-form-urlencoded'}
+          response = RestClient.post(request_url, params, reuqest_header)
+          if response.present?
+            result = JSON.parse(response)
+            if result
+              [result["ret_code"], result["err_msg"]]
+            end
+          end
+        rescue => e
+          puts e.response
+          return false
+        end
+      end
+
+      def get_request_url(type, method)
+        "/#{XINGE_API_VERSION}/#{type}/#{method}"
+      end
+
+    end
+
+  end
+end
+</pre>
+
+<p>Xinge 模块的 <b>Ios 类</b>，信鸽针对 iOS 设备的消息推送，接口上有部分特殊要求。如：消息结构体较 Android 复杂，需要指明是开发还是生产环境，消息的内容字节数限制等。</p>
+<pre class="prettyprint lang-html">
+module Xinge
+  class Ios < Base
+
+    class << self
+
+      def push_to_single_device(device_token, title, content)
+        push_single_device(device_token, build_simple_message(title, content),
+          environment_param)
+      end
+
+      protected
+
+      def environment_param
+        env_val = Rails.env.production? ? 1 : 2
+        { environment: env_val }
+      end
+
+      def build_simple_message(title, content)
+        {
+          aps: {
+            alert: {
+              title: title,
+              body: content
+            },
+            sound: 'default',
+            badge: 5
+          }
+        }.to_json
+      end
+
+    end
+
+  end
+end
+</pre>
+<p>Xinge 模块的 <b>Notification 类</b>，实现的时，对接 APP 内部的具体业务。如：准备发送用户评论的消息内容等。</p>
+<pre class="prettyprint lang-html">
+module Xinge
+  class Notification
+
+    class << self
+
+      def reply_push(reply_id)
+        reply = Reply.where(id: reply_id).first
+        if reply.present?
+          content = "#{reply.to_user.name}: 对您发表了新的评论，快去看看吧~"
+          do_push(reply.to_user_id, content)
+        end
+      end
+
+      def do_push(user_id, content)
+        title = "APP名称"
+        device = UserDevice.notification_device(user_id)
+        if device.present?
+          if device.is_ios?
+            Xinge::Ios.push_to_single_device(device.device_token, title, content)
+          else
+            Xinge::Android.push_to_single_device(device.device_token, title, content)
+          end
+        end
+      end
+
+    end
+
+  end
+end
+</pre>
+
+<p>
+  <b>参考链接</b><br />
+  国内一位 Ruby 朋友写的库，值得参考：<a href="https://github.com/RobotJiang/ruby-for-xinge" target="_blank">A Ruby portal for Tencent Xinge</a><br />
+  本人写的一个 Grape Demo 项目，提交了对接信鸽的逻辑：<a href="https://github.com/manageyp/grape_demo/commit/a77d6eb8d031cf0bb32338dc46de9331670def47" target="_blank">xinge ios,android notification push logic</a>
+</p>
