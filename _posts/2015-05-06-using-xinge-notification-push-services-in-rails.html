@@ -40,11 +40,15 @@ record_on: 2015-05-06
 </p>
 <pre class="prettyprint lang-html">
   development:
+    xinge_host: openapi.xg.qq.com
+    xinge_api_url: http://openapi.xg.qq.com
     xinge_access_id: access_id
     xinge_secret_key: secret_key
 
 
   production:
+    xinge_host: openapi.xg.qq.com
+    xinge_api_url: http://openapi.xg.qq.com
     xinge_access_id: access_id
     xinge_secret_key: secret_key
 </pre>
@@ -56,13 +60,6 @@ record_on: 2015-05-06
 module Xinge
   class Base
 
-    XINGE_HOST = 'openapi.xg.qq.com'
-    XINGE_HOST_URI = 'http://openapi.xg.qq.com'
-    XINGE_API_VERSION = 'v2'
-    XINGE_ACCESS_ID = Settings.xinge_access_id
-    XINGE_SECRET_KEY = Settings.xinge_secret_key
-    XINGE_MESSAGE_TYPE = 1
-
     class << self
 
       # push 消息（包括通知和透传消息）给单个设备
@@ -70,7 +67,7 @@ module Xinge
         params.merge!({
           device_token: device_token,
           message: message,
-          message_type: XINGE_MESSAGE_TYPE
+          message_type: 1
           })
         send_request('push', 'single_device', params)
       end
@@ -79,16 +76,16 @@ module Xinge
 
       def send_request(type, method, params = {})
         request_path = get_request_url(type, method)
-        params.merge!({access_id: XINGE_ACCESS_ID, timestamp: Time.now.to_i})
+        params.merge!({access_id: Settings.xinge_access_id, timestamp: Time.now.to_i})
 
         # sort params and calculate sign
         params_string = params.sort.map{ |h| h.join('=') }.join
-        sign_str = "POST#{XINGE_HOST}#{request_path}#{params_string}#{XINGE_SECRET_KEY}"
+        sign_str = "POST#{Settings.xinge_host}#{request_path}#{params_string}#{Settings.xinge_secret_key}"
         sign = Digest::MD5.hexdigest(sign_str)
         params.merge!({ sign: sign })
 
         begin
-          request_url = "#{XINGE_HOST_URI}#{request_path}"
+          request_url = "#{Settings.xinge_api_url}#{request_path}"
           reuqest_header = {'Content-Type' => 'application/x-www-form-urlencoded'}
           response = RestClient.post(request_url, params, reuqest_header)
           if response.present?
@@ -104,7 +101,7 @@ module Xinge
       end
 
       def get_request_url(type, method)
-        "/#{XINGE_API_VERSION}/#{type}/#{method}"
+        "/v2/#{type}/#{method}"
       end
 
     end
