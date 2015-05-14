@@ -1,0 +1,119 @@
+---
+layout: post
+title: HTTP Server Benchmarking Tools
+description: HTTP Server Benchmarking Tools
+categories: Performance Test
+tags: Performance Test
+record_on: 2015-05-14
+---
+
+<p>
+看了运维同事（松涛，腾讯的大牛），关于<b>《线上代码压测问题梳理排查总结》</b>的内部 wiki，受益匪浅。</br>
+整理一下文章中提到的测试工具，及其特点，以备将来查阅。同时还补习了 HTTP 协议的部分知识。</br>
+</p>
+
+<h3>1. Web Bench</h3>
+<p>
+  <a href="http://home.tiscali.cz/~cz210552/webbench.html" target="_blank"> Web Bench </a> is very simple tool for benchmarking WWW or proxy servers.
+ Uses fork() for simulating multiple clients and can use HTTP/0.9-HTTP/1.1 requests. This benchmark is not very realistic, but it can test if your HTTPD can realy handle that many clients at once (try to run some CGIs) without taking your machine down. Displays pages/min and bytes/sec. Can be used in more aggressive mode with -f switch.
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    # 测试用例
+    # -c  设置并发数
+    # -t  测试持续时间
+
+    webbench -c 10 -t 10 api-url
+  </pre>
+</p>
+
+<p>
+  <b>主要特点：</b>
+  轻量级，简单，易用；可以模拟并发测试</br>
+  默认使用 HTTP 1.0 协议，支持 HTTP/1.x。
+</p>
+
+
+<h3>2. Apache ab</h3>
+<p>
+  <a href="http://httpd.apache.org/docs/2.2/programs/ab.html" target="_blank">ab</a> is a tool for benchmarking your Apache Hypertext Transfer Protocol (HTTP) server. It is designed to give you an impression of how your current Apache installation performs. This especially shows you how many requests per second your Apache installation is capable
+  of serving.
+</p>
+
+<p>
+  <pre class="prettyprint lang-html">
+    # 测试用例
+    # -n  设置请求总数
+    # -c  设置并发数
+    # -t  测试持续时间
+    # -k  开启 HTTP KeepAlive
+
+    ab -n 1000 -c 10 -t 10 -k api-url
+  </pre>
+</p>
+
+<p>
+  <b>主要特点：</b>
+  轻量级，简单，易上手；可以模拟并发测试；功能比 Web Bench 强大</br>
+  默认使用 HTTP 1.0 协议，不完全支持 HTTP/1.x。
+</p>
+
+
+<h3>3. Apache JMeter</h3>
+<p>
+  The <a href="http://jmeter.apache.org/" target="_blank">Apache JMeter™</a>application is open source software, a 100% pure Java application designed
+to load test functional behavior and measure performance. It was originally designed for testing Web Applications but has since expanded to other test functions.
+</p>
+
+<p>
+  在 Windows 上安装后，可视化的操作界面。提供图形化的测试结果。
+</p>
+
+<p>
+  <b>主要特点：</b>
+  用于对静态的和动态的资源（文件、Servlet、Perl脚本、java对象、数据库和查询、FTP服务器等等）的性能进行测试。</br>
+  用于对服务器，网络 或对象模拟繁重的负载来测试它们的强度或分析不同压力类型下的整体性能。
+  提供丰富的性能图形分析，或在大并发负载测试你的服务器/脚本/对象。</br>
+  默认使用 HTTP 1.1 协议。
+</p>
+
+
+<h3>4. HP LoadRunner</h3>
+<p>
+  <a href="http://en.wikipedia.org/wiki/HP_LoadRunner" target="_blank">HP LoadRunner</a> is an software testing tool from Hewlett-Packard.
+It is used to test applications, measuring system behaviour and performance under load.
+</p>
+
+<p>
+  在 Windows 上安装，有丰富的可视化的操作界面。各种图形分析操作。
+</p>
+
+<p>
+  <b>主要特点：</b>
+  测试人员的专用压测工具，高度灵活，数据分析，图表展示，用户行为模拟等功能非常强大。</br>
+  每次的访问都是全新的请求访问，相当于浏览器 ctrl + f5 的请求。</br>
+  默认使用 HTTP 1.1 协议。
+</p>
+
+
+<h3>HTTP 1.0/1.1 协议的差异</h3>
+<p>
+一个 Web 站点，每天可能要接收到上百万的用户请求，为了提高系统的效率， HTTP 1.0 规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个 TCP 连接，服务器完成请求处理后立即断开 TCP 连接，服务器不跟踪每个客户也不记录过去的请求。</br>
+1.0 协议在性能上存在缺陷：每次请求和响应都需要建立一个单独的连接，上一次和下一次请求完全分离。
+客户端和服务器端，每次建立和关闭连接却是一个相对比较费时的过程，并且会严重影响客户机和服务器的性能。</br>
+
+在 TCP/IP 3 次握手 4 次挥手中,主动发送 FIN 状态要求断开连接方 TCP 状态会被置为 TIMEWAIT 状态,被断开方 TCP 状态会被置为 CLOSEWAIT 状态。正因为这样的原因,所以每次压测都会出现在 keepalived-time 超时时长内 webserver 就会有 TIMEWAIT 状态.</br>
+</p>
+
+<p>
+为了克服 HTTP 1.0 的这个缺陷，HTTP 1.1 支持持久连接，在一个 TCP 连接上可以传送多个 HTTP 请求和响应，减少了建立和关闭连接的消耗和延迟。HTTP 1.1 还允许客户端不用等待上一次请求结果返回，就可以发出下一次请求，但服务器端必须按照接收到客户端请求的先后顺序依次回送响应结果，以保证客户端能够区分出每次请求的响应内容，这样也显著地减少了整个下载过程所需要的时间。</br>
+可见，HTTP 1.1 在继承了 HTTP 1.0 优点的基础上，也克服了 HTTP 1.0 的性能问题。不仅如此，HTTP 1.1还通过增加更多的请求头和响应头来改进和扩充 HTTP 1.0 的功能。HTTP 1.1 还提供了与身份认证、状态管理和 Cache 缓存等机制相关的请求头和响应头。
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  IBM 技术文档，值得参考：<a href="http://www.ibm.com/developerworks/cn/java/l-jmeter/" target="_blank">使用 JMeter 进行性能测试</a></br>
+
+  <a href="http://blog.csdn.net/elifefly/article/details/3964766" target="_blank">HTTP 1.1 与 HTTP 1.0 的比较</a>
+</p>
