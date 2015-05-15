@@ -1,0 +1,108 @@
+---
+layout: post
+title: Redis Persistence And RDB Backup
+description: Redis Persistence And RDB Backup
+categories: Database
+tags: Database
+record_on: 2015-05-15
+---
+
+<p>
+本篇将学习一下 Redis 的持久化机制，以及利用 Redis 的持久化，来做 Redis 数据的备份和迁移。
+</p>
+
+<p>
+因为 Redis 是内存数据库，所有的数据库状态（数据库和数据库中的键值对）都存储在内存中，一旦服务器进程退出（断电、重启、Redis 进程异常崩溃等），这些内存中的数据状态将丢失。因此，为了避免数据丢失，必须实施一套持久化的机制，将内存中的数据库状态，保存到磁盘上。</br>
+
+Redis 提供 <b>RDB 和 AOF </b>两种持久化的功能。
+</p>
+
+<h3>RDB 持久化</h3>
+<p>
+RDB 持久化功能，可以在指定的时间间隔内，生成数据集的时间点快照。
+将 Redis 内存数据库状态，保存到磁盘上一个 RDB 文件中，避免数据意外丢失。RDB 文件是一个经过压缩的二进制文件，通过该文件可以还原生成 RDB 文件时的数据库状态。</br>
+
+<b>【特点】</b>：RDB 文件保存了 Redis 在某个时间点上的数据集。用于保存和还原 Redis 服务器数据库状态。RDB 在恢复大数据集时的速度比 AOF 的恢复速度要快。
+</p>
+
+<h3>AOF 持久化</h3>
+<p>
+AOF 持久化功能，记录服务器执行的所有写操作命令，并在服务器启动时，通过重新执行这些命令来还原数据集。</br>
+<b>【特点】</b>：AOF 策略默认的文件更新频率是每秒钟执行一次。在这种配置下，Redis 仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒钟的数据。AOF 文件有序地保存了对数据库执行的所有写入操作，这些写入操作以 Redis 协议的格式保存，
+因此 AOF 文件的内容非常容易被人读懂，对文件进行分析也很轻松。对于相同的数据集来说，AOF 文件的体积通常要大于 RDB 文件的体积。
+</p>
+
+<h3>RDB 文件的创建</h3>
+<p>
+Redis 有两个命令，可以用于生成 RDB 文件：<b>SAVE 和 BGSAVE</b>。</br>
+
+<b>SAVE</b></br>
+会阻塞 Redis 服务器进程，直到 RDB 文件创建完毕为止。
+在进程阻塞期间，服务器不能处理任何命令请求。</br>
+
+<b>BGSAVE</b></br>
+派生出一个子进程，负责创建 RDB 文件，非阻塞父进程，Redis 父进程继续处理命令请求。
+</p>
+
+<p>
+RDB 文件的载入
+Redis 服务在启动时，检测到 RDB 文件的存在，将会被自动载入。
+</p>
+
+<h3>配置选项，自动创建</h3>
+<p>
+因为 BGSAVE 命令可以在，不阻塞服务器进程的情况下，执行数据库状态的保存。可以通过设置服务器 save 选项，让服务器每隔一段时间，自动执行一次 BGSAVE 命令。从而实现自动保存。
+</p>
+
+<p>
+  服务器提供的，默认配置项如下：
+  只要满足三个条件中的任意一个，BGSAVE 命令就会被执行。
+  <pre class="prettyprint lang-html">
+  save 900 1          # 服务器在 900 秒之内，对数据库进行了至少 1 次修改
+  save 300 10         # 服务器在 300 秒之内，对数据库进行了至少 10 次修改
+  save 60 10000       # 服务器在 60 秒之内，对数据库进行了至少 10000 次修改
+  </pre>
+</p>
+
+<h3>利用 RDB 持久化迁移 Redis 数据</h3>
+
+<p>
+  <pre class="prettyprint lang-html">
+  $ redis-cli
+
+  # 查看当前 Redis 数据库的状态
+  redis 127.0.0.1:6379> info
+  redis_version:2.4.8
+  used_memory:946576
+  used_memory_human:924.39K
+  used_memory_rss:1417216
+  used_memory_peak:947008
+  used_memory_peak_human:924.81K
+
+  # 保存内存中的数据
+  redis 127.0.0.1:6379> SAVE
+  OK
+  redis 127.0.0.1:6379> BGSAVE
+  Background saving started
+
+  # 查询最新一次的保存时间戳
+  redis 127.0.0.1:6379> LASTSAVE
+  (integer) 1431668219
+
+  # 关闭 Redis 服务器
+  redis 127.0.0.1:6379> SHUTDOWN
+
+  # 查看 Redis 的 RDB 文件
+  find / -name dump.rdb
+  /usr/local/var/db/redis/dump.rdb
+
+  # 将 dump.rdb 文件拷贝至目标服务器，启动 Redis
+  redis-server /usr/local/etc/redis.conf
+  </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://redis.io/topics/persistence" target="_blank">Redis Persistence</a><br />
+  <a href="http://redis.readthedocs.org/en/latest/topic/persistence.html" target="_blank">Redis 持久化</a>
+</p>
