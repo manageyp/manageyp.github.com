@@ -17,7 +17,7 @@ record_on: 2015-05-15
 Redis 提供 <b>RDB 和 AOF </b>两种持久化的功能。
 </p>
 
-<h3>RDB 持久化</h3>
+<h3>1.1 RDB 持久化</h3>
 <p>
 RDB 持久化功能，可以在指定的时间间隔内，生成数据集的时间点快照。
 将 Redis 内存数据库状态，保存到磁盘上一个 RDB 文件中，避免数据意外丢失。RDB 文件是一个经过压缩的二进制文件，通过该文件可以还原生成 RDB 文件时的数据库状态。</br>
@@ -25,14 +25,7 @@ RDB 持久化功能，可以在指定的时间间隔内，生成数据集的时�
 <b>【特点】</b>：RDB 文件保存了 Redis 在某个时间点上的数据集。用于保存和还原 Redis 服务器数据库状态。RDB 在恢复大数据集时的速度比 AOF 的恢复速度要快。
 </p>
 
-<h3>AOF 持久化</h3>
-<p>
-AOF 持久化功能，记录服务器执行的所有写操作命令，并在服务器启动时，通过重新执行这些命令来还原数据集。</br>
-<b>【特点】</b>：AOF 策略默认的文件更新频率是每秒钟执行一次。在这种配置下，Redis 仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒钟的数据。AOF 文件有序地保存了对数据库执行的所有写入操作，这些写入操作以 Redis 协议的格式保存，
-因此 AOF 文件的内容非常容易被人读懂，对文件进行分析也很轻松。对于相同的数据集来说，AOF 文件的体积通常要大于 RDB 文件的体积。
-</p>
-
-<h3>RDB 文件的创建</h3>
+<h3>1.2 RDB 文件的创建</h3>
 <p>
 Redis 有两个命令，可以用于生成 RDB 文件：<b>SAVE 和 BGSAVE</b>。</br>
 
@@ -57,7 +50,7 @@ Redis 有两个命令，可以用于生成 RDB 文件：<b>SAVE 和 BGSAVE</b>�
   </pre>
 </p>
 
-<h3>利用 RDB 持久化迁移 Redis 数据</h3>
+<h3>1.3 利用 RDB 持久化迁移 Redis 数据</h3>
 <p>
   使用 BGSAVE 保存 Redis 数据库状态，将保存的 RDB 文件，拷贝至相关服务器上的 Redis 数据备份目录下。</br>
   启动 Redis 服务时，检测到 RDB 文件的存在，将会被自动载入。从而实现了 Redis 数据的迁移。
@@ -93,6 +86,36 @@ Redis 有两个命令，可以用于生成 RDB 文件：<b>SAVE 和 BGSAVE</b>�
   # 将 dump.rdb 文件拷贝至目标服务器，启动 Redis
   redis-server /usr/local/etc/redis.conf
   </pre>
+</p>
+
+<h3>2.1 AOF 持久化</h3>
+<p>
+AOF 持久化功能，记录服务器执行的所有写操作命令，并在服务器启动时，通过重新执行这些命令来还原数据集。</br>
+<b>【特点】</b>：AOF 策略默认的文件更新频率是每秒钟执行一次。在这种配置下，Redis 仍然可以保持良好的性能，并且就算发生故障停机，也最多只会丢失一秒钟的数据。AOF 文件有序地保存了对数据库执行的所有写入操作，这些写入操作以 Redis 协议的格式保存，
+因此 AOF 文件的内容非常容易被人读懂，对文件进行分析也很轻松。对于相同的数据集来说，AOF 文件的体积通常要大于 RDB 文件的体积。
+</p>
+
+<p>
+  配置 AOF 项如下：
+  <pre class="prettyprint lang-html">
+  # appendonly  no     # 默认关闭，性能好，容易丢失数据
+  appendonly  yes      # 启用 AOF 持久化
+
+  # appendfsync always # 一旦接收到写操作，就立即写入磁盘
+  appendfsync everysec # 推荐配置，当开启 AOF 时，每秒写入磁盘一次，权衡了速度和安全性
+  # appendfsync no     # 不写入磁盘
+
+  no-appendfsync-on-rewrite yes   # 表示 rewrite 期间对新写操作不 fsync
+  auto-aof-rewrite-percentage 100 # AOF 文件增加了一倍，则后台 rewrite 自动运行
+  auto-aof-rewrite-min-size 64mb  # 进行后面 rewrite 要求的最小 AOF 文件大小
+  </pre>
+</p>
+
+
+<h3>Redis 持久化总结</h3>
+<p>
+出于对数据安全性的考虑，在机器硬件允许的情况下，建议同时开启 AOF 和 RDB 持久化。
+AOF (BGREWRITEAOF) 设置为每秒写入一次磁盘，RDB (BGSAVE) 保持默认设置。
 </p>
 
 <p>
