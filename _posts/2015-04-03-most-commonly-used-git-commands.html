@@ -70,7 +70,10 @@ record_on: 2015-04-03
   # 删除文件
   git rm file_name
 
-  # 删除分支
+  # 删除本地分支
+  git branch -d branch_name
+
+  # 删除远程分支
   git push origin --delete branch_name
 
   # 撤销已经提交到远程的动作，已经拉取代码的，需要重新 clone
