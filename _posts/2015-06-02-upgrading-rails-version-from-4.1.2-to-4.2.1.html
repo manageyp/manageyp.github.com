@@ -1,0 +1,76 @@
+---
+layout: post
+title: Upgrading Rails Version From 4.1.2 To 4.2.1
+description: Upgrading Rails Version From 4.1.2 To 4.2.1
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2016-06-02
+---
+
+<p>
+本篇博客记录了，将线上 Rails 项目，由 4.1.2 升级为 4.2.1 的详细步骤。</br>
+总体过程比较顺利，但是，也遇到几个 Gem 需要更新的情况。
+目前，在线上运行，监控性能数据。
+</p>
+
+<h3>1. 阅读 Rails Guides</h3>
+<p>
+  首先，仔细阅读一遍 Rails Guides，关于 <a href="http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#upgrading-from-rails-4-1-to-rails-4-2" target="_blank"> Upgrading from Rails 4.1 to Rails 4.2 </a>这一篇的内容，对于本次升级，可能会遇到的问题，做到心中有数。其次，推荐阅读 <a href="http://guides.ruby-china.org/4_2_release_notes.html" target="_blank"> Ruby on Rails 4.2 Release Notes </a>，了解一下 Rails 4.2 的主要变更情况。
+</p>
+
+<h3>2. 调整 Gemfile</h3>
+<p>
+  本次升级，涉及下面几个 Gem 版本的变更。
+  <pre class="prettyprint lang-html">
+  gem 'rails', '4.2.1'
+
+  gem "ransack", '1.6.6'
+
+  gem 'sidekiq', '3.3.4'
+
+  gem "rspec-rails", '3.2.1'
+  </pre>
+</p>
+
+<h3>3. 调整 Action Mailer</h3>
+<p>
+  本次升级，设计下面几个 Gem 版本的变更，原因下面将会逐个解释一下。
+  <pre class="prettyprint lang-html">
+    # 4.1 的写法
+    UserMailer.forget_password(email, captcha).deliver
+
+    # 4.2 的写法
+    mail = UserMailer.forget_password(email, captcha)
+    mail.deliver_now
+  </pre>
+</p>
+
+<h3>4. 错误信息汇总</h3>
+<p>
+  <pre class="prettyprint lang-html">
+    # Rails Error message
+    $ bundle update rails
+    >> libiconv is missing.
+
+    $ gem install nokogiri -v '1.6.6.2' -- --use-system-libraries
+
+    # Ransack Error message
+    >> uninitialized constant Arel::OuterJoin
+    >> @search = User.ransack(params[:q])
+
+    # Solution
+    $ bundle update ransack
+  </pre>
+</p>
+
+<h3>5. 验收测试</h3>
+<p>
+  <b>RSpec</b> 测试全部通过之后，部署至 staging 环境，测试了 Admin 后台和 API 接口，运行正常，确保没有 Exception。<br />
+  最后，部署至生产环境，使用 NewRelic 监控性能数据，并作对比。【对比数据待更新】
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://edgeguides.rubyonrails.org/upgrading_ruby_on_rails.html#upgrading-from-rails-4-1-to-rails-4-2" target="_blank"> Upgrading from Rails 4.1 to Rails 4.2 </a><br />
+  <a href="http://guides.ruby-china.org/4_2_release_notes.html" target="_blank"> Ruby on Rails 4.2 Release Notes </a>
+</p>
