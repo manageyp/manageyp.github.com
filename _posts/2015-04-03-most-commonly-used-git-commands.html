@@ -58,6 +58,12 @@ record_on: 2015-04-03
 
   git fetch
   git checkout branch_name
+
+  # 拉取远程代码
+  git pull
+
+  # 拉取代码，并避免无谓的合并
+  git pull --rebase
   </pre>
 </p>
 
@@ -120,8 +126,13 @@ record_on: 2015-04-03
   # 切换分支
   git checkout new_branch
 
+  # feature 分支合并工作流
+  git branch feature/name
+  git rebase origin/master
+  git checkout master
   # 合并分支，加 --no-ff 会有 merge commit
-  git merge fake_data --no-ff
+  git merge feature/name --no-ff
+  git push origin master
   </pre>
 </p>
 
