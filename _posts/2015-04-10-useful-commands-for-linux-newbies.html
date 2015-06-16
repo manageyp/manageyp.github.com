@@ -16,6 +16,10 @@ record_on: 2015-04-10
   <pre class="prettyprint lang-html">
     # 查看系统当前进程运行情况，CPU，内存使用情况
     top
+    # 显示整个命令行而不只是显示命令名
+    top - c
+    # 根据内存资源使用大小进行排序
+    top - shift + m
 
     # 内存使用情况，单位为 MB
     free -m
