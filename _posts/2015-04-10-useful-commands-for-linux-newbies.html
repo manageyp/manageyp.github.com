@@ -11,8 +11,8 @@ record_on: 2015-04-10
 本篇记录了 Linux 常用的命令和功能介绍，对于我这样的 Linux 新手特别有用。
 </p>
 
+<h3>系统监控命令</h3>
 <p>
-<b>系统监控命令</b></br>
   <pre class="prettyprint lang-html">
     # 查看系统当前进程运行情况，CPU，内存使用情况
     top
@@ -43,8 +43,8 @@ record_on: 2015-04-10
   </pre>
 </p>
 
+<h3>文件和磁盘操作命令</h3>
 <p>
-<b>文件和磁盘操作命令</b></br>
   <pre class="prettyprint lang-html">
   # 文件系统空间和占用情况
   df -hl
@@ -57,5 +57,67 @@ record_on: 2015-04-10
 
   # 查看隐藏文件大小
   du -sch .[!.]* *
+
+  # 完全开放文件的可读，可写，可执行操作
+  sudo chmod 777 -R /path/public
+
+  # 修改文件可执行权限
+  chmod +x /etc/sv/dropbox/run
+  </pre>
+</p>
+
+
+<h3>网络操作命令</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 查看网络配置，网卡情况
+  ifconfig
+  ifconfig eth0
+
+  # 关闭或者打开 local 网络接口
+  ifconfig lo down
+  ifconfig lo up
+
+  # 查看运行进程，及其占用的端口，port
+  netstat -tulpn
+  </pre>
+</p>
+
+
+<h3>用户操作命令</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 新增 Gitlab  登录账号 CentOS
+  adduser git
+  passwd git-password
+
+  # 切换用户
+  su root
+  </pre>
+</p>
+
+<h3>Other 操作命令</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 生成 SSH key
+  $ ssh-keygen -t rsa
+  $ cat ~/.ssh/id_rsa.pub
+
+  # memcache 清空 cache
+  $ telnet localhost 11211
+  Trying 127.0.0.1...
+  Connected to localhost.
+  Escape character is '^]'.
+  flush_all
+  OK
+  quit
+  Connection closed by foreign host.
+
+  # wget 保存静态网页至本地
+  # 把 Google 深度为 4 以内的所有页面，下载下来并转换成本地链接
+  wget -r -l4 -k http://google.com
+
+  # 把 Rails Guides 镜像到本地，可以离线查看文档
+  wget -k -m http://guides.rubyonrails.org/v4.1.8/
   </pre>
 </p>
