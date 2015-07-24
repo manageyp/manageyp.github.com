@@ -1,0 +1,130 @@
+---
+layout: post
+title: The Difference Between Include And Extend Of Ruby Module
+description: The Difference Between Include And Extend Of Ruby Module
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2015-07-25
+---
+
+<p> Ruby 中引入 Module（模块），是为了提供单继承和多继承机制。
+模块用关键字 module 定义，与定义类的 class 类似。
+模块中的方法等的定义和类一样。
+但模块不能被实例化，也不能从普通类继承。
+模块是独立的，且一个模块对像是 Module 类的一个实例。
+在类中可以通过 include 继承模块中的方法，因为是继承而不是复制，所以，当类中有相同命名的方法时，优先执行类中的方法。</br>
+
+模块最常用的两个用途是：命名空间(Namespace)和混入(Mix-in)。
+前者解决了命名冲突，后者解决了代码的复用。</br>
+
+下面，主要用实例，介绍一下使用模块时的，include 和 extend 方法的区别。
+</p>
+
+<h3>include 方法和实例</h3>
+<p>
+  该方法主要用来将一个模块包含到(混入)一个类或者其它模块。
+  在类定义中引入模块，使模块中的方法成为类的实例方法。</br>
+  include 后的模块，出现在类的父类查找链上，实例方法调用时，若在本类中找不到方法。
+  将会沿着继承树，向上从模块中检索。
+</p>
+<p>
+  <pre class="prettyprint lang-html">
+  module Human
+
+    def eat
+      puts "eat"
+    end
+
+  end
+
+
+  class Boy
+    include Human
+  end
+
+
+  Boy.ancestors
+  => [Boy, Human, Object, Kernel, BasicObject]
+
+  Boy.singleton_class.ancestors
+  => [Class, Module, Object, Kernel, BasicObject]
+
+  Boy.new.eat
+  => eat
+  </pre>
+</p>
+
+
+<h3>extend 实例</h3>
+<p>
+  在类定义中引入模块，使模块中的方法成为类的类方法。
+  extend 后的模块，出现在了类的单例父类的链上，类方法调用时，将会依次从链上检索。
+</p>
+<p>
+  <pre class="prettyprint lang-html">
+  class Girl
+    extend Human
+    # Same as the following line
+    # Girl.singleton_class.send :include, Human
+  end
+
+
+  Girl.ancestors
+  => [Girl, Object, Kernel, BasicObject]
+
+  Girl.singleton_class.ancestors
+  => [Human, Class, Module, Object, Kernel, BasicObject]
+
+  Girl.eat
+  => eat
+  </pre>
+</p>
+
+
+<h3>include & extend 实例</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  module Human
+
+    def self.included(base)
+      base.extend(ClassMethods)
+    end
+
+    def eat
+      puts "eat"
+    end
+
+    module ClassMethods
+
+      def sleep
+        puts "We don't sleep."
+      end
+
+    end
+
+  end
+
+
+  class Programmer
+    include Human
+  end
+
+  Programmer.new.eat
+  => eat
+
+  Programmer.sleep
+  => We don't sleep.
+
+  Programmer.ancestors
+  => [Programmer, Human, Object, Kernel, BasicObject]
+
+  Programmer.singleton_class.ancestors
+  => [Human::ClassMethods, Class, Module, Object, Kernel, BasicObject]
+  </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.railstips.org/blog/archives/2009/05/15/include-vs-extend-in-ruby/" target="_blank">Include vs Extend in Ruby</a><br />
+  <a href="http://www.cnblogs.com/puresoul/archive/2012/01/20/2327798.html" target="_blank">Ruby学习笔记-Module</a>
+</p>
