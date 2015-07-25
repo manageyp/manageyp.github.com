@@ -1,0 +1,110 @@
+---
+layout: post
+title: Rails Development Standard Guides
+description: Rails Development Standard Guides
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2015-07-26
+---
+
+<p>
+本篇整理一下 Rails 开发实践的标准指南。
+主要参考一篇 Github 上的文章，内容非常详细，观点很多。</br>
+下面只列举比较认同的观点。
+</p>
+
+<h3>遵循软件开发 3 原则</h3>
+<p>
+  <b>1. DRY 原则</b></br>
+  Don’t Repeat Yourself. 不要重复自己。</br>
+  涵义是，系统中的每一个功能，都应该有唯一的实现。如果多次遇到同样的问题，就应该抽象出一个共同的解决方法，而不要重复开发同样的功能。项目中出现了重复的代码，应当通过重构，来消除代码的冗余。
+</p>
+
+<p>
+  <b>2. KISS 原则</b></br>
+  Keep it Simple Stupid. 保持简单、一目了然。</br>
+  将软件开发中，遇到的问题，尽量简单化处理，让代码的实现，一目了然。
+  这样可以保证软件开发的可维护性和易理解性。复杂是大敌。
+</p>
+
+<p>
+  <b>3. YAGNI 原则</b></br>
+  You Aren't Gonna Need It. 你不会需要它。</br>
+  意思是，在软件开发阶段，不要过度设计，要适可而止。快而省的完成软件的核心功能，让软件运行起来。而不要试图添加任何，你以为可能需要的功能。遵循该原则，可以节省早期开发的成本。
+</p>
+
+<h3>文件编写规范</h3>
+<p>
+  缩进使用空格，而不是制表符(tab)</br>
+  使用两个空格，代替一个制表符(tab)</br>
+  使用 Unix 行尾结束符</br>
+  采用 UTF-8 编码格式
+</p>
+
+<h3>文档注释</h3>
+<p>
+  尽量写可以自解释的代码</br>
+  如果一个方法的注释都很复杂，请重构这个方法</br>
+  使用 YARD 为所有的类、模块和方法格式化注释
+</p>
+
+<h3>Model 代码组织规范</h3>
+<p>
+  Rails Model 内的业务逻辑代码，请遵循下面的排序进行组织，方便查找和阅读。
+  <pre class="prettyprint lang-html">
+  class MyModel < ActiveRecord::Base
+    # extends .................................................................
+    # includes ................................................................
+    # security (i.e. attr_accessible) .........................................
+    # relationships ...........................................................
+    # validations .............................................................
+    # callbacks ...............................................................
+    # scopes ..................................................................
+    # additional config .......................................................
+    # class methods ...........................................................
+    # public instance methods .................................................
+    # protected instance methods ..............................................
+    # private instance methods ................................................
+  end
+  </pre>
+</p>
+
+<h3>扩展和 Monkey 补丁</h3>
+<p>
+  在斟酌是否使用 Monkey Patches 时，请优先考虑其他替代方案。</br>
+  扩展和 Monkey Patches 的代码，请放于 lib/extensions 目录下。
+  <pre class="prettyprint lang-html">
+  |-project
+  |-app
+  |-config
+  |-db
+  |-lib
+    |-extensions <-----
+  </pre>
+</p>
+
+<h3>Gem 依赖</h3>
+<p>
+  项目依赖的 Gem 版本，在发布到生产环境时，必须固定。这样可以保证应用的可靠性和稳定性。
+  <pre class="prettyprint lang-html">
+  # Gemfile
+  gem 'rails', '4.1.8'           # GOOD: exact specifier
+  gem 'sass-rails', '~> 4.0.3'   # GOOD: tilde specifier
+  gem 'yell', '>=1.2'            # BAD: unspecific
+  gem 'jquery-rails'             # BAD: no version specifier
+  </pre>
+</p>
+
+<p>
+虽然 Bundler 所使用的 Gemfile.lock 文件来解决依赖的 Gem 版本的问题。
+但是，固定的版本，可以保证任何时候，执行 bundle install，或者不小心使用了 bundle update
+都能获得正确的 Gem 版本。因此，为了保证应用的可靠性，在 Gemfile 中使用精确的定义，是最好的办法。
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="https://github.com/hopsoft/rails_standards/blob/rails-3-2/README.md" target="_blank">Rails 3.2 Development Standards Guide</a><br />
+  <a href="https://ruby-china.org/topics/8430" target="_blank">【翻译】Rails 3.2 开发标准指南</a><br />
+  <a href="http://www.ruanyifeng.com/blog/2013/01/abstraction_principles.html" target="_blank">代码的抽象三原则</a><br />
+  <a href="http://blog.jobbole.com/22559/" target="_blank">3 条必须知道的软件开发原则</a>
+</p>
