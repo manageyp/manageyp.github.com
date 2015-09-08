@@ -6,8 +6,12 @@ categories: Ruby-on-Rails
 tags: Ruby-on-Rails
 record_on: 2012-11-09
 ---
-<p>Date Object Tips</p>
+
+<h3>Date Object Tips</h3>
 <pre class="prettyprint lang-html">
+  # 当前时间
+  Time.now
+
   # 当天
   today = Date.today
 
@@ -40,5 +44,28 @@ record_on: 2012-11-09
 
   # 5 分钟之前
   5.minutes.ago
+</pre>
 
+<h3>日期 (strftime) 格式化</h3>
+<pre class="prettyprint lang-html">
+  # 转换为汉语习惯的时间
+  Time.now.strftime("%Y年%m月%d日 %H时:%M分:%S秒")
+  => "2015年09月08日 10时:19分:21秒"
+
+  # 转换为简单的日期
+  Date.today.strftime("%Y-%m-%d")
+  => "2015-09-08"
+
+  # 将当前时间戳，转化为字符，用于生成文件名
+  Time.now.strftime("%Y%m%d%H%M%S")
+  => "20150908102345"
+
+  # 获取当前日期对应星期几
+  # 注意星期天的 wday 为 0
+  def week_day(date)
+    "星期" + ["天", "一", "二", "三", "四", "五", "六"][date.wday]
+  end
+
+  week_day(Date.today)
+  => "星期二"
 </pre>
