@@ -1,0 +1,55 @@
+---
+layout: post
+title: Ruijie Switches Configuration Commands
+description: Ruijie Switches Configuration Commands
+categories: Cloud
+tags: Cloud
+record_on: 2015-10-03
+---
+
+<p>
+本文介绍一下锐捷交换机，并且，列举几个常用的配置命令。
+网络拓扑中，使用到的交换机有两款：<b>RG-S6000</b> 和 <b>RG-S6220</b>。
+</p>
+
+
+<h3>锐捷交换机</h3>
+<p>
+<b>RG-S6000系列数据中心与云计算交换机</b></br>
+RG-S6000系列交换机是锐捷网络推出的全千兆数据中心接入交换机。提供丰富的接口形态和扩展方式，最高支持48个千兆端口与8个万兆端口（RG-S6010-48GT4XS可提供40G接口），让您更加方便和灵活的组建数据中心接入网络。</br>
+RG-S6000系列交换机通过业界最先进的虚拟化技术可以大幅提高网络设备的可靠性，最大程度上简化部署和运维。同时，丰富的云计算数据中心特性，使RG-S6000系列交换机充分满足各类虚拟化服务器的接入需求。
+</p>
+<p>
+<b>RG-S6220系列数据中心交换机</b></br>
+数据中心与云计算万兆交换机</br>
+同时支持数据中心特性和园区网特性</br>
+融合FC/FCoE/IP网络的万兆TOR</br>
+支持丰富数据中心特性组建融合网络和虚拟交换</br>
+根据业务需要可部署在数据中心、园区网、城域网等场景
+</p>
+
+
+<h3>配置命令</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # SSH 登录交换机
+
+  # 进入特权模式
+  > enable
+
+  # 端口配置
+  > interface gigabitEthernet 0/1
+  > switchport mode access/trunk
+  > switchport access vlan 2
+  > show vlan
+
+  # TODO 待完善
+
+  </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.ruijie.com.cn/" target="_blank">锐捷网络</a><br />
+  <a href="http://www.ruijie.com.cn/cp/jh-shjzhx/6220-xgwd" target="_blank">交换机RG-S6220系列交换机-相关文档</a>
+</p>
