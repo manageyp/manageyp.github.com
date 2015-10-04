@@ -1,0 +1,157 @@
+---
+layout: post
+title: How to Write Rake Task to Parse Txt CSV or Excel Files
+description: How to Write Rake Task to Parse Txt CSV or Excel Files
+categories: Ruby-on-Rails
+tags: Ruby-on-Rails
+record_on: 2015-10-04
+---
+
+<p>
+项目开发的过程中，经常遇到以下的情况：<br/>
+1. 从 Txt，CSV 或者 Excel 文档中，导入数据至数据库；<br/>
+2. 数据库内的原始数据，经过计算后，导出给运营，营销同事；<br/>
+3. 程序自动导入运营人员收集的图片；<br/>
+4. 自动根据中文地址，收集 GEO 经纬度坐标数据：纬度 latitude & 经度 longitude 等
+</p>
+
+
+<h3>Excel 文件读取</h3>
+<p>
+  <pre class="prettyprint lang-html">
+namespace :school do
+
+  desc "manually load excel data"
+  task :load => :environment do
+    puts "Start manually load excel data"
+
+  	file = "#{Rails.root}/doc/schools.xls"
+      data = Spreadsheet.open file
+      sheet1 = data.worksheet 0
+      sheet1.each_with_index do |row, row_index|
+        name = row[0]
+        address = row[1].to_s.strip
+
+  	    if row[2].present? && row[2] != '\\N'
+  	      phone = row[2]
+  	    end
+      end
+
+      puts "End manually load excel data"
+    end
+  end
+
+end
+  </pre>
+</p>
+
+
+<h3>CSV 文件写入</h3>
+<p>
+  <pre class="prettyprint lang-html">
+    csv_file = File.new("#{Rails.root}/doc/schools.csv", "w")
+    $\ = "\n";
+    csv_file.print("id,name,address,phone")
+
+    schools = School.find_in_batches do |groups|
+      groups.each do |school|
+        csv_file.print("\"#{school.id}\",\"#{school.name}\",\"#{school.address}\",\"#{school.phone}\"")
+      end
+    end
+  </pre>
+</p>
+
+
+<h3>Txt 文件写入</h3>
+<p>
+  <pre class="prettyprint lang-html">
+    file = File.open("#{Rails.root}/doc/missing_names.txt", 'w')
+    School.where("name is null or name = ''").all.each do |school|
+      file.puts school.id
+    end
+    file.close
+  </pre>
+</p>
+
+
+<h3>遍历目录下的图片文件</h3>
+<p>
+  <pre class="prettyprint lang-html">
+    image_path = "#{Rails.root}/app/assets/images/school_logos"
+    Dir.chdir(image_path)
+    image_files = Dir.glob("*")
+
+    count = 0
+    image_files.each do |file_name|
+      len = file_name.rindex('.')
+      code = file_name[0,len]
+      puts "image file code #{code}"
+      schools = School.where(code: code).all
+      schools.each do |school|
+        if school
+          count += 1 if school.refresh_logo(file_name.to_s)
+        end
+      end
+    end
+
+    puts "Successfully update #{count}"
+  </pre>
+</p>
+
+
+<h3>GEO 经纬度坐标数据收集</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  namespace :geo do
+
+    desc "load school geo data"
+    task :load => :environment do
+      puts "Start load school geo data"
+
+      start_id = ENV["start_id"]
+
+      schools = School.where("id > ?", start_id).where("lat < 1").order("id").limit(1000)
+      puts "total school count #{schools.size}"
+      schools.each do |school|
+        puts "process #{school.name} #{school.addr}"
+        url = "http://maps.googleapis.com/maps/api/geocode/json?language=zh-CN&sensor=false&address=#{school.addr}"
+        resp_data = fetch_geocode(url)
+        parse_school_geocode(school, resp_data) if resp_data
+        sleep(rand(5))
+      end
+
+      puts "End load school geo data"
+    end
+
+    def parse_school_geocode(school, resp_data)
+      json_data = JSON.parse(resp_data.body)
+      results = json_data["results"][0]
+      if results.present?
+        params = {}
+        location = results["geometry"]["location"]
+        params[:lat] = location["lat"] if location["lat"].present?
+        params[:lng] = location["lng"] if location["lng"].present?
+        if params.size > 0
+          school.update_attributes(params)
+          puts "update #{school.id} params #{params.inspect}"
+        end
+      end
+    end
+
+    def fetch_geocode(url)
+      begin
+        response = Net::HTTP.get_response(URI.parse(URI.encode(url)))
+      rescue
+        puts "INVALID URL: #{url}"
+      end
+
+      case response
+      when Net::HTTPSuccess then response
+      else
+        nil
+      end
+    end
+
+  end
+  </pre>
+</p>
