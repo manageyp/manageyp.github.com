@@ -58,6 +58,10 @@ record_on: 2015-09-08
   <pre class="prettyprint lang-html">
   # SSH 登录防火墙
 
+
+  # 进入视图编辑模式
+  > system-view
+
   # 创建新的用户名
   > local-user new-admin
   > password simple admin-password
@@ -72,11 +76,18 @@ record_on: 2015-09-08
   > add interface GigabitEthernet0/0
   > quit
 
+  # 端口网络设置
+  > interface GigabitEthernet0/6
+  > display this
+
+  > undo port link-mode
+
+  > port link-mode bridge
+  > port link-type trunk
+  > port trunk permit vlan 20
 
   # 开启/关闭服务
   > ftp server enable
-  >
-  >
   >
 
   # 保存当前的修改

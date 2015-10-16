@@ -47,7 +47,9 @@ RG-S6000系列交换机通过业界最先进的虚拟化技术可以大幅提高
   # 端口配置
   > interface gigabitEthernet 0/1
   > switchport mode access/trunk
-  > switchport access vlan 2
+  > switchport trunk allowed vlan add 20
+  > switchport trunk allowed vlan remove 1-3,30-50
+
   > show vlan
 
   # 查询当前配置信息
