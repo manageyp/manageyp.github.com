@@ -54,11 +54,49 @@ record_on: 2015-09-08
 </p>
 
 <h3>部署和设置</h3>
-<p>等机器到货后，待更新</p>
+<p>
+  <pre class="prettyprint lang-html">
+  # SSH 登录防火墙
+
+  # 创建新的用户名
+  > local-user new-admin
+  > password simple admin-password
+  > service-type telnet
+  > level 3
+
+  # 删除原有的 admin 用户
+  > undo local-user admin
+
+  # 将连接 PC 的接口，加入到安全域（重要）
+  > firewall zone trust
+  > add interface GigabitEthernet0/0
+  > quit
+
+
+  # 开启/关闭服务
+  > ftp server enable
+  >
+  >
+  >
+
+  # 保存当前的修改
+  > save
+
+  # 查询当前配置信息
+  > display saved-configuration
+
+  # 退出登录
+  > quit
+
+  # TODO 待完善
+
+  </pre>
+</p>
 
 <p>
   <b>参考链接</b><br />
   <a href="https://item.taobao.com/item.htm?id=40121511067" target="_blank">H3C SecPath F1000-S-AI</a><br />
   <a href="http://item.jd.com/1713618767.html" target="_blank">H3C SecPath F100-A-SI</a><br />
-  <a href="http://item.jd.com/1493413564.html" target="_blank">HUAWEI USG6390</a>
+  <a href="http://item.jd.com/1493413564.html" target="_blank">HUAWEI USG6390</a><br />
+  <a href="http://www.doc88.com/p-1456540058527.html" target="_blank">H3C 防火墙配置文档</a>
 </p>
