@@ -63,6 +63,10 @@ record_on: 2015-04-10
 
   # 修改文件可执行权限
   chmod +x /etc/sv/dropbox/run
+
+  # 创建文件链接，具体用法是：ln –s 源文件 目标文件
+  # –s 是创建软链接，否则为硬链接；软链接不会占用空间；两种方式，文件都是同步的
+  sudo ln -s /home/deploy/project/release201510190942 /opt/jetty/webapps/project
   </pre>
 </p>
 
