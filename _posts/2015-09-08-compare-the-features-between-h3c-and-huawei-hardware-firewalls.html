@@ -88,7 +88,25 @@ record_on: 2015-09-08
 
   # 开启/关闭服务
   > ftp server enable
-  >
+  > ssh server enable
+
+  # DHCP 服务配置
+  > dhcp enable
+  > dhcp server ip-pool vlan20 extended
+  >  network ip range 开始IP 结束IP
+  >  network mask 255.255.255.0
+  >  gateway-list 网关
+  >  dns-list DNS 服务器
+  > interface Vlan-interface20
+  >  ip address 网关 掩码
+  >  dhcp server apply ip-pool vlan20
+
+  # 端口 IP，Port 映射
+  > interface GigabitEthernet0/1
+  >  port link-mode route
+  >  nat outbound 2000
+  >  nat server protocol tcp global 公网IP 端口 inside 内网IP 端口
+  >  ip address 公网IP 掩码
 
   # 保存当前的修改
   > save
