@@ -1,0 +1,45 @@
+---
+layout: post
+title: Ceph the Future of Storage
+description: Ceph the Future of Storage
+categories: Cloud
+tags: Cloud
+record_on: 2015-10-23
+---
+
+<p>
+本文介绍一下 <b>Ceph</b>：一个 Linux PB 级分布式文件系统。
+</p>
+
+<h3>Ceph 介绍</h3>
+<p>
+  官方英文介绍如下：
+  <pre class="prettyprint lang-html">
+    Ceph is a distributed object store and file system designed to provide excellent performance, reliability and scalability.
+  </pre>
+  Ceph 是一个分布式对象存储和文件系统，拥有优越的性能，可靠性和可扩展性。
+</p>
+
+<p>
+  Ceph 当前稳定的版本有：Hammer，Giant，Firefly。最新版为 Hammer。</br>
+  应用的模式有：块设备服务（RDB），对象存储（Rados Gateway），分布式文件系统（CephFS），Native API（RADOS）</br>
+  数据可靠性机制：双同步副本，三个同步副本，四个或医生同步副本，Erasure Coding，同步副本 + 异步机制</br>
+  我们线上安装的版本为：Firefly，使用块设备服务（RDB），三个同步副本存储。
+</p>
+
+<h3>Ceph 系统架构</h3>
+<p>
+  Ceph 生态系统架构，可以划分为四部分：</br>
+  1. Clients：客户端（数据用户）</br>
+  2. cmds：Metadata server cluster：元数据服务器（缓存和同步分布式元数据）</br>
+  3. cosd：Object storage cluster：对象存储集群（将数据和元数据作为对象存储，执行其他关键职能）</br>
+  4. cmon：Cluster monitors：集群监视器（执行监视功能）</br>
+
+  # TODO 未完待续
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.ibm.com/developerworks/cn/linux/l-ceph/index.html" target="_blank">Ceph：一个 Linux PB 级分布式文件系统</a><br />
+  <a href="http://ceph.com/" target="_blank">Ceph 官方网站</a>
+</p>
