@@ -108,6 +108,16 @@ record_on: 2015-09-08
   >  nat server protocol tcp global 公网IP 端口 inside 内网IP 端口
   >  ip address 公网IP 掩码
 
+  # 查看防火墙内部学习到的 arp 信息
+  > display ip routing-table
+
+  Routing Tables: Public
+    Destinations : x  Routes : x
+  Destination/Mask    Proto  Pre  Cost         NextHop         Interface
+  0.0.0.0/0           Static 60   0            x.x.x.1         GE0/1
+  x.0.0.0/24          Direct 0    0            x.0.0.254       Vlanx
+  x.0.0.254/32        Direct 0    0            127.0.0.1       InLoop0
+
   # 保存当前的修改
   > save
 

@@ -53,6 +53,14 @@ RG-S6000系列交换机通过业界最先进的虚拟化技术可以大幅提高
   # 对接防火墙上划分的 vlan 20
   > switchport trunk native vlan 20
 
+  # 默认路由转发至防火墙配置
+  > ip route 0.0.0.0 0.0.0.0 x.x.x.254
+
+  # 查看交换机内部学习到的 arp 信息
+  > show  arp
+  Protocol  Address        Age(min)  Hardware        Type   Interface
+  Internet  x.x.x.10        6         x.x.x           arpa   VLAN x
+
   # 端口的启用和关闭
   > shutdown
   > no shutdown
