@@ -1,0 +1,35 @@
+---
+layout: post
+title: What is Open vSwitch
+description: What is Open vSwitch
+categories: Cloud
+tags: Cloud
+record_on: 2015-10-30
+---
+
+<p>
+本文介绍一下 <b>Open vSwitch</b>，Open vSwitch 是运行在虚拟化平台上的虚拟交换机。
+</p>
+
+<h3>Open vSwitch 介绍</h3>
+<p>
+  Open vSwitch（下面简称为 OVS）是由 Nicira Networks 主导的，运行在虚拟化平台（例如 KVM，Xen）上的虚拟交换机。在虚拟化平台上，OVS 可以为动态变化的端点提供 2 层交换功能，很好的控制虚拟网络中的访问策略、网络隔离、流量监控等等。</br>
+  OVS 遵循 Apache 2.0 许可证, 能同时支持多种标准的管理接口和协议。OVS 也提供了对 OpenFlow 协议的支持，用户可以使用任何支持 OpenFlow 协议的控制器对 OVS 进行远程管理控制。
+</p>
+
+<h3>Open vSwitch 概念</h3>
+<p>
+  在 OVS 中, 有几个非常重要的概念：</br>
+  <b>Bridge</b>: Bridge 代表一个以太网交换机（Switch），一个主机中可以创建一个或者多个 Bridge 设备。</br>
+  <b>Port</b>: 端口与物理交换机的端口概念类似，每个 Port 都隶属于一个 Bridge。</br>
+  <b>Interface</b>: 连接到 Port 的网络接口设备。在通常情况下，Port 和 Interface 是一对一的关系, 只有在配置 Port 为 bond 模式后，Port 和 Interface 是一对多的关系。</br>
+  <b>Controller</b>: OpenFlow 控制器。OVS 可以同时接受一个或者多个 OpenFlow 控制器的管理。</br>
+  <b>datapath</b>: 在 OVS 中，datapath 负责执行数据交换，也就是把从接收端口收到的数据包在流表中进行匹配，并执行匹配到的动作。</br>
+  <b>Flow table</b>: 每个 datapath 都和一个“flow table”关联，当 datapath 接收到数据之后， OVS 会在 flow table 中查找可以匹配的 flow，执行对应的操作, 例如转发数据到另外的端口。
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.ibm.com/developerworks/cn/cloud/library/1401_zhaoyi_openswitch/index.html" target="_blank">基于 Open vSwitch 的 OpenFlow 实践</a><br />
+  <a href="http://openvswitch.org/support/config-cookbooks/vlan-configuration-cookbook/" target="_blank">Isolating VM Traffic Using VLANs</a>
+</p>
