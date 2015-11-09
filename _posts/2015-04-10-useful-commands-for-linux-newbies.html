@@ -110,6 +110,10 @@ record_on: 2015-04-10
   $ ssh-keygen -t rsa
   $ cat ~/.ssh/id_rsa.pub
 
+  # scopy 拷贝命令
+  $ scp file root@ip:/home
+  $ scp -P port file root@ip:/home
+
   # memcache 清空 cache
   $ telnet localhost 11211
   Trying 127.0.0.1...
