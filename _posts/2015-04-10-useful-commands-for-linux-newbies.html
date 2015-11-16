@@ -103,12 +103,45 @@ record_on: 2015-04-10
   </pre>
 </p>
 
+
+<h3>SSH 禁用 Root 账号登录</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 创建账号 test
+  sudo adduser test
+
+  passwd test
+  test123
+
+  # 调整 test 账号的权限
+  visudo
+  test    ALL=(ALL:ALL) ALL
+
+  # ssh 禁用 root 登录
+  vi /etc/ssh/sshd_config
+
+  # Prevent root logins:
+  PermitRootLogin no
+
+  # Limit User Logins
+  AllowUsers test
+
+  # Run ssh on a non-standard port:
+  Port 22  # Change to another port
+
+  # 重启 ssh 服务
+  service sshd restart
+  </pre>
+</p>
+
+
 <h3>Other 操作命令</h3>
 <p>
   <pre class="prettyprint lang-html">
   # 生成 SSH key
   $ ssh-keygen -t rsa
   $ cat ~/.ssh/id_rsa.pub
+
 
   # scopy 拷贝命令
   $ scp file root@ip:/home
@@ -130,5 +163,12 @@ record_on: 2015-04-10
 
   # 把 Rails Guides 镜像到本地，可以离线查看文档
   wget -k -m http://guides.rubyonrails.org/v4.1.8/
+
+
+  # yum 离线安装已下载的文件
+  yum install yum-utils
+  # yumdownloader <package>
+  yumdownloader dmidecode
+  rpm -ivh dmidecode-2.12-6.el6.x86_64.rpm
   </pre>
 </p>
