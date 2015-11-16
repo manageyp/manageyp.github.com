@@ -1,0 +1,57 @@
+---
+layout: post
+title: High Quality Set of Qdditional Packages for Linux
+description: High Quality Set of Qdditional Packages for Linux
+categories: Linux-Mac
+tags: Linux-Mac
+record_on: 2015-11-16
+---
+
+<p>
+本篇收集了常用的 Linux 组件。会持续更新，以备查询。
+一下命令均在 CentOS 系统上执行，如果是其他平台的，将特殊说明。
+</p>
+
+<h3>查看硬件信息</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  yum install dmidecode
+
+  # 查看 主板上的硬件设备信息
+  dmidecode
+
+  System Information
+    Manufacturer: Dell Inc.
+    Product Name: PowerEdge R920
+
+  # 查看 CPU 信息
+  cat /proc/cpuinfo
+
+  # 检查硬盘信息
+  yum install smartmontools
+  smartctl -i /dev/sda
+  </pre>
+</p>
+
+<h3>安装 Nginx 高性能 Web 服务器</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  centos install nginx
+
+  yum install nginx
+
+  /etc/rc.d/init.d/nginx start
+
+  chkconfig nginx on
+  chkconfig --list nginx
+
+  service nginx start
+  </pre>
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.ibm.com/developerworks/cn/linux/l-ceph/index.html" target="_blank">Ceph：一个 Linux PB 级分布式文件系统</a><br />
+  <a href="http://ceph.com/" target="_blank">Ceph 官方网站</a>
+</p>
