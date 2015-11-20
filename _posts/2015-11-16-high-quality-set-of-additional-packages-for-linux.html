@@ -1,7 +1,7 @@
 ---
 layout: post
-title: High Quality Set of Qdditional Packages for Linux
-description: High Quality Set of Qdditional Packages for Linux
+title: High Quality Set of Additional Packages for Linux
+description: High Quality Set of Additional Packages for Linux
 categories: Linux-Mac
 tags: Linux-Mac
 record_on: 2015-11-16
@@ -46,6 +46,28 @@ record_on: 2015-11-16
   chkconfig --list nginx
 
   service nginx start
+  </pre>
+</p>
+
+
+<h3>安装 6.5 高版本 MySQl 数据库</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 清理现有 mysql
+  yum list installed | grep -i mysql
+  yum remove mysql mysql-*
+
+  # 修改安装源，不修改源，重新安装的仍然是 5.1 的版本
+  rpm -Uvh http://repo.webtatic.com/yum/el6/latest.rpm
+
+  # 安装 5.5 版本的 mysql client
+  yum install libmysqlclient16 --enablerepo=webtatic
+  yum install mysql55w mysql55w-libs mysql55w-devel --enablerepo=webtatic
+
+  yum -y install mysql*  --enablerepo=webtatic
+
+  # 如果你需要安装 mysql server，请执行
+  yum install  mysql55w-server --enablerepo=webtatic
   </pre>
 </p>
 
