@@ -1,0 +1,150 @@
+---
+layout: post
+title: How To Configure Nginx with SSL as a Reverse Proxy for Jetty
+description: How To Configure Nginx with SSL as a Reverse Proxy for Jetty
+categories: Linux-Mac Cloud
+tags: Linux-Mac Cloud
+record_on: 2015-11-23
+---
+
+<p>
+本篇整理了如何利用 Nginx 作为反向代理，并配置 SSL 证书，实现 HTTPs 加密传输 Web 网页的内容，提高网站的安全性。
+</p>
+
+
+<h3>申请免费的 SSL 证书</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 国外 StartSSL
+  http://www.startssl.com
+
+  # 国内 沃通 WoSign
+  https://buy.wosign.com/free/
+  </pre>
+</p>
+<p>
+StartSSL，国外的一家 CA 机构，支持大部分主流的浏览器，Firefox、Chrome、Safari、IE等。
+唯一的问题是纯英文的网站，而且，用户体验做的很差。</br>
+
+沃通 WoSign，是国内的一家数字证书商店。官方宣传是支持全球所有浏览器。
+申请免费证书的操作流程，全程中文，非常轻松。
+验证域名归属性后，下载 SSL 证书。
+</p>
+
+
+<h3>安装新版本的 Nginx</h3>
+<p>
+  由于系统之前已经使用 yum 安装了一个低版本的 Nginx，需要升级至较高的版本。
+  <pre class="prettyprint lang-html">
+  nginx -v
+    nginx version: nginx/1.0.15
+
+
+  # 在 /etc/yum.repos.d 目录下创建文件 nginx.repo
+  # nginx.repo
+  [nginx]
+  name=nginx repo
+  baseurl=http://nginx.org/packages/centos/6/$basearch/
+  gpgcheck=0
+  enabled=1
+
+
+  yum update nginx
+
+
+  nginx -v
+  nginx version: nginx/1.8.0
+  </pre>
+</p>
+
+
+
+<h3>配置 Nginx SSL 证书</h3>
+<p>
+  HTTPs 使用 443 端口，进行通信，所以，需要配置 Nginx 监听 443 端口。
+  如有需要可以将 80 过来的 HTTP 请求，强制重定向到 HTTPs 443 端口。
+<p>
+  <pre class="prettyprint lang-html">
+  # Force redirect HTTP request to HTTPs
+  server {
+    listen 80;
+    return 301 https://$host$request_uri;
+  }
+
+  server {
+    listen          443 default ssl;
+    server_name     server_name;
+
+    ssl_protocols  SSLv2 SSLv3 TLSv1;
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  5m;
+    ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+    ssl_prefer_server_ciphers   on;
+
+    ssl_certificate      /path/server_name.crt;
+    ssl_certificate_key  /path/server_name.key;
+
+    location / {
+      index             index.jsp;
+      root              /path;
+      proxy_pass        http://localhost:3000;
+      proxy_set_header  X-Real-IP $remote_addr;
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header  Host $host;
+      proxy_set_header  X-Forwarded-Proto  $scheme;
+      add_header        Front-End-Https   on;
+    }
+  }
+  </pre>
+</p>
+
+
+<h3>调整 Jetty 配置文件，开启 Forwarded 特性</h3>
+<p>
+  <pre class="prettyprint lang-html">
+    # /path/jetty/etc/jetty.xml
+
+    < New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration" >
+      < Set name="secureScheme">https< /Set>
+      ...
+      <!-- Uncomment to enable handling of X-Forwarded- style headers -->
+      < Call name="addCustomizer">
+        < Arg>< New class="org.eclipse.jetty.server.ForwardedRequestCustomizer"/>< /Arg>
+      < /Call>
+    < /New>
+
+  </pre>
+</p>
+
+
+<h3>Java 代码打印 HTTP 请求的 Log 信息</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  logger.info("========ContextPath: "+request.getContextPath());
+  logger.info("========Scheme: "+request.getScheme());
+  logger.info("========serverName: "+request.getServerName());
+  logger.info("========serverPort: "+request.getServerPort());
+
+  2015-11-18 07:40:00 [com.servername.controller.forward.AccountController:160]
+  INFO: ========ContextPath: /actionpath
+  2015-11-18 07:40:00 [com.servername.controller.forward.AccountController:161]
+  INFO: ========Scheme: https
+  2015-11-18 07:40:00 [com.servername.controller.forward.AccountController:162]
+  INFO: ========serverName: servername
+  2015-11-18 07:40:00 [com.servername.controller.forward.AccountController:163]
+  INFO: ========serverPort: 443
+
+  request.getSchema()      可以返回当前页面使用的协议，http 或是 https;
+  request.getServerName()  可以返回当前页面所在的服务器的名字;
+  request.getServerPort()  可以返回当前页面所在的服务器使用的端口, 默认是 80;
+  request.getContextPath() 可以返回当前页面所在的应用的名字;
+  </pre>
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-nginx-with-ssl-as-a-reverse-proxy-for-jenkins
+" target="_blank">How To Configure Nginx with SSL as a Reverse Proxy for Jenkins</a><br />
+  <a href="http://www.21andy.com/new/20100224/1714.html" target="_blank">Nginx + https + 免费SSL证书配置指南</a>
+</p>
