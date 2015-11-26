@@ -84,6 +84,11 @@ StartSSL，国外的一家 CA 机构，支持大部分主流的浏览器，Firef
     ssl_certificate      /path/server_name.crt;
     ssl_certificate_key  /path/server_name.key;
 
+    # Support JS WebSocket wss://
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
     location / {
       index             index.jsp;
       root              /path;
