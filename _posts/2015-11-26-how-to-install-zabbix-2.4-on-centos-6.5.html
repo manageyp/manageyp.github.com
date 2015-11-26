@@ -1,0 +1,93 @@
+---
+layout: post
+title: How To Install Zabbix Server 2.4 on CentOS 6.5
+description: How To Install Zabbix Server 2.4 on CentOS 6.5
+categories: Linux-Mac Cloud
+tags: Linux-Mac Cloud
+record_on: 2015-11-26
+---
+
+<p>
+本篇记录了在 CentOS 6.5 系统上，安装部署 Zabbix 监控服务的步骤。</br>
+
+首先，需要安装 LAMP 环境：Linux，Apache，MySQL，PHP。
+然后，安装 Zabbix 服务。
+</p>
+
+
+<h3>安装  Apache</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  yum install httpd
+
+  service httpd start
+  chkconfig httpd on
+  </pre>
+</p>
+
+
+<h3>安装 MySQL</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 修改安装源，不修改源，重新安装的仍然是 5.1 的版本
+  rpm -Uvh http://repo.webtatic.com/yum/el6/latest.rpm
+
+  yum install  mysql55w-server --enablerepo=webtatic
+
+  service mysqld start
+
+  /usr/bin/mysql_secure_installation
+
+  chkconfig mysqld on
+  </pre>
+</p>
+
+
+
+<h3>安装 PHP</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  yum install php php-mysql
+
+  # vi /etc/php.ini
+  max_execution_time = 600
+  max_input_time = 600
+  memory_limit = 256M
+  post_max_size = 32M
+  upload_max_filesize = 16M
+  date.timezone = Asia/Shanghai
+  </pre>
+</p>
+
+
+<h3>安装 Zabbix</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  rpm -ivh http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm
+
+  yum install  zabbix zabbix-agent zabbix-web-mysql zabbix-server-mysql
+
+  # vi /etc/httpd/conf.d/zabbix
+  php_value date.timezone Asia/Shanghai
+
+  # 配置和初始化 MySQL
+  mysql> create database zabbix character set utf8;
+  mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'password';
+  mysql> flush privileges;
+
+  mysql -u zabbix -p zabbix < /path/schema.sql
+  mysql -u zabbix -p zabbix < /path/images.sql
+  mysql -u zabbix -p zabbix < /path/data.sql
+
+  service zabbix-server start
+
+  chkconfig zabbix-server on
+  </pre>
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="https://www.atlantic.net/community/howto/install-lamp-centos-6/" target="_blank">Install a LAMP (Apache, MySQL, PHP) stack on CentOS 6.7</a><br />
+  <a href="https://www.atlantic.net/community/howto/install-zabbix-server-on-centos-6/" target="_blank">Install Zabbix Server on a CentOS 6.7 Server</a>
+</p>
