@@ -118,6 +118,14 @@ record_on: 2015-09-08
   x.0.0.0/24          Direct 0    0            x.0.0.254       Vlanx
   x.0.0.254/32        Direct 0    0            127.0.0.1       InLoop0
 
+  # 配置 SNMP
+  snmp-agent
+  snmp-agent local-engineid xxxx
+  snmp-agent community read aaaa
+  snmp-agent sys-info version v3
+  snmp-agent group v3 aaaa read-view aaaa
+  snmp-agent usm-user v3 aaaa aaaa cipher authentication-mode md5 xxxx privacy-mode des56 xxxx
+
   # 保存当前的修改
   > save
 
