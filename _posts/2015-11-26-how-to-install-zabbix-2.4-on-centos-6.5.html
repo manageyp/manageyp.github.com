@@ -39,6 +39,15 @@ record_on: 2015-11-26
   /usr/bin/mysql_secure_installation
 
   chkconfig mysqld on
+
+  # 配置和初始化 MySQL
+  mysql> create database zabbix character set utf8;
+  mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'password';
+  mysql> flush privileges;
+
+  mysql -u zabbix -p zabbix < /path/schema.sql
+  mysql -u zabbix -p zabbix < /path/images.sql
+  mysql -u zabbix -p zabbix < /path/data.sql
   </pre>
 </p>
 
@@ -50,12 +59,21 @@ record_on: 2015-11-26
   yum install php php-mysql
 
   # vi /etc/php.ini
-  max_execution_time = 600
-  max_input_time = 600
-  memory_limit = 256M
-  post_max_size = 32M
-  upload_max_filesize = 16M
-  date.timezone = Asia/Shanghai
+  < Directory "/usr/share/zabbix">
+      Options FollowSymLinks
+      AllowOverride None
+      Order allow,deny
+      Allow from all
+
+      < IfModule mod_php5.c>
+          php_value max_execution_time 300
+          php_value memory_limit 128M
+          php_value post_max_size 16M
+          php_value upload_max_filesize 2M
+          php_value max_input_time 300
+          # php_value date.timezone Europe/Riga
+      < /IfModule>
+  < /Directory>
   </pre>
 </p>
 
@@ -67,22 +85,36 @@ record_on: 2015-11-26
 
   yum install  zabbix zabbix-agent zabbix-web-mysql zabbix-server-mysql
 
-  # vi /etc/httpd/conf.d/zabbix
+  # vi /etc/httpd/conf.d/zabbix.conf
   php_value date.timezone Asia/Shanghai
 
-  # 配置和初始化 MySQL
-  mysql> create database zabbix character set utf8;
-  mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'password';
-  mysql> flush privileges;
-
-  mysql -u zabbix -p zabbix < /path/schema.sql
-  mysql -u zabbix -p zabbix < /path/images.sql
-  mysql -u zabbix -p zabbix < /path/data.sql
-
   service zabbix-server start
+  service zabbix-agent start
 
   chkconfig zabbix-server on
   </pre>
+</p>
+
+
+<h3>初始化配置 Zabbix</h3>
+
+<p>
+  <pre class="prettyprint lang-html">
+  # 浏览器内访问
+  http://ip/zabbix
+
+  # 如果访问失败，请关闭 CentOS 防火墙
+  service iptables stop
+
+  # 或者允许输入 tcp 80 端口的请求
+  sudo iptables -I INPUT -p tcp --dport 80 -j ACCEPT
+  service iptables save
+  service iptables restart
+
+  # 初始化页面打开后按照提示，设置配置信息
+  # 初始登录账户：Admin，密码：zabbix
+  </pre>
+  <img src="/images/posts/zabbixsetup.png" alt="zabbix setup 页面">
 </p>
 
 
