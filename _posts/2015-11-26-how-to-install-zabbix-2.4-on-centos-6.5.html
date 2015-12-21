@@ -113,6 +113,10 @@ record_on: 2015-11-26
 
   # 初始化页面打开后按照提示，设置配置信息
   # 初始登录账户：Admin，密码：zabbix
+
+  # 如果提示 zabbix server is running 是 no localhost 10051
+  # 设置 SELinux 成为 permissive 模式，刷新页面就可以了
+  setenforce 0
   </pre>
   <img src="/images/posts/zabbixsetup.png" alt="zabbix setup 页面">
 </p>
