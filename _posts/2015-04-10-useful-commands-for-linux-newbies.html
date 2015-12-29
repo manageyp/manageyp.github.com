@@ -43,6 +43,25 @@ record_on: 2015-04-10
     # 显示各种网络相关信息，端口占用情况
     netstat -tulpn
     netstat -tulpn | grep 8080
+
+    # 查看操作系统时间，时区；调整时间
+    date
+    > 2015年 12月 29日 星期二 22:00:02 CST
+    cat /etc/sysconfig/clock
+    > ZONE="Asia/Shanghai"
+
+    date MMDDhhmmYYYY
+      MM - Two digit month number
+      DD - Two digit date
+      hh - Two digit 24 hour system hour
+      mm - Two digit minute
+      YYYY - Four digit year code
+
+    date 122914372015
+
+    # 查看和调整硬件时钟
+    hwclock --show
+    hwclock --set --date="2015-12-29 14:36:01" --localtime
   </pre>
 </p>
 
