@@ -14,6 +14,23 @@ record_on: 2015-11-26
 然后，安装 Zabbix 服务。
 </p>
 
+<h3>Zabbix 介绍</h3>
+<p>
+Zabbix 是一个基于 WEB 界面的提供分布式系统监视，以及网络监视功能的企业级的开源解决方案。
+Zabbix 能监视各种网络参数，保证服务器系统的安全运营；并提供柔软的通知机制，以让系统管理员快速定位/解决存在的各种问题。
+</p>
+
+<p>
+Zabbix 由 2 部分构成，Zabbix server与可选组件 Zabbix agent。</br>
+
+Zabbix server 可以通过 SNMP，Zabbix agent，ping，端口监视等方法提供对远程服务器/网络状态的监视，数据收集等功能，它可以运行在 Linux,Solaris, HP-UX, AIX, Free BSD, Open BSD, OS X 等平台之上。</br>
+
+Zabbix agent 需要安装在被监视的目标服务器上，它主要完成对硬件信息或与操作系统有关的内存，CPU等信息的收集。Zabbix agent可以运行在 Linux ,Solaris, HP-UX, AIX, Free BSD, Open BSD, OS X, Tru64/OSF1, Windows NT4.0, Windows 2000/2003/XP/Vista) 等系统之上。</br>
+
+Zabbix server 可以单独监视远程服务器的服务状态；同时也可以与 Zabbix agent 配合，可以轮询 Zabbix agent 主动接收监视数据（trapping方式），同时还可被动接收 Zabbix agent 发送的数据（trapping方式）。
+另外 Zabbix server 还支持 SNMP (v1,v2)，可以与 SNMP 软件(例如：net-snmp)等配合使用。</br>
+</p>
+
 
 <h3>安装  Apache</h3>
 <p>
@@ -59,21 +76,15 @@ record_on: 2015-11-26
   yum install php php-mysql
 
   # vi /etc/php.ini
-  < Directory "/usr/share/zabbix">
-      Options FollowSymLinks
-      AllowOverride None
-      Order allow,deny
-      Allow from all
 
-      < IfModule mod_php5.c>
-          php_value max_execution_time 300
-          php_value memory_limit 128M
-          php_value post_max_size 16M
-          php_value upload_max_filesize 2M
-          php_value max_input_time 300
-          # php_value date.timezone Europe/Riga
-      < /IfModule>
-  < /Directory>
+  max_execution_time = 300
+  max_input_time = 300
+
+  memory_limit 128M
+  post_max_size = 16M
+  upload_max_filesize 2M
+
+  date.timezone = Asia/Shanghai
   </pre>
 </p>
 
