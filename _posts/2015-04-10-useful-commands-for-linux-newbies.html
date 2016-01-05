@@ -109,6 +109,9 @@ record_on: 2015-04-10
 
   # 查看运行进程，及其占用的端口，port
   netstat -tulpn
+
+  # Telnet 登录
+  telnet ip
   </pre>
 </p>
 
@@ -153,6 +156,9 @@ record_on: 2015-04-10
 
   # 重启 ssh 服务
   service sshd restart
+
+  # ssh 登录
+  ssh -p 22 user@ip
   </pre>
 </p>
 
@@ -193,4 +199,9 @@ record_on: 2015-04-10
   yumdownloader dmidecode
   rpm -ivh dmidecode-2.12-6.el6.x86_64.rpm
   </pre>
+</p>
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.tuicool.com/articles/QBJVRv" target="_blank">How to install telnet in CentOS / RHEL / Scientific Linux 6.4</a>
 </p>
