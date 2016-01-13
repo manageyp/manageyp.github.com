@@ -65,12 +65,8 @@ Zabbix server 可以单独监视远程服务器的服务状态；同时也可以
   mysql> grant all privileges on zabbix.* to 'zabbix'@'localhost' identified by 'password';
   mysql> flush privileges;
 
-  mysql -u zabbix -p zabbix < /path/schema.sql
-  mysql -u zabbix -p zabbix < /path/images.sql
-  mysql -u zabbix -p zabbix < /path/data.sql
   </pre>
 </p>
-
 
 
 <h3>安装 PHP</h3>
@@ -101,6 +97,12 @@ Zabbix server 可以单独监视远程服务器的服务状态；同时也可以
 
   # vi /etc/httpd/conf.d/zabbix.conf
   php_value date.timezone Asia/Shanghai
+
+  # 初始化 MySQL DB
+  cd /usr/share/doc/zabbix-server-mysql-2.4.7/create/
+  mysql -u zabbix -p zabbix < schema.sql
+  mysql -u zabbix -p zabbix < images.sql
+  mysql -u zabbix -p zabbix < data.sql
 
   service zabbix-server start
   service zabbix-agent start
