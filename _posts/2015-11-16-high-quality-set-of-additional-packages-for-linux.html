@@ -64,9 +64,14 @@ record_on: 2015-11-16
   yum install libmysqlclient16 --enablerepo=webtatic
   yum install mysql55w mysql55w-libs mysql55w-devel --enablerepo=webtatic
 
-  yum -y install mysql*  --enablerepo=webtatic
-
   # 如果你需要安装 mysql server，请执行
   yum install  mysql55w-server --enablerepo=webtatic
+
+  service mysqld start
+
+  chkconfig mysqld on
+
+  初始设置
+  mysql_secure_installation
   </pre>
 </p>
