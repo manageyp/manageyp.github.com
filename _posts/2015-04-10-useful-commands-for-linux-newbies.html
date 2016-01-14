@@ -92,6 +92,20 @@ record_on: 2015-04-10
 
   # 批量删除 .svn 隐藏文件夹
   find . -type d -name ".svn"|xargs rm -rf
+
+  # 文件压缩/解压
+  tar czvf filea.tar filea.sql
+  tar zxvf filea.tar
+
+  tar cvf folderb.tar folderb
+  tar xvf folderb.tar
+
+  # SCP 拷贝命令
+  scp file root@ip:/home
+  scp root@ip:/home/file  /folder/
+
+  # SCP 拷贝带上端口号
+  scp -P port file root@ip:/home
   </pre>
 </p>
 
@@ -169,11 +183,6 @@ record_on: 2015-04-10
   # 生成 SSH key
   $ ssh-keygen -t rsa
   $ cat ~/.ssh/id_rsa.pub
-
-
-  # scopy 拷贝命令
-  $ scp file root@ip:/home
-  $ scp -P port file root@ip:/home
 
   # memcache 清空 cache
   $ telnet localhost 11211
