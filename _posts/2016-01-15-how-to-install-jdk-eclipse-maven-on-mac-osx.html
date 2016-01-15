@@ -1,0 +1,80 @@
+---
+layout: post
+title: How to Install JDK Eclipse Maven on Mac OSX
+description: How to Install JDK Eclipse Maven on Mac OSX
+categories: Linux-Mac Cloud
+tags: Linux-Mac Cloud
+record_on: 2016-01-15
+---
+
+<p>
+本篇记录了在 Mac OS X EI Capitan 10.11 系统上，搭建 Java 开发环境的步骤。 </br>
+</p>
+
+
+<h3>安装 Java 1.8</h3>
+<p>
+  进入 Java 下载页面，选择下载 jdk-8u65-macosx-x64
+  <a href="http://sdlc-esd.oracle.com/ESD6/JSCDL/jdk/8u66-b17/jre-8u66-macosx-x64.dmg" target="_blank">下载链接</a></br>
+
+  <pre class="prettyprint lang-html">
+  # 命令行查看 Java 安装的情况
+
+  $ java -version
+  java version "1.8.0_65"
+  Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
+  Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
+  </pre>
+</p>
+
+
+<h3>安装 Apache Maven 3.3.3</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # 使用 Homebrew 安装 Maven
+
+  $ brew install maven
+
+  # 命令行查看 Maven 安装的情况
+
+  $ mvn -version
+  Apache Maven 3.3.3 (0775791599e205a5524ec3e0dfe41d4a06; 2015-04-22T19:57:37+08:00)
+  Maven home: /usr/local/Cellar/maven/3.3.3/libexec
+  Java version: 1.8.0_65, vendor: Oracle Corporation
+  Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home/jre
+  Default locale: zh_CN, platform encoding: UTF-8
+  OS name: "mac os x", version: "10.11", arch: "x86_64", family: "mac"
+  </pre>
+</p>
+
+
+<h3>安装 MySQL 5.6</h3>
+<p>
+  前往 MySQL 下载页，选择下载 Mac OS X 10.10 (x86, 64-bit), DMG Archive
+  <a href="http://dev.mysql.com/downloads/mysql/" target="_blank">下载链接</a>
+</p>
+
+
+<h3>安装 Eclipse Mars</h3>
+<p>
+  打开 <a href="https://eclipse.org/downloads/" target="_blank">Eclipse 下载页面</a>，
+  下载 Eclipse IDE for Eclipse Committers 4.5.1.
+  Package suited for development of Eclipse itself at Eclipse. Version: Mars.1 Release (4.5.1).
+</p>
+
+
+<h3>Eclipse 安装 Maven 插件 m2e</h3>
+<p>
+  Eclipse 默认不支持 Maven。需要给它添加 m2eclipse 插件。</br>
+  打开 Eclipse，选择 Help，Eclipse Marketplace。
+  在 All Markets 选项下，搜索 maven。</br>
+  有很多搜索的结果，请安装 Maven Integration for Eclipse (Luna)。如下图所示</br>
+  <img src="/images/posts/mavenm2e.png" alt="Eclipse 安装 Maven 插件 m2e">
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.otnira.com/2014/02/09/java-on-mavericks/" target="_blank">Java, Eclipse, & Maven on Mac OS X Mavericks</a><br />
+  <a href="http://www.laird.tw/2015/04/eclipse-mac-os-x-mac-os-x-eclipse-ide.html" target="_blank">[ Eclipse ] [ Mac OS X ] 如何在 Mac OS X 安裝 Eclipse 開發環境 ( IDE ) </a><br />
+</p>
