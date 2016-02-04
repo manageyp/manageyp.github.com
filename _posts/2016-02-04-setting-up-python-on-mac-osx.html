@@ -1,0 +1,99 @@
+---
+layout: post
+title: Setting up Python on Mac OSX
+description: Setting up Python on Mac OSX
+categories: Python
+tags: Python
+record_on: 2016-02-04
+---
+
+<p>
+本篇记录了在 Mac OS X EI Capitan 10.11 系统上，搭建 Python 开发环境的步骤。 </br>
+为啥又要开发 Python 的项目了，一言难尽，因为，我们要做二次开发一个广告系统，包含 DSP、DMP等，原有的实现基于 Django 实现。
+</p>
+
+
+<h3>安装 Python 2.7.x</h3>
+<p>
+  Mac OS X EI Capitan 10.11 系统上，自带了 Python 2.7.10。
+  <pre class="prettyprint lang-html">
+  $ python
+  Python 2.7.10
+  [GCC 4.2.1 Compatible Apple LLVM 7.0.0 (clang-700.0.59.1)] on darwin
+  Type "help", "copyright", "credits" or "license" for more information.
+  >>>
+  </pre>
+</p>
+
+
+<h3>安装 pip 包管理工具</h3>
+<p>
+  pip 用来解决项目依赖问题。将项目所有依赖的第三方库写在一个 requirements.txt 中用 pip 批量安装。
+  一般和 virtualenv 配合使用，将所有包安装在 virtualenv 的环境中。
+  <pre class="prettyprint lang-html">
+  $ sudo easy_install pip
+
+  Installed /Library/Python/2.7/site-packages/pip-8.0.2-py2.7.egg
+  </pre>
+</p>
+
+
+<h3>安装 Python 虚拟环境</h3>
+<p>
+  virtualenv 用来建立一个虚拟的 Python 环境，一个专属于项目的 Python 环境。
+  用 virtualenv 来保持一个干净的环境非常有用。
+  <pre class="prettyprint lang-html">
+  $ sudo pip install virtualenv
+  $ sudo easy_install virtualenvwrapper
+
+  # 创建目录
+  $ sudo mkdir -p .virtualenvs
+  </pre>
+</p>
+
+
+<h3>命令行设置</h3>
+<p>
+
+  <pre class="prettyprint lang-html">
+  $ sudo vi ~/.bash_profile
+
+  # Python virtualenvs
+  export WORKON_HOME=$HOME/.virtualenvs  #虚拟环境安装的目录
+  export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python
+  export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
+  export PIP_VIRTUALENV_BASE=$WORKON_HOME
+  export PIP_RESPECT_VIRTUALENV=true
+  if [[ -r /usr/local/bin/virtualenvwrapper.sh ]]; then
+      source /usr/local/bin/virtualenvwrapper.sh
+  else
+      echo "WARNING: Can't find virtualenvwrapper.sh"
+  fi
+
+
+  $ sudo vi .bashrc
+
+  export WORKON_HOME="~/.virtualenvs"
+  source "/usr/local/bin/virtualenvwrapper.sh"
+
+  $ source ~/.bashrc
+  </pre>
+</p>
+
+
+<h3>创建环境和项目</h3>
+<p>
+  mkvirtualenv demo
+
+  workon demo
+
+  安装 Django
+  pip install Django==1.9.2
+
+  创建项目
+
+  django-admin startproject demo
+
+  启动项目
+  python manage.py runserver
+</p>
