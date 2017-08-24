@@ -1,0 +1,65 @@
+---
+layout: post
+title: PyMongo - a Python distribution containing tools for working with MongoDB
+description: PyMongo - a Python distribution containing tools for working with MongoDB
+categories: Database Python
+tags: Database Python
+record_on: 2017-08-24
+---
+<p>
+<a href="http://api.mongodb.com/python/current/" target="_blank"> PyMongo </a> 是用 Python 编写的高性能，对接 MongoDB 数据库的驱动程序。以下将记录 PyMongo 库在与 MongoDB 交互时的常用语句。
+</p>
+<h3>常用数据库操作</h3>
+<p>
+<pre class="prettyprint lang-html">
+$ python
+
+# 引入 pymongo 库
+import pymongo
+
+# 配置 MongoDB 连接信息
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
+
+# 建立连接
+mongoclient = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)
+
+# 读取数据库
+database_logs = mongoclient.logs
+# 读取集合
+collection_logs = database_logs.logs
+
+log_data1 = {
+    "id": 1,
+    "server_name": "api",
+    "content" : "request input content 1"
+}
+
+log_data2 = {
+    "id": 2,
+    "server_name": "api",
+    "content" : "request input content 2"
+}
+
+# 插入数据
+collection_logs.insert(log_data, safe=True)
+
+collection_logs.insert(log_data2, safe=True)
+
+# 查找一条记录
+first_log = collection_logs.find_one()
+
+# 根据条件，查找一条记录
+collection_logs.find_one({"server_name" : "api"})
+
+# 根据条件，查找所有符合的记录
+logs = collection_logs.find({"server_name":"api"})
+for log in logs:
+    print log.get("content")
+
+# 根据条件，统计条数
+collection_logs.find({"server_name":"api"}).count()
+</pre>
+</p>
+
+
