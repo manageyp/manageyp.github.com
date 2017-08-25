@@ -62,6 +62,42 @@ record_on: 2015-04-10
     # 查看和调整硬件时钟
     hwclock --show
     hwclock --set --date="2015-12-29 14:36:01" --localtime
+
+    # strace用于跟踪程序执行过程中的系统调用
+    strace -p [pid]
+    # 比如，跟踪pid为12345的进程中所有线程的read和write系统调用，输出字符串的长度限制为1024：
+    strace -s 1024 -f -e trace=read,write -p 12345
+
+    # tcpdump是Linux上的抓包工具，如抓取eth0网卡上的包，使用:
+    sudo tcpdump -i eth0
+    # 比如，抓取80端口的HTTP报文，以文本形式展示：
+    sudo tcpdump -i any port 80 -A
+
+    # nc可以在Linux上开启TCP Server、TCP Client、UDP Server、UDP Client。
+    # 如在端口号12345上开启TCP Server和Client模拟TCP通信：
+    Server:  nc -l 127.0.0.1 12345
+    Client:  nc 127.0.0.1 12345 
+
+    # 在端口号12345上开启UDP Server和Client模拟TCP通信：
+    Server:  nc -ul 127.0.0.1 12345
+    Client:  nc -u 127.0.0.1 12345
+
+    # Unix Socket通信示例:
+    Server:  nc -Ul /tmp/1.sock
+    Client:  nc -U /tmp/1.sock
+
+    # lsof命令主要用法包括：
+    # 查看端口占用进程信息，经常用于端口绑定失败时确认端口被哪个进程占用
+    sudo lsof -i :[port] 
+    # 查看进程打开了哪些文件或套接字
+    sudo lsof -p [pid] 
+
+    # ss命令可以用于替换netstat，ss直接读取解析/proc/net下的统计信息，相比netstat遍历/proc下的每个PID目录，速度快很多
+    ss -t -a 显示所有的TCP Sockets
+    ss -u -a 显示所有的UDP Sockets
+    ss -x src /tmp/a.sock 显示连接到/tmp/a.sock的进程
+    ss -o state [state TCP-STATE] 如ss -o state established显示所有建立的连接
+
   </pre>
 </p>
 
@@ -73,6 +109,12 @@ record_on: 2015-04-10
 
   # 根据文件名，查找系统内的文件，
   find / -name mysql
+
+  # 在当前目录及其子目录下查找文件名为1.txt的文件
+  find . -name "1.txt"
+
+  # 在当前目录及其子目录下查找包含abcd字符串的文件行，经常用于搜索代码
+  find . -type f|xargs grep 'abcd'
 
   # 查看当前文件目录，文件大小
   du -sh *
@@ -106,6 +148,25 @@ record_on: 2015-04-10
 
   # SCP 拷贝带上端口号
   scp -P port file root@ip:/home
+  </pre>
+</p>
+
+<h3>文本处理</h3>
+<p>
+  <pre class="prettyprint lang-html">
+  # awk按列进行处理，sed按行进行处理
+  # 如采用冒号分隔数据，输出第一列数据（$0代表行全部列数据，$1代表第一列，$2代表第二列...）
+  awk -F ":" '{print $1}'
+
+  # 在awk的结果基础上，结合sort、uniq和head等命令可以轻松完成频率统计等功能
+  # 查看文件的第100行到第200行：
+  sed -n '100,200p' log.txt
+
+  # 替换字符串中的特定子串
+  echo "int charset=gb2312 float"|sed "s/charset=gb2312/charset=UTF-8/g"
+
+  # 替换test文件每行匹配ab的部分为cd
+  sed -i 's/ab/cd/g' test
   </pre>
 </p>
 
@@ -201,6 +262,12 @@ record_on: 2015-04-10
   # 把 Rails Guides 镜像到本地，可以离线查看文档
   wget -k -m http://guides.rubyonrails.org/v4.1.8/
 
+  # curl用于模拟HTTP请求，在终端模拟请求时常用，如最基本的用法：
+  # 指定HTTP首部 -H选项，如-H "Host: xx.xx.xx.xx"
+  # 指定请求方法 -X选项，如-X POST，-d指定post数据
+  # 显示请求详细信息，包括请求和响应首部 -v选项
+  # 重定向请求自动追踪 -L选项
+  curl http://www.bing.com
 
   # yum 离线安装已下载的文件
   yum install yum-utils
