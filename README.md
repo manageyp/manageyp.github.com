@@ -1,6 +1,6 @@
 Henry's Blog.
 ========
-本博客项目，是基于 [Jekyll](https://github.com/jekyll/jekyll "Jekyll") 工具，以及 [Fuel UX](http://exacttarget.github.io/fuelux/"Fuel UX") 模板生成的。
+本博客项目，是基于 [Jekyll](https://github.com/jekyll/jekyll "Jekyll") 工具，以及 [Fuel UX](http://exacttarget.github.io/fuelux/ "Fuel UX") 模板生成的。
 主要包含个人在项目开发的过程中，总结的实践经验和学习笔记。
 
 
