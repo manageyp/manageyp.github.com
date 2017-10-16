@@ -50,6 +50,29 @@ record_on: 2015-05-14
     # -k  开启 HTTP KeepAlive
 
     ab -n 1000 -c 10 -t 10 -k api-url
+
+
+    # POST 请求示例
+    # -p  提交的参数
+    # test.txt 文件内容，格式为 json {"data":"test"}
+
+    ab -c 100 -t 60 -k -p 'test.txt' -T 'application/json' http://url/data/credit
+  </pre>
+</p>
+
+<p>
+  <b>返回结果解读：</b>
+  <pre class="prettyprint lang-html">
+    Concurrency Level:      100
+    Time taken for tests:   60.172 seconds
+    Complete requests:      6539
+    # 每秒中服务实际的处理请求数
+    Requests per second:    65.58 [#/sec] (mean)
+
+    Percentage of the requests served within a certain time (ms)
+      50%   1754
+      75%   2488
+     100%   3860 (longest request)
   </pre>
 </p>
 
