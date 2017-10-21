@@ -1,0 +1,71 @@
+---
+layout: post
+title: RSA Secure Data Connections for API Design based on HTTPs
+description: RSA Secure Data Connections for API Design based on HTTPs
+categories: App-API
+tags: App-API
+record_on: 2017-10-20
+---
+
+<p>
+  本篇讲解一下，如何设计安全的 API 接口通信策略。主要包含以下三个方面：</br>
+   <b>1. 启用 HTTPs </b></br>
+
+   <b>2. 数据加密（RSA） </b></br>
+
+   <b>3. 参数签名（MD5） </b></br>
+</p>
+
+<p>
+  本篇之后，将继续撰写两篇文章，使用代码实例，讲解 Server 与 Client 的通信处理过程。
+</p>
+
+<h3>1. 启用 HTTPs</h3>
+<p>
+  HTTPs 协议是由 SSL + HTTP 协议构建的可进行加密传输、身份认证的网络协议，要比 HTTP 协议安全。
+  使用 HTTPs 对网络传输的内容进行加密，可防止内容监听和内容篡改。</br>
+
+  启用 HTTPs 服务，需要申请 SSL 证书 <a href="https://www.startssl.com " target="_blank">StartSSL </a>
+</p>
+
+
+<h3>2. 数据加密（RSA）</h3>
+<p>
+  网络安全是一个整体的事件，涉及到个人计算机的安全，协议的安全，传输数据的安全，以及软件开发公司和网站的安全。
+  单纯的依靠一个 HTTPs 协议并不能解决所有的问题。</br>
+
+  因此，为了保证网络传输中数据的安全，不可读性。我们引入 RSA 非对称加密算法。
+  平台端与客户端，共享各自的公钥，双方加密的信息只有各自的私钥才能解密，只要私钥不泄漏，通信就是安全的。</br>
+
+  对于较大的数据，需要进行分段加密。
+</p>
+<p>
+  <b>RSA 算法历史背景</b><br />
+  1977 年，三位数学家 Rivest、Shamir 和 Adleman 设计了一种算法，可以实现非对称加密。这种算法用他们三个人的名字命名，叫做 RSA 算法。从那时直到现在，RSA 算法一直是最广为使用的"非对称加密算法"。毫不夸张地说，只要有计算机网络的地方，就有 RSA 算法。
+
+  这种算法非常可靠，密钥越长，它就越难破解。根据已经披露的文献，目前被破解的最长 RSA 密钥是 768 个二进制位。也就是说，长度超过 768 位的密钥，还无法破解（至少没人公开宣布）。因此可以认为，1024 位的 RSA 密钥基本安全，2048 位的密钥极其安全。
+</p>
+
+
+<h3>3. 参数签名（MD5）</h3>
+<p>
+  当接口服务启用了 HTTPs，并使用 RSA 算法对数据进行加密之后，理论上数据的安全性已经很高了。
+  为了进一步防止传输中的数据被篡改，再增加一道防线：参数签名。<br />
+
+  将接口中所有参数名按照字典顺序排序。再把所有参数“参数名1参数1的值a参数名2参数2的值b...”连接起来，使用 MD5 算法，计算出一个签名字符串，与加密的数据一起传输。可防止数据在传输的过程中被篡改。
+</p>
+
+
+<h3>4. 安全的 API 接口架构图解</h3>
+<p>
+  基于 HTTPs，使用 RSA 加解密算法，并结合 MD5 进行参数签名的通信流程图解。
+  <img src="/images/posts/https-rsa-workflow.jpg" />
+</p>
+
+
+<p>
+  <b>参考链接</b><br />
+  <a href="http://www.guokr.com/post/114121/" target="_blank">HTTPs 那些事（一）HTTPs 原理 </a><br />
+  <a href="http://www.ruanyifeng.com/blog/2013/06/rsa_algorithm_part_one.html" target="_blank"> RSA 算法原理（一） </a><br />
+
+</p>
