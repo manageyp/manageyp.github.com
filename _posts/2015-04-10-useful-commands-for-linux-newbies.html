@@ -76,7 +76,7 @@ record_on: 2015-04-10
     # nc可以在Linux上开启TCP Server、TCP Client、UDP Server、UDP Client。
     # 如在端口号12345上开启TCP Server和Client模拟TCP通信：
     Server:  nc -l 127.0.0.1 12345
-    Client:  nc 127.0.0.1 12345 
+    Client:  nc 127.0.0.1 12345
 
     # 在端口号12345上开启UDP Server和Client模拟TCP通信：
     Server:  nc -ul 127.0.0.1 12345
@@ -88,9 +88,9 @@ record_on: 2015-04-10
 
     # lsof命令主要用法包括：
     # 查看端口占用进程信息，经常用于端口绑定失败时确认端口被哪个进程占用
-    sudo lsof -i :[port] 
+    sudo lsof -i :[port]
     # 查看进程打开了哪些文件或套接字
-    sudo lsof -p [pid] 
+    sudo lsof -p [pid]
 
     # ss命令可以用于替换netstat，ss直接读取解析/proc/net下的统计信息，相比netstat遍历/proc下的每个PID目录，速度快很多
     ss -t -a 显示所有的TCP Sockets
@@ -167,6 +167,13 @@ record_on: 2015-04-10
 
   # 替换test文件每行匹配ab的部分为cd
   sed -i 's/ab/cd/g' test
+
+  # vi 编辑，搜索，替换文件
+  # :%s/str1/str2/g
+  # 用字符串 str2 替换所有出现的字符串 str1
+  # 例如，将单引号 ' 替换为双引号 "
+  :%s/'/\"/g
+
   </pre>
 </p>
 
