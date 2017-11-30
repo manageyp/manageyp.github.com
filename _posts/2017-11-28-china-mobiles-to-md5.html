@@ -33,7 +33,7 @@ def generate_md5_mobiles():
     for m in mobiles:
         base_num = str(m)
 
-        result_file = open('YOUR-PATH/md5files/' + base_num + '.txt', "wb")
+        result_file = open('YOUR-PATH/md5mobiles/' + base_num + '.txt', "wb")
 
         zero = '00000000'
         for i in range(0, 100000000):
@@ -56,6 +56,8 @@ def main():
 if __name__ == '__main__':
     main()
 
+# 执行脚本生成所有号段的 MD5 值
+# python generate_md5_mobile.py
 </pre>
 
 <h3>使用 MD5 的加密值，依据对应关系，查找到明文的手机号</h3>
@@ -80,9 +82,9 @@ def prepare_md5_sets(input_file):
 def main(base_num):
     # base_num = '130'
 
-    input_file = '/YourPath/inputs.txt'
-    origin_md5_file = '/YourPath/md5mobiles/' + base_num + '.txt'
-    result_file = open('/YourPath/results/' + base_num  + '.txt', "wb")
+    input_file = '/YOUR-PATH/inputs.txt'
+    origin_md5_file = '/YOUR-PATH/md5mobiles/' + base_num + '.txt'
+    result_file = open('/YOUR-PATH/results/' + base_num  + '.txt', "wb")
 
     md5_sets = prepare_md5_sets(input_file)
 
@@ -101,15 +103,16 @@ if __name__ == '__main__':
     main(base_num)
 
 
-# cd /YourPath/results/
+# cd /YOUR-PATH/results/
 # rm *.txt
 
-# cd /YourPath/
+# cd /YOUR-PATH/
 
+# 执行脚本从 130 段搜索 MD5 值
 # python search_md5_to_mobile.py 130
 
 # 合并多个 txt 文件
-# cd /YourPath/results/
+# cd /YOUR-PATH/results/
 # cat *.txt > all_mobiles.txt
 
 </pre>
