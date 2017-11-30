@@ -1,0 +1,115 @@
+---
+layout: post
+title: China Mobiles to MD5
+description: China Mobiles to MD5
+categories: Python
+tags: Python
+record_on: 2017-11-28
+---
+
+
+<p>
+  本篇讲解基于 Python 脚本，穷举所有中国境内的手机号，并生成对应的 MD5 值。</br>
+  国内的运营商分为：移动、联通和电信。
+  每家运营商在不同的时间节点上线了多个手机号码段，每个号码段对应 1 亿个手机号码。
+  单个手机号段，生成的 手机号,MD5 值，文件占用空间为 2GB 左右。
+</p>
+
+<h3>手机号号段大致如下</h3>
+<pre class="prettyprint lang-html">
+  130,131,132,133,134,135,136,137,138,139,145,147,150,151,152,153,155,156,157,158,159,170,171,176,177,178,180,181,182,183,184,185,186,187,188,189
+</pre>
+
+<h3>穷举手机号段，并生成对应的 MD5 值</h3>
+<pre class="prettyprint lang-html">
+#coding=utf-8
+
+import sys
+import hashlib
+
+
+def generate_md5_mobiles():
+    mobiles = [131,132,133,134,135,136,137,138,139,145,147,150,151,152,153,155,156,157,158,159,170,171,176,177,178,180,181,182,183,184,185,186,187,188,189]
+    for m in mobiles:
+        base_num = str(m)
+
+        result_file = open('YOUR-PATH/md5files/' + base_num + '.txt', "wb")
+
+        zero = '00000000'
+        for i in range(0, 100000000):
+            num_left = zero + str(i)
+            num_len = len(num_left)
+            num_left = num_left[num_len-8:num_len]
+            num = base_num + num_left
+
+            hash_md5 = hashlib.md5(num)
+            md5num = hash_md5.hexdigest()
+
+            result_file.write('%s,%s\n' % (md5num, num))
+
+        result_file.close()
+
+
+def main():
+    generate_md5_mobiles()
+
+if __name__ == '__main__':
+    main()
+
+</pre>
+
+<h3>使用 MD5 的加密值，依据对应关系，查找到明文的手机号</h3>
+<pre class="prettyprint lang-html">
+#coding=utf-8
+
+import sys
+from sets import Set
+
+
+def prepare_md5_sets(input_file):
+    md5_sets = Set([])
+    with open(input_file) as f:
+        for line in f:
+            content = line.rstrip('\n')
+            if content != '' and content != None:
+                if content not in md5_sets:
+                    md5_sets.add(content)
+    return md5_sets
+
+
+def main(base_num):
+    # base_num = '130'
+
+    input_file = '/YourPath/inputs.txt'
+    origin_md5_file = '/YourPath/md5mobiles/' + base_num + '.txt'
+    result_file = open('/YourPath/results/' + base_num  + '.txt', "wb")
+
+    md5_sets = prepare_md5_sets(input_file)
+
+    with open(origin_md5_file) as f:
+        for line in f:
+            content = line.rstrip('\n')
+            if content != '' and content != None:
+                items = content.split(',')
+                if items[0] in md5_sets:
+                    result_file.write('%s,%s\n' % (items[0], items[1]))
+    result_file.close()
+
+
+if __name__ == '__main__':
+    base_num = sys.argv[1].strip()
+    main(base_num)
+
+
+# cd /YourPath/results/
+# rm *.txt
+
+# cd /YourPath/
+
+# python search_md5_to_mobile.py 130
+
+# 合并多个 txt 文件
+# cd /YourPath/results/
+# cat *.txt > all_mobiles.txt
+
+</pre>
