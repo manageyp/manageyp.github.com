@@ -1,0 +1,375 @@
+---
+layout: post
+title: Telegram Bot API Develop
+description: Telegram Bot API Develop
+categories: Python Ruby-on-Rails
+tags: Python Ruby-on-Rails
+record_on: 2018-02-04
+---
+
+<p>
+  本篇讲解如何创建电报群的机器人账号 Telegram Bot，将机器人账号加入电报群。
+  并配置回调接口地址 Webhook，搭建后端服务，接收机器人账号所在的群组的所有信息。以实现对电报群内用户加入、退出、邀请、聊天内容等消息的监和处理。
+</p>
+
+<h3>电报 Telegram 介绍</h3>
+<p>
+  Telegram 是一款即时通讯程序，它和 WhatsApp、微信等程序类似，能在你和所有联系人之间架起一座简单、便利的沟通桥梁。Telegram 与其他通讯工具最大的区别就在于，它能够更好保障用户的隐私安全。</br>
+
+  Telegram 的安全功能允许你建立秘密对话，这意味着你和联系人的对话不仅会被加密，而且不会被保存或是储存到 Telegram 的服务器中。你可以激活‘自动销毁’功能，让程序每隔 N 秒钟清除一次历史记录。</br>
+
+  除了隐私保护功能，Telegram 也提供和其他即时通讯系统相同的基础服务：群聊、文件分享、个性化提醒等。
+</p>
+
+<h3>机器人 Bot 介绍</h3>
+<p>
+    Telegram 提供 Bot 机器人功能，可用来管理机器人所在群里用户的加入、退出、邀请、聊天内容等。</br>
+    Telegram 上有一个叫做 @BotFather 的用户，用来管理所有机器人的，叫作：机器人之父。</br>
+    在 Telegram 上搜索 @BotFather，打开与机器人之父的聊天窗口，机器人会自动发送如下信息。
+</p>
+
+<pre class="prettyprint lang-html">
+I can help you create and manage Telegram bots. If you're new to the Bot API, please see the manual.
+
+You can control me by sending these commands:
+
+/newbot - create a new bot
+/mybots - edit your bots [beta]
+/mygames - edit your games [beta]
+
+Edit Bots
+/setname - change a bot's name
+/setdescription - change bot description
+/setabouttext - change bot about info
+/setuserpic - change bot profile photo
+/setcommands - change the list of commands
+/deletebot - delete a bot
+
+Bot Settings
+/token - generate authorization token
+/revoke - revoke bot access token
+/setinline - toggle inline mode
+/setinlinegeo - toggle inline location requests
+/setinlinefeedback - change inline feedback settings
+/setjoingroups - can your bot be added to groups?
+/setprivacy - toggle privacy mode in groups
+
+Games
+/newgame - create a new game
+/listgames - get a list of your games
+/editgame - edit a game
+/deletegame - delete an existing game
+</pre>
+
+
+<h3>创建机器人账号</h3>
+<p>
+    按照 BotFather 提示的信息，输入命令创建机器人账号。机器人账号的名称，为了有别于正常的用户名称，有一定的命名规范。</br>
+    机器人的用户名，需要以 _bot 或者 Bot 结尾，如：username_bot 或者 UserNameBot。
+</p>
+<pre class="prettyprint lang-html">
+
+# creting a new bot 创建用户
+/newbot
+
+# set username 设置用户名
+RubyFansBot
+
+Done! Congratulations on your new bot. You will find it at t.me/RubyFansBot. You can now add a description, about section and profile picture for your bot, see /help for a list of commands. By the way, when you've finished creating your cool bot, ping our Bot Support if you want a better username for it. Just make sure the bot is fully operational before you do this.
+
+Use this token to access the HTTP API:
+540000000:aaaaaaaaaaabbbbbbbbbbbbcccccccccccc
+
+For a description of the Bot API, see this page: https://core.telegram.org/bots/api
+</pre>
+
+<p>
+  默认情况下，机器人在群里，只能接受，用户加入，退出，被邀请类的信息。不能收到所有用户的聊天.</br>
+  按照下面的命令，进行 Privacy 隐私模式设置。
+</p>
+
+<p>
+  请注意即使做了以下的隐私模式设置，机器人，仍然不能接受群里所有的消息。
+  需要电报群的管理员，将机器人的账号 设置为管理员 admin。
+</p>
+
+<pre class="prettyprint lang-html">
+
+Sequence within a BotFather chat:
+
+You: /setprivacy
+
+BotFather: Choose a bot to change group messages settings.
+
+You: @your_name_bot
+
+BotFather: 'Enable' - your bot will only receive messages that either start with the '/' symbol or mention the bot by username.
+
+'Disable' - your bot will receive all messages that people send to groups.
+
+Current status is: ENABLED
+
+You: Disable
+
+BotFather: Success! The new status is: DISABLED. /help
+
+</pre>
+
+
+
+<h3>如何配置消息回调地址 Set Webhook</h3>
+<p>
+  下面借助 Python 的库 python-telegram-bot 在命令行内，测试一下机器人是否设置正常。</br>
+  并设置 Telegram 机器人消息回调的接口，由于接收群里一切消息。</br>
+  Telegram 官方要求回调接口，必须启用 HTTPs，证书可以使用 OpenSSL 自行创建，免去了购买证书的开销。
+</p>
+<pre class="prettyprint lang-html">
+# 使用 pip 安装
+sudo pip install python-telegram-bot
+
+# 进入命令行
+python
+
+# 引用库
+import telegram
+
+# 通过 机器人的 Token，获取机器人的信息
+bot = telegram.Bot(token='540000000:aaaaaaaaaaabbbbbbbbbbbbcccccccccccc')
+
+print(bot.get_me())
+
+{'username': u'RubyFansBot', 'first_name': u'RubyFansBot', 'is_bot': True, 'id': 540000000}
+
+# 获取 Webhook 配置信息
+info = bot.get_webhook_info()
+print info
+
+
+
+# 设置 Webhook
+url = 'https://hosts/bots/telegram'
+timeout = 120
+# 需要上传 SSL cert 证书，否则会报一下错误
+# SSL error {error: :SSL routines:tls_process_server_certificate:certificate verify failed
+certificate = open(os.path.join('/PATH/cert.crt'), "rb")
+# 设置为空数组，可以获得所有的群消息
+allowed_updates = []
+bot.set_webhook(url, certificate=certificate, timeout=timeout, allowed_updates=allowed_updates)
+
+# 查询获取 Webhook 的配置信息
+info = bot.get_webhook_info()
+print info
+
+{'url': u'https://hosts/bots/telegram', 'pending_update_count': 0, 'has_custom_certificate': True, 'max_connections': 40}
+
+</pre>
+
+<h3>搭建回调后台服务</h3>
+<p>
+    由于国内不能使用 Telegram 服务。回调服务，需要搭建在国外的服务器上，可以选用 AWS 的云主机等。</br>
+    OpenSSL 创建的证书，需要配置到 Nginx 中。
+    Nginx 配置完成之后，可以开发解析 Telegram 回调的消息接口。</br>
+    经测试，电报回调消息的结构如下。
+    回调的消息结构明确之后，就可以写消息内容的解析代码了。
+</p>
+<pre class="prettyprint lang-html">
+// 聊天消息
+{
+  "update_id":67000000,
+  "message":{
+    "message_id":41,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+      "language_code":"zh-Hans-CN"
+    },
+    "chat":{
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date":1517456341,
+    "text":"hello"
+  },
+  "bot":{ }
+}
+
+
+// 邀请用户进群
+{
+  "update_id":67000001,
+  "message":{
+    "message_id":12,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+    },
+    "chat":{
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date":1517400266,
+    "new_chat_participant":{
+      "id":520000001,
+      "is_bot":false,
+      "first_name":"Henry",
+      "last_name":"Li"
+    },
+    "new_chat_member":{
+      "id":520000001,
+      "is_bot":false,
+      "first_name":"Henry",
+      "last_name":"Li"
+    },
+    "new_chat_members":[
+      {
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+      }
+    ]
+  },
+  "bot":{ }
+}
+
+// 用户自己进群
+{
+    "update_id":671326009,
+    "message":{
+        "message_id":43,
+        "from":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "chat":{
+            "id":-1000000000007,
+            "title":"rubyfans",
+            "username":"rubyfans",
+            "type":"supergroup"
+        },
+        "date":1517464283,
+        "new_chat_participant":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_member":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_members":[
+            {
+                "id":520000001,
+                "is_bot":false,
+                "first_name":"Henry",
+                "last_name":"Li"
+                "language_code":"zh-Hans-CN"
+            }
+        ]
+    },
+    "bot":{ }
+}
+
+
+
+// 用户被踢出群
+{
+  "update_id":671325981,
+  "message":{
+    "message_id":22,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+      "language_code":"zh-CN"
+    },
+    "chat":{
+          "id":-1000000000007,
+          "title":"rubyfans",
+          "username":"rubyfans",
+          "type":"supergroup"
+    },
+    "date":1517406720,
+    "left_chat_participant":{
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+    },
+    "left_chat_member":{
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+    }
+  },
+  "controller":"bots",
+  "action":"telegram",
+  "bot":{ }
+}
+
+// 用户自行离开群
+{
+    "update_id":671326008,
+    "message":{
+        "message_id":42,
+        "from":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "chat":{
+              "id":-1000000000007,
+              "title":"rubyfans",
+              "username":"rubyfans",
+              "type":"supergroup"
+        },
+        "date":1517464264,
+        "left_chat_participant":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "left_chat_member":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        }
+    },
+    "bot":{ }
+}
+
+</pre>
+
+<h3>参考链接</h3>
+<p>
+  Telegram
+  <a href="https://mp.weixin.qq.com/s/y3wQOb6gwMxCDhRKbiSz4Q" target="_blank">传奇创始经历</a></br>
+  Telegram Bot API
+  <a href="https://core.telegram.org/bots/api" target="_blank">Bot 官方 API 文档</a></br>
+  Python interface for the Telegram Bot API
+  <a href="https://github.com/python-telegram-bot/python-telegram-bot" target="_blank">python-telegram-bot</a>
+</p>
