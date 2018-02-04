@@ -149,9 +149,11 @@ print info
 # 设置 Webhook
 url = 'https://hosts/bots/telegram'
 timeout = 120
+
 # 需要上传 SSL cert 证书，否则会报一下错误
 # SSL error {error: :SSL routines:tls_process_server_certificate:certificate verify failed
 certificate = open(os.path.join('/PATH/cert.crt'), "rb")
+
 # 设置为空数组，可以获得所有的群消息
 allowed_updates = []
 bot.set_webhook(url, certificate=certificate, timeout=timeout, allowed_updates=allowed_updates)
@@ -242,7 +244,7 @@ print info
 
 // 用户自己进群
 {
-    "update_id":671326009,
+    "update_id":67000002,
     "message":{
         "message_id":43,
         "from":{
@@ -290,7 +292,7 @@ print info
 
 // 用户被踢出群
 {
-  "update_id":671325981,
+  "update_id":67000003,
   "message":{
     "message_id":22,
     "from":{
@@ -327,7 +329,7 @@ print info
 
 // 用户自行离开群
 {
-    "update_id":671326008,
+    "update_id":67000004,
     "message":{
         "message_id":42,
         "from":{
