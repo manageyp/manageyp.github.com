@@ -115,9 +115,14 @@ BotFather: Success! The new status is: DISABLED. /help
 
 </pre>
 
-
-
-<h3>如何配置消息回调地址 Set Webhook</h3>
+<h3>搭建后台服务，配置消息回调地址 Webhook</h3>
+<p>
+    由于国内不能使用 Telegram 服务。回调服务，需要搭建在国外的服务器上，可以选用 AWS 的云主机等。</br>
+    OpenSSL 创建的证书，需要配置到 Nginx 中。
+    Nginx 配置完成之后，可以开发解析 Telegram 回调的消息接口。</br>
+    经测试，电报回调消息的结构如下。
+    回调的消息结构明确之后，就可以写消息内容的解析代码了。
+</p>
 <p>
   下面借助 Python 的库 python-telegram-bot 在命令行内，测试一下机器人是否设置正常。</br>
   并设置 Telegram 机器人消息回调的接口，由于接收群里一切消息。</br>
@@ -166,205 +171,26 @@ print info
 
 </pre>
 
-<h3>搭建回调后台服务</h3>
+<h3>Webhook 回调的消息</h3>
 <p>
-    由于国内不能使用 Telegram 服务。回调服务，需要搭建在国外的服务器上，可以选用 AWS 的云主机等。</br>
-    OpenSSL 创建的证书，需要配置到 Nginx 中。
-    Nginx 配置完成之后，可以开发解析 Telegram 回调的消息接口。</br>
-    经测试，电报回调消息的结构如下。
-    回调的消息结构明确之后，就可以写消息内容的解析代码了。
+    消息体结构和内容，请查看下一篇博文<a href="http://manageyp.github.io/python/ruby-on-rails/2018/02/04/telegram-bot-webhook-messages.html" target="_blank"> Telegram Bot Webhook Messages </a>
 </p>
-<pre class="prettyprint lang-html">
-// 聊天消息
-{
-  "update_id":67000000,
-  "message":{
-    "message_id":41,
-    "from":{
-      "id":4500000001,
-      "is_bot":false,
-      "first_name":"技术支持",
-      "last_name":"Tech Support",
-      "language_code":"zh-Hans-CN"
-    },
-    "chat":{
-      "id":-1000000000007,
-      "title":"rubyfans",
-      "username":"rubyfans",
-      "type":"supergroup"
-    },
-    "date":1517456341,
-    "text":"hello"
-  },
-  "bot":{ }
-}
 
 
-// 邀请用户进群
-{
-  "update_id":67000001,
-  "message":{
-    "message_id":12,
-    "from":{
-      "id":4500000001,
-      "is_bot":false,
-      "first_name":"技术支持",
-      "last_name":"Tech Support",
-    },
-    "chat":{
-      "id":-1000000000007,
-      "title":"rubyfans",
-      "username":"rubyfans",
-      "type":"supergroup"
-    },
-    "date":1517400266,
-    "new_chat_participant":{
-      "id":520000001,
-      "is_bot":false,
-      "first_name":"Henry",
-      "last_name":"Li"
-    },
-    "new_chat_member":{
-      "id":520000001,
-      "is_bot":false,
-      "first_name":"Henry",
-      "last_name":"Li"
-    },
-    "new_chat_members":[
-      {
-        "id":520000001,
-        "is_bot":false,
-        "first_name":"Henry",
-        "last_name":"Li"
-      }
-    ]
-  },
-  "bot":{ }
-}
+<h3>总结一下</h3>
+<p>
+【电报群机器人创建步骤】</br>
 
-// 用户自己进群
-{
-    "update_id":67000002,
-    "message":{
-        "message_id":43,
-        "from":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        },
-        "chat":{
-            "id":-1000000000007,
-            "title":"rubyfans",
-            "username":"rubyfans",
-            "type":"supergroup"
-        },
-        "date":1517464283,
-        "new_chat_participant":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        },
-        "new_chat_member":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        },
-        "new_chat_members":[
-            {
-                "id":520000001,
-                "is_bot":false,
-                "first_name":"Henry",
-                "last_name":"Li"
-                "language_code":"zh-Hans-CN"
-            }
-        ]
-    },
-    "bot":{ }
-}
+1. 搭建机器人后端服务，可申请阿里云香港区服务器，或亚马逊美国区的云服务</br>
+2. 搭建后端服务，配置 HTTPs，对接电报群 API 开发</br>
+3. 创建电报机器人 Bot，把机器人账号拉进群，并设置为 Admin</br>
+4. 使用 python-telegram-bot 配置机器人 Webhook 回调地址</br>
+5. 联调测试</br>
 
-
-
-// 用户被踢出群
-{
-  "update_id":67000003,
-  "message":{
-    "message_id":22,
-    "from":{
-      "id":4500000001,
-      "is_bot":false,
-      "first_name":"技术支持",
-      "last_name":"Tech Support",
-      "language_code":"zh-CN"
-    },
-    "chat":{
-          "id":-1000000000007,
-          "title":"rubyfans",
-          "username":"rubyfans",
-          "type":"supergroup"
-    },
-    "date":1517406720,
-    "left_chat_participant":{
-        "id":520000001,
-        "is_bot":false,
-        "first_name":"Henry",
-        "last_name":"Li"
-    },
-    "left_chat_member":{
-        "id":520000001,
-        "is_bot":false,
-        "first_name":"Henry",
-        "last_name":"Li"
-    }
-  },
-  "controller":"bots",
-  "action":"telegram",
-  "bot":{ }
-}
-
-// 用户自行离开群
-{
-    "update_id":67000004,
-    "message":{
-        "message_id":42,
-        "from":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        },
-        "chat":{
-              "id":-1000000000007,
-              "title":"rubyfans",
-              "username":"rubyfans",
-              "type":"supergroup"
-        },
-        "date":1517464264,
-        "left_chat_participant":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        },
-        "left_chat_member":{
-            "id":520000001,
-            "is_bot":false,
-            "first_name":"Henry",
-            "last_name":"Li"
-            "language_code":"zh-Hans-CN"
-        }
-    },
-    "bot":{ }
-}
-
-</pre>
+【注意事项】</br>
+1. 电报群回调接口，必须启用 HTTPs；无需购买证书，可以自行创建</br>
+2. 请提早准备一台服务器，同步以太坊的数据，准备脚本，用于活动后期，批量、自动化打币
+</p>
 
 <h3>参考链接</h3>
 <p>
