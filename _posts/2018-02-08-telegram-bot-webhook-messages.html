@@ -1,0 +1,259 @@
+---
+layout: post
+title: Telegram Bot Webhook Messages
+description: Telegram Bot Webhook Messages
+categories: Python Ruby-on-Rails
+tags: Python Ruby-on-Rails
+record_on: 2018-02-08
+---
+
+<p>
+  本篇将电报群机器人，通过 Webhook 回调接口，返回的消息体，收集和展示出来。
+  便于对电报群消息的解析和监控处理。
+</p>
+
+<h3>Webhook 回调的消息处理和存储注意事项</h3>
+<p>
+  1. 消息的内容，可能包含表情，视频，图片等；用户的昵称也会有表情<br>
+  2. 关于用户的个人信息模块，一开始没有返回 username，运行后期才出现
+</p>
+
+<h3>Webhook 回调的消息示例</h3>
+<pre class="prettyprint lang-html">
+// 系统上线后期，发现，用户结构内，包含 username
+{
+  "update_id": 671333111,
+  "message": {
+    "message_id": 10014,
+    "from": {
+      "id": 531161011,
+      "is_bot": false,
+      "first_name": "小王",
+      "username": "telegram18888"
+    },
+    "chat": {
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date": 1517991125,
+    "new_chat_participant": {
+      "id": 527651111,
+      "is_bot": false,
+      "first_name": "jack",
+      "username": "jack2018"
+    },
+    "new_chat_member": {
+      "id": 527651111,
+      "is_bot": false,
+      "first_name": "jack",
+      "username": "jack2018"
+    },
+    "new_chat_members": [
+      {
+      "id": 527651111,
+      "is_bot": false,
+      "first_name": "jack",
+      "username": "jack2018"
+      }
+    ]
+  },
+  "bot": { }
+}
+
+// 聊天消息
+{
+  "update_id":67000000,
+  "message":{
+    "message_id":41,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+      "language_code":"zh-Hans-CN"
+    },
+    "chat":{
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date":1517456341,
+    "text":"hello"
+  },
+  "bot":{ }
+}
+
+
+// 邀请用户进群
+{
+  "update_id":67000001,
+  "message":{
+    "message_id":12,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+    },
+    "chat":{
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date":1517400266,
+    "new_chat_participant":{
+      "id":520000001,
+      "is_bot":false,
+      "first_name":"Henry",
+      "last_name":"Li"
+    },
+    "new_chat_member":{
+      "id":520000001,
+      "is_bot":false,
+      "first_name":"Henry",
+      "last_name":"Li"
+    },
+    "new_chat_members":[
+      {
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+      }
+    ]
+  },
+  "bot":{ }
+}
+
+// 用户自己进群
+{
+    "update_id":67000002,
+    "message":{
+        "message_id":43,
+        "from":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "chat":{
+            "id":-1000000000007,
+            "title":"rubyfans",
+            "username":"rubyfans",
+            "type":"supergroup"
+        },
+        "date":1517464283,
+        "new_chat_participant":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_member":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_members":[
+            {
+                "id":520000001,
+                "is_bot":false,
+                "first_name":"Henry",
+                "last_name":"Li"
+                "language_code":"zh-Hans-CN"
+            }
+        ]
+    },
+    "bot":{ }
+}
+
+
+
+// 用户被踢出群
+{
+  "update_id":67000003,
+  "message":{
+    "message_id":22,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "first_name":"技术支持",
+      "last_name":"Tech Support",
+      "language_code":"zh-CN"
+    },
+    "chat":{
+          "id":-1000000000007,
+          "title":"rubyfans",
+          "username":"rubyfans",
+          "type":"supergroup"
+    },
+    "date":1517406720,
+    "left_chat_participant":{
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+    },
+    "left_chat_member":{
+        "id":520000001,
+        "is_bot":false,
+        "first_name":"Henry",
+        "last_name":"Li"
+    }
+  },
+  "controller":"bots",
+  "action":"telegram",
+  "bot":{ }
+}
+
+// 用户自行离开群
+{
+    "update_id":67000004,
+    "message":{
+        "message_id":42,
+        "from":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "chat":{
+              "id":-1000000000007,
+              "title":"rubyfans",
+              "username":"rubyfans",
+              "type":"supergroup"
+        },
+        "date":1517464264,
+        "left_chat_participant":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        },
+        "left_chat_member":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "last_name":"Li"
+            "language_code":"zh-Hans-CN"
+        }
+    },
+    "bot":{ }
+}
+
+</pre>
+
+<h3>如何创建电报群机器人，配置 Webhook 回调的消息</h3>
+<p>
+    请参考上一篇文章 <a href="http://manageyp.github.io/python/ruby-on-rails/2018/02/04/telegram-bot-api-develop.html" target="_blank"> Telegram Bot API Develop </a>
+</p>
