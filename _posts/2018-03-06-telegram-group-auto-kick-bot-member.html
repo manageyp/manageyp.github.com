@@ -1,0 +1,144 @@
+---
+layout: post
+title: Telegram Group Auto Kick Bot Member
+description: Telegram Group Auto Kick Bot Member
+categories: Python Ruby-on-Rails
+tags: Python Ruby-on-Rails
+record_on: 2018-03-06
+---
+
+<p>
+  电报群社区里最烦人的是机器人账号，滥发广告，严重影响社区清新的氛围。<br>
+  本文讲解，如何通过在电报群里，设置自己的机器人账号，监控群内新加入的账号。
+  检测到机器人账号，立即自动踢群。
+</p>
+
+<h3>如何创建自己的机器人账号，配置 Webhook 回调地址</h3>
+<p>
+  请参考之前的博文，创建机器人账号 Telegram Bot account
+  <a href="http://manageyp.github.io/python/ruby-on-rails/2018/02/04/telegram-bot-api-develop.html">Telegram Bot API Develop</a>
+</p>
+
+<h3>机器人账号接收到的新人入群消息通知结构</h3>
+<p>
+  本节重点研究电报群加入新人的通知消息结构体<br>
+  更多机器人接收的群消息结构，请看上一篇博文：
+  <a href="http://manageyp.github.io/python/ruby-on-rails/2018/02/08/telegram-bot-webhook-messages.html">Telegram Bot Webhook Messages</a>
+</p>
+
+<h3>新人主动加入</h3>
+<pre class="prettyprint lang-html">
+// 用户自己进群
+{
+    "update_id":67000002,
+    "message":{
+        "message_id":43,
+        "from":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "username": "telegram18888"
+            "language_code":"zh-Hans-CN"
+        },
+        "chat":{
+            "id":-1000000000007,
+            "title":"rubyfans",
+            "username":"rubyfans",
+            "type":"supergroup"
+        },
+        "date":1517464283,
+        "new_chat_participant":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "username": "telegram18888"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_member":{
+            "id":520000001,
+            "is_bot":false,
+            "first_name":"Henry",
+            "username": "telegram18888"
+            "language_code":"zh-Hans-CN"
+        },
+        "new_chat_members":[
+            {
+                "id":520000001,
+                "is_bot":false,
+                "first_name":"Henry",
+                "username": "telegram18888"
+                "language_code":"zh-Hans-CN"
+            }
+        ]
+    },
+    "bot":{ }
+}
+</pre>
+
+
+<h3>新人被动邀请进群</h3>
+<pre class="prettyprint lang-html">
+// 邀请用户进群
+{
+  "update_id":67000001,
+  "message":{
+    "message_id":12,
+    "from":{
+      "id":4500000001,
+      "is_bot":false,
+      "username": "telegram18888"
+    },
+    "chat":{
+      "id":-1000000000007,
+      "title":"rubyfans",
+      "username":"rubyfans",
+      "type":"supergroup"
+    },
+    "date":1517400266,
+    "new_chat_participant":{
+      "id":520000001,
+      "is_bot":true,
+      "username": "telegramBot"
+    },
+    "new_chat_member":{
+      "id":520000001,
+      "is_bot":true,
+      "username": "telegramBot"
+    },
+    "new_chat_members":[
+      {
+        "id":520000001,
+        "is_bot":true,
+        "username": "telegramBot"
+      }
+    ]
+  },
+  "bot":{ }
+}
+</pre>
+
+
+<h3>对接电报群踢人的接口</h3>
+<pre class="prettyprint lang-html">
+require 'uri'
+require 'net/http'
+
+def kick_chat_member(chat_id, user_id)
+  url = "https://api.telegram.org/bot540000000:aaaaaaaaaaabbbbbbbbbbbbcccccccccccc/kickChatMember"
+  data = {'chat_id': chat_id, 'user_id': user_id}
+  puts "kick bot #{chat_id} #{user_id}"
+  response = Net::HTTP.post URI(url), data.to_json, "Content-Type" => "application/json"
+  puts response.inspect
+end
+
+</pre>
+
+<h3>参考链接</h3>
+<p>
+  Telegram
+  <a href="https://mp.weixin.qq.com/s/y3wQOb6gwMxCDhRKbiSz4Q" target="_blank">传奇创始经历</a></br>
+  Telegram Bot API
+  <a href="https://core.telegram.org/bots/api" target="_blank">Bot 官方 API 文档</a></br>
+  Python interface for the Telegram Bot API
+  <a href="https://github.com/python-telegram-bot/python-telegram-bot" target="_blank">python-telegram-bot</a>
+</p>
