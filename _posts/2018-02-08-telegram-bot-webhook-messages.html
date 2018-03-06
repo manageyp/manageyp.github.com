@@ -15,6 +15,11 @@ record_on: 2018-02-08
 <h3>Webhook 回调的消息处理和存储注意事项</h3>
 <p>
   1. 消息的内容，可能包含表情，视频，图片等；用户的昵称也会有表情<br>
+  如果数据库采用 MySQL，需要将编码集改为 utf8mb4，并且，应用层的连接 encoding 也需要改为 utf8mb4 字符集。<br>
+  MySQL 支持表情字符的保存详细信息请看之前的博客：
+  <a href="http://manageyp.github.io/ruby-on-rails/2015/03/05/aliyun-rds-change-mysql-charset-from-utf8-to-utf8mb4.html">Aliyun RDS Change MySQL Charset From utf8 To utf8mb4</a>
+</p>
+<p>
   2. 关于用户的个人信息模块，一开始没有返回 username，运行后期才出现
 </p>
 
