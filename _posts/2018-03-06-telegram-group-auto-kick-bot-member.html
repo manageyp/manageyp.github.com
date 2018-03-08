@@ -120,17 +120,16 @@ record_on: 2018-03-06
 
 <h3>对接电报群踢人的接口</h3>
 <pre class="prettyprint lang-html">
-require 'uri'
-require 'net/http'
+  require 'uri'
+  require 'net/http'
 
-def kick_chat_member(chat_id, user_id)
-  url = "https://api.telegram.org/bot540000000:aaaaaaaaaaabbbbbbbbbbbbcccccccccccc/kickChatMember"
-  data = {'chat_id': chat_id, 'user_id': user_id}
-  puts "kick bot #{chat_id} #{user_id}"
-  response = Net::HTTP.post URI(url), data.to_json, "Content-Type" => "application/json"
-  puts response.inspect
-end
-
+  def kick_chat_member(chat_id, user_id)
+    url = "https://api.telegram.org/bot540000000:aaaaaaaaaaabbbbbbbbbbbbcccccccccccc/kickChatMember"
+    data = {'chat_id': chat_id, 'user_id': user_id}
+    puts "kick bot #{chat_id} #{user_id}"
+    response = Net::HTTP.post URI(url), data.to_json, "Content-Type" => "application/json"
+    puts response.inspect
+  end
 </pre>
 
 <h3>参考链接</h3>
