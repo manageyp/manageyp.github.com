@@ -1,0 +1,189 @@
+---
+layout: post
+title: Most Commonly Used SQL Scripts on MySQL Command Line Client
+description: Most Commonly Used SQL Scripts on MySQL Command Line Client
+categories: Database
+tags: Database
+record_on: 2018-03-09
+---
+
+<p>
+此篇博客将记述在日常工作中，常用的 MySQL SQL 脚本。会持续的更新。
+</p>
+
+<h3>数据库 Database 操作</h3>
+<p>
+  数据库用户创建和权限控制
+  <pre class="prettyprint lang-html">
+  # MySQL 创建 user
+  # CREATE USER 'username'@'host' IDENTIFIED BY 'password';
+  # 例子:
+  CREATE USER 'user_test'@'localhost' IDENTIFIED BY '123456';
+
+  # 开通访问权限
+  GRANT ALL ON *.* TO 'user_test'@'localhost' WITH GRANT OPTION;
+
+  SHOW GRANTS FOR user_test@localhost;
+
+  # 密码丢失之后处理
+
+  # 用 SET PASSWORD 命令
+　mysql -u user_test
+　mysql> SET PASSWORD FOR 'user_test'@'localhost' = PASSWORD('newpass');
+
+  # 用 UPDATE 直接编辑 user 表
+　mysql -u user_test
+　mysql> use mysql;
+　mysql> UPDATE user SET Password = PASSWORD('newpass') WHERE user = 'user_test';
+
+　mysql> FLUSH PRIVILEGES;
+
+  # 在丢失 user_test 密码的时候，可以这样
+　mysqld_safe --skip-grant-tables&
+　mysql -u user_test mysql
+　mysql> UPDATE user SET password=PASSWORD("new password") WHERE user='user_test';
+
+　mysql> FLUSH PRIVILEGES;
+
+  </pre>
+</p>
+<p>
+  数据库备份 mysqldump 和还原 restore
+  <pre class="prettyprint lang-html">
+  # 从远程机器，导出数据库，包含 Schema 信息
+  mysqldump -hHost -uRoot -pPassword database_name  > database_name20170316.sql
+
+  # 导出数据库，包含 Schema 信息
+  mysqldump -uRoot -pPassword database_name  > database_name20170316.sql
+
+  # 指定导出数据表，包含 Schema 信息
+  mysqldump -uRoot -pPassword database_name user web_user > database_name_user20120907.sql
+
+  # 导出数据库，不包含 Schema 信息，仅包含数据
+  mysqldump -uRoot -pPassword --no-create-db --no-create-info database_name > database_name-20180227.sql
+
+  # 还原数据
+  mysql  -u Root -p database_name < database_name_user20120907.sql
+  </pre>
+</p>
+<p>
+  数据库设置。
+  <pre class="prettyprint lang-html">
+  # mysql error
+  GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+
+  SELECT @@GLOBAL.sql_mode;
+  SELECT @@SESSION.sql_mode;
+
+  # 一次性设置，服务重启后失效
+  SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+  SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
+  # 永久设置，重启后永久失效
+  /etc/mysql/mysql.conf.d
+  mysqld.cnf
+
+  [mysqld]
+  sql-mode="STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+  </pre>
+</p>
+<p>
+  数据库查看，创建，删除等。
+  <pre class="prettyprint lang-html">
+  # Mysql create database utf8 编码
+
+  CREATE DATABASE IF NOT EXISTS supergw
+  DEFAULT CHARACTER SET utf8
+  DEFAULT COLLATE utf8_general_ci;
+
+  # 查看数据库列表
+  show databases;
+
+  # 删除数据
+  drop database db_name;
+
+  # 使用数据库
+  use `test_db`;
+
+  # 退出
+  exit;
+  </pre>
+</p>
+
+
+<h3>数据表 Table 操作</h3>
+<p>
+  表的创建，新建字段，新建索引，修改字段类型等。
+  <pre class="prettyprint lang-html">
+  # 创建表
+  CREATE TABLE `users` (
+    `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `email` int(11) DEFAULT NULL COMMENT '邮箱',
+    `name` varchar(255) DEFAULT NULL COMMENT '名称',
+    `price` decimal(10, 2) DEFAULT '0.00' COMMENT '定价',
+    `position` int(11) DEFAULT 0 COMMENT '排序',
+    `status` int(11) DEFAULT 0 COMMENT '状态',
+    `created_at` datetime NOT NULL,
+    `updated_at` datetime NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `index_users_on_name` (`name`),
+    UNIQUE KEY `index_users_on_email` (`email`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+  # 查看表的创建结构
+  show create table tablename \G;
+
+  # 清空表至初始状态
+  truncate table tablename;
+
+  # 删除表
+  drop table if exists `table_a`;
+
+  # 增加字段，设置索引
+  ALTER table table_name Add column column_name57 integer AFTER column_name56;
+
+  # 修改字段类型
+  ALTER TABLE tabel_name CHANGE  column_name column_name LONGTEXT;
+  </pre>
+</p>
+
+<h3>数据表查询 Query select</h3>
+<p>
+  查询数据，将查询结果保存到临时表。
+  <pre class="prettyprint lang-html">
+  # 将查询结果保存到临时表
+  insert into temp_user_price(user_id,price,created_at)(select user_id,price,created_at from user_price where user_id = 1);
+
+  # 判断字符的长度
+  select id,name from users where CHAR_LENGTH(name) > 7;
+
+
+  # left join 查询右侧表，为空的情况
+  select a.user_id,b.id
+    from table_a as a
+    left join table_b as b on a.user_id = b.user_id
+    where b.id is null;
+
+  # COALESCE 函数从值列表中返回第一个非NULL的值，当遇到NULL值时将其替换为0。
+  UPDATE `users` SET `users_count` = COALESCE(`users_count`, 0) + 1 WHERE `users`.`id` = 26;
+  </pre>
+</p>
+
+<h3>数据表更新 Update</h3>
+<p>
+  数据更新操作。
+  <pre class="prettyprint lang-html">
+  # 更新一条记录
+  update table_a set `name` = 'henry' where id = 1 limit 1;
+
+  # 两个表关联后，更新其中一个表
+  update table_a,table_b
+    set table_a.begin_day = table_b.begin_day,
+        table_a.begin_price = table_b.begin_price
+    where table_a.user_id = table_b.user_id;
+  </pre>
+</p>
+
+
+
+
