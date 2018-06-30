@@ -1,0 +1,135 @@
+---
+layout: post
+title: Chinese Word Segmentation Python Tools
+description: Chinese Word Segmentation Python Tools
+categories: Python
+tags: Python
+record_on: 2018-06-27
+---
+
+<p>
+前一篇讲解了中文分词的基本概念，本篇介绍几款基于 Python 语言的中文分词工具，并分析整理其各自的优缺点。<br>
+这四款工具为：<a href="https://github.com/fxsjy/jieba" target="_blank">Jieba</a>、
+<a href="https://github.com/isnowfy/snownlp" target="_blank">SnowNLP</a>、
+<a href="https://github.com/tsroten/pynlpir" target="_blank">PyNLPIR</a>和
+<a href="https://github.com/thunlp/THULAC-Python" target="_blank">THULAC</a>。
+</p>
+
+<h3>Jieba 结巴中文分词</h3>
+<p>
+  “结巴”中文分词：做最好的 Python 中文分词组件。
+</p>
+<p>
+  <b>Jieba 结巴中文分词的特点</b><br>
+  支持三种分词模式：精确模式，全模式，搜索引擎模式；
+  支持繁体分词；
+  支持自定义词典；
+  支持并行分词；
+  支持词性标注；
+  MIT 授权协议；
+</p>
+<p>
+  <b>Jieba 结巴使用基于统计的分词算法，主要有以下几种</b><br>
+  一种算法是基于前缀词典实现高效的词图扫描，生成句子中汉字所有可能成词情况，所构成的有向无环图<br>
+  另一种算法是采用了动态规划查找最大概率路径，找出基于词频的最大切分组合<br>
+  对于没有被收录在分词词表中的词，采用了基于汉字成词能力的 HMM 模型，使用了 Viterbi 算法
+</p>
+
+<p>
+  <b>安装步骤和示例代码</b>
+  <pre class="prettyprint lang-html">
+  pip install jieba
+
+  import jieba
+
+  seg_list = jieba.cut("我在浦东软件园写代码")  # 默认是精确模式
+  print(" / ".join(seg_list))
+  # 我 / 在 / 浦东 / 软件园 / 写 / 代码
+  </pre>
+</p>
+
+
+<h3>SnowNLP：Simplified Chinese Text Processing</h3>
+<p>
+  SnowNLP 是一个 python 写的类库，可以方便的处理中文文本内容，是受到了 <a href="https://github.com/sloria/TextBlob" target="_blank">TextBlob</a> 的启发而写的，和 TextBlob 不同的是，这里没有用 NLTK，所有的算法都是作者自己实现的，并且自带了一些训练好的字典。注意本程序都是处理的 unicode 编码，所以使用时请自行 decode 成 unicode。
+</p>
+<p>
+  <b>SnowNLP 分词的特点</b><br>
+  支持中文分词；词性标注；情感分析；文本分类；可转换成拼音；支持繁体转简体；提取文本关键词；提取文本摘要；文本相似度
+</p>
+<p>
+  <b>安装步骤和示例代码</b>
+  <pre class="prettyprint lang-html">
+    pip install snownlp
+
+    from snownlp import SnowNLP
+
+    s = SnowNLP("我热爱编程，不喜欢加班")
+    result = s.words
+    print(len(result), '/'.join(result))
+    # 我 / 热爱 / 编程 / ， / 不 / 喜欢 / 加班
+  </pre>
+</p>
+
+
+<h3>PyNLPIR：Simplified Chinese Text Processing</h3>
+<p>
+  <a href="https://github.com/NLPIR-team/NLPIR" target="_blank">NLPIR</a> 分词系统，前身为 2000 年发布的 ICTCLAS 词法分析系统，
+  是由北京理工大学张华平博士研发的中文分词系统，经过十余年的不断完善，拥有丰富的功能和强大的性能。NLPIR 是一整套对原始文本集进行处理和加工的软件，提供了中间件处理效果的可视化展示，也可以作为小规模数据的处理加工工具。
+  <a href="https://github.com/tsroten/pynlpir" target="_blank">PyNLPIR</a> 是 NLPIR 的 Python 实现的版本。
+</p>
+<p>
+  <b>PyNLPIR 分词的特点</b><br>
+  支持中文分词；词性标注；命名实体识别；用户词典、新词发现与关键词提取等
+</p>
+<p>
+  <b>安装步骤和示例代码</b>
+  <pre class="prettyprint lang-html">
+    pip install pynlpir
+
+    import pynlpir
+    pynlpir.open()
+
+    s = '欢迎科研人员、技术工程师、企事业单位与个人参与NLPIR平台的建设工作。'
+    pynlpir.segment(s)
+
+    [('欢迎', 'verb'), ('科研', 'noun'), ('人员', 'noun'), ('、', 'punctuation mark'), ('技术', 'noun'), ('工程师', 'noun'), ('、', 'punctuation mark'), ('企事业', 'noun'), ('单位', 'noun'), ('与', 'conjunction'), ('个人', 'noun'), ('参与', 'verb'), ('NLPIR', 'noun'), ('平台', 'noun'), ('的', 'particle'), ('建设', 'verb'), ('工作', 'verb'), ('。', 'punctuation mark')]
+  </pre>
+</p>
+
+
+<h3>THULAC</h3>
+<p>
+  <a href="https://github.com/thunlp/THULAC-Python" target="_blank">THULAC</a>（THU Lexical Analyzer for Chinese）由清华大学自然语言处理与社会人文计算实验室研制推出的一套中文词法分析工具包。
+
+</p>
+<p>
+  <b>THULAC 分词的特点</b><br>
+    1. 能力强。利用我们集成的目前世界上规模最大的人工分词和词性标注中文语料库（约含5800万字）训练而成，模型标注能力强大。<br>
+    2. 准确率高。该工具包在标准数据集 Chinese Treebank（CTB5）上分词的F1值可达97.3％，词性标注的F1值可达到92.9％，与该数据集上最好方法效果相当。<br>
+    3. 速度较快。同时进行分词和词性标注速度为300KB/s，每秒可处理约15万字。只进行分词速度可达到1.3MB/s。
+</p>
+<p>
+  <b>安装步骤和示例代码</b>
+  <pre class="prettyprint lang-html">
+    pip install thulac
+
+    import thulac
+
+    thu1 = thulac.thulac()  # 默认模式
+    text = thu1.cut("杭州西湖风景很好，是旅游胜地！", text=True)  #进行一句话分词
+    print(text)
+    # [['杭州', 'ns'], ['西湖', 'ns'], ['风景', 'n'], ['很', 'd'], ['好', 'a'], ['，', 'w'], ['是', 'v'], ['旅游', 'v'], ['胜地', 'n'], ['！', 'w']]
+  </pre>
+</p>
+
+
+
+<h3>参考链接</h3>
+<p>
+  <a href="https://cuiqingcai.com/5844.html" target="_blank">中文分词原理及工具</a></br>
+  <a href="https://github.com/fxsjy/jieba" target="_blank">Python Jieba Tools</a></br>
+  <a href="https://blog.csdn.net/sinat_26917383/article/details/77067515" target="_blank">python︱六款中文分词模块尝试</a></br>
+  <a href="https://blog.csdn.net/sinat_26917383/article/details/71436563" target="_blank">python + gensim︱jieba分词、词袋doc2bow、TFIDF文本挖掘</a></br>
+</p>
+
