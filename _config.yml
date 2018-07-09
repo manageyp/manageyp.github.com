@@ -1,4 +1,26 @@
-title: You can do well, you must do well.
-author: Henry
+author: Henry li
 email: manageyp@gmail.com
+title: Coding for fun.
+baseurl: /
+github_username: manageyp
+tags: Python Ruby MySQL
+books: programming
 copyright: Designed by <a href="https://github.com/manageyp">Henry</a>
+
+# Build settings
+# markdown: kramdown
+# theme: minima
+# plugins:
+#   - jekyll-feed
+
+# Exclude from processing.
+# The following items will not be processed, by default. Create a custom list
+# to override the default setting.
+# exclude:
+#   - Gemfile
+#   - Gemfile.lock
+#   - node_modules
+#   - vendor/bundle/
+#   - vendor/cache/
+#   - vendor/gems/
+#   - vendor/ruby/
