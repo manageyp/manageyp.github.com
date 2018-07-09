@@ -1,0 +1,111 @@
+---
+layout: default
+---
+
+<style type="text/css" media="screen">
+/*404 Error Page v1
+------------------------------------*/
+.error-v1 {
+  padding-bottom: 30px;
+  text-align: center;
+}
+
+.error-v1 p {
+  color: #555;
+  font-size: 16px;
+}
+
+.error-v1 span {
+  color: #555;
+  display: block;
+  font-size: 35px;
+  font-weight: 200;
+}
+
+.error-v1 span.error-v1-title {
+  color: #777;
+  font-size: 180px;
+  line-height: 200px;
+  padding-bottom: 20px;
+}
+
+.service-block-h1 {
+  margin-top: 20px;
+  text-align: center;
+  position: relative;
+  padding: 45px 20px 20px;
+  border: 1px solid #72c02c;
+}
+
+/*For Mobile Devices*/
+@media (max-width: 500px) {
+  .error-v1 p {
+    font-size: 12px;
+  }
+
+  .error-v1 span {
+    font-size: 25px;
+  }
+
+  .error-v1 span.error-v1-title {
+    font-size: 140px;
+  }
+}
+</style>
+
+<div class="header">
+    <div class="container">
+        <a class="logo" id="earth-logo" title="Time is flying." href="/"><img src="/images/demo/earth_logo.png" alt="Earth"></a>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="fa fa-bars"></span>
+        </button>
+    </div><!--/end container-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/categories/">Categories</a></li>
+                <li><a href="/archives/">Archives</a></li>
+                <li><a href="/books/">Books</a></li>
+                <li><a href="/about/">About</a></li>
+            </ul>
+        </div><!--/end container-->
+    </div><!--/navbar-collapse-->
+</div><!--=== End Header ===-->
+
+<div class="container content">
+  <!--Error Block-->
+  <div class="row margin-bottom-40">
+    <div class="col-md-8 col-md-offset-2">
+      <div class="error-v1">
+        <span class="error-v1-title">404</span>
+        <span>That’s an error!</span>
+        <p>The requested URL was not found on this server.</p>
+      </div>
+    </div>
+  </div>
+  <!--End Error Block-->
+  <div class="row   margin-bottom-40">
+    <div class="col-md-6">
+      <div class="service-block-h1 service-or">
+        <div class="service-bg"></div>
+        <i class="icon-bulb"></i>
+        <h4>Not what you were looking for?</h4>
+        <p>If the page is not what you are looking for, try searching the page.</p>
+        <a class="btn-u btn-bordered" href="/"> Discover More</a>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="service-block-h1 service-or">
+        <div class="service-bg"></div>
+        <i class="icon-users"></i>
+        <h4>Contact me</h4>
+        <p>If you have a problem with the website, please contact me.</p>
+        <a class="btn-u btn-bordered" href="mailto:manageyp@gmail.com?subject=error%20Henry&body=Error%20from%20your%20blog."> Contact Me</a>
+      </div>
+    </div>
+  </div>
+
+</div>
