@@ -1667,26 +1667,6 @@ img.img-center,
   background-position: center;
 }
 
-/*.parallax-quote:after {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  content: " ";
-  position: absolute;
-  background: rgba(0,0,0,0.8);
-}*/
-
-/*.parallax-quote:before {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  content: " ";
-  position: absolute;
-  background: url(../images/demo/gridtile.png) repeat;
-}*/
-
 /*Parallax Quote Inner*/
 .parallax-quote-in {
   z-index: 1;
