@@ -1,47 +1,63 @@
 <!DOCTYPE html>
-<html  class="fuelux" lang="en">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="author" itemprop="author" content="Henry" />
-  <meta name="keywords" itemprop="keywords" content="{% if page.tags %}{{ page.tags }}{% else %} Henry's Blog {% endif %}" />
-  <meta name="description" itemprop="description" content="{% if page.description %}{{ page.description }}{% else %} Henry {% endif %}" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>{% if page.title %}{{ page.title }} - {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-
-  <link href="/stylesheets/fuelux/fuelux.min.css" rel="stylesheet" type="text/css">
-  <link href="/stylesheets/fuelux/fuelux-responsive.min.css" rel="stylesheet" type="text/css">
-
-  <link rel="stylesheet" href="/stylesheets/pygment_trac.css">
-  <link rel="stylesheet" href="/stylesheets/prettify.css">
-  <link rel="stylesheet" href="/stylesheets/sunburst.css">
-
-  <link rel="stylesheet" href="/stylesheets/blog_base.css">
-
-  <script src="/javascripts/jquery.min.1.8.2.js"></script>
-  <script src="/javascripts/fuelux/loader.min.js"></script>
-
-  <script src="/javascripts/prettify.js"></script>
-  <script src="/javascripts/lang-css.js"></script>
-  <script src="/javascripts/main.js"></script>
-
-  <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-
+    <meta charset="UTF-8" />
+    <meta name="author" itemprop="author" content="Henry li" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" itemprop="keywords" content="{% if page.tags %}{{ page.tags }}{% else %} Henry Li's Blog {% endif %}" />
+    <meta name="description" itemprop="description" content="{% if page.description %}{{ page.description }}{% else %} Henry Li's Blog {% endif %}" />
+    <title>{% if page.title %} {{ page.title }} {% else %} Henry Li's Blog {% endif %}</title>
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/stylesheets/bootstrap.min.v3.3.7.css">
+    <link rel="stylesheet" href="/stylesheets/font-awesome.min.4.7.0.css">
+    <link rel="stylesheet" href="/stylesheets/unify.1.9.2.css">
 </head>
+<body>
+    <div class="wrapper">
+        {{ content }}
+        <div class="footer-v1">
+            <div class="copyright">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>&copy; 2010-2018, <a href="https://github.com/manageyp" target="_blank">Henry Li</a> All Rights Reserved. Feel free to <a href="mailto:manageyp@gmail.com?subject=Hello%20Henry&body=Greeting%20from%20your%20blog.">contact</a> me.</p>
+                        </div>
+                        <!-- Social Links -->
+                        <div class="col-md-6">
+                            <ul class="footer-socials list-inline">
+                                <li><a href="https://github.com/manageyp" target="_blank" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Github"><i class="fa fa-github"></i></a>
+                                </li>
+                                <li><a href="https://www.linkedin.com/in/henry-li-01318798/" target="_blank" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Linkedin"><i class="fa fa-linkedin"></i></a>
+                                </li>
+                                <li><a href="javascript:void(0);" target="_blank" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Facebook"><i class="fa fa-facebook"></i></a>
+                                </li>
+                                <li><a href="javascript:void(0);" target="_blank" class="tooltips" data-toggle="tooltip" data-placement="top" title="" data-original-title="Twitter"><i class="fa fa-twitter"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- End Social Links -->
+                    </div>
+                </div>
+            </div><!--/copyright-->
+        </div><!--=== End Footer Version 1 ===-->
+    </div><!--/wrapper-->
+    <script type="text/javascript" src="/javascripts/jquery.min.1.11.3.js"></script>
+    <script type="text/javascript" src="/javascripts/bootstrap.min.v3.3.7.js"></script>
+    <script type="text/javascript" src="/javascripts/back-to-top.v1.1.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+            // Bootstrap Tooltips and Popovers
+            jQuery('.tooltips').tooltip();
 
-<body data-spy="scroll" data-target=".subnav" data-offset="50" onload="prettyPrint();">
-  {% include nav.html %}
-  <div class="container">
-    <div class="hero-unit">
-      {{ content }}
-    </div>
-    {% include footer.html %}
-  </div>
+            /* Bootstrap Carousel */
+            jQuery('.carousel').carousel({
+                interval: 15000,
+                pause: 'hover'
+            });
+
+        });
+    </script>
   {% include tongji.html %}
 </body>
 </html>
