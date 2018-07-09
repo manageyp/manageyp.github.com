@@ -1,10 +1,105 @@
 ---
-layout: page
-title: Henry's Blog - Manage Your Project
+layout: default
+title: Henry Li's Blog
+description: Coding for fun. Manage Your Project - You can do well, you must do well.
 permalink: /
 ---
-{% for post in site.posts limit: 1 %}
-  <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
-  {{ post.content }}
-  <div>{{ post.record_on }}</div>
-{% endfor %}
+
+<div class="header">
+    <div class="container">
+        <a class="logo" id="earth-logo" title="Time is flying." href="/"><img src="/images/demo/earth_logo.png" alt="Earth"></a>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="fa fa-bars"></span>
+        </button>
+    </div><!--/end container-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/">Home</a></li>
+                <li><a href="/categories/">Categories</a></li>
+                <li><a href="/archives/">Archives</a></li>
+                <li><a href="/books/">Books</a></li>
+                <li class="mega-menu-fullwidth"><a href="/about/">About</a></li>
+            </ul>
+        </div><!--/end container-->
+    </div><!--/navbar-collapse-->
+</div><!--=== End Header ===-->
+<!--=== Content Part ===-->
+<div class="container content">
+    <div class="row blog-page">
+        <!-- Left Sidebar -->
+        <div class="col-md-9 md-margin-bottom-30">
+            {% for post in site.posts limit: 5 %}
+                <div class="row blog blog-medium margin-bottom-30">
+                    <div class="col-md-4">
+                        <img class="img-responsive" src="/images/demo/img22.jpg" alt="">
+                    </div>
+                    <div class="col-md-8">
+                        <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+                        <ul class="list-unstyled list-inline blog-info">
+                            <li><i class="fa fa-calendar"></i> {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}</li>
+                            <li><i class="fa fa-tags"></i> {{ post.tags }}</li>
+                        </ul>
+                        <p>{{ post.description }}</p>
+                    </div>
+                </div><!--End Blog Post-->
+                <hr class="margin-bottom-30">
+            {% endfor %}
+
+            <!--Pagination-->
+            <div class="text-center">
+                <ul class="pagination">
+                    <li><a href="#">«</a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li class="active"><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">6</a></li>
+                    <li><a href="#">7</a></li>
+                    <li><a href="#">8</a></li>
+                    <li><a href="#">»</a></li>
+                </ul>
+            </div><!--End Pagination-->
+        </div><!-- End Left Sidebar -->
+        <!-- Right Sidebar -->
+        <div class="col-md-3">
+            <div class="headline headline-md"><h2>Search</h2></div>
+            <div class="input-group margin-bottom-30">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-btn">
+                    <button class="btn-u" type="button">Go</button>
+                </span>
+            </div>
+
+            <div class="posts margin-bottom-30">
+                <div class="headline headline-md"><h2>Recent Posts</h2></div>
+                {% for post in site.posts limit: 5 %}
+                    <dl class="dl-horizontal">
+                        <dt><a href="#"><img src="/images/demo/2.jpg" alt="" /></a></dt>
+                        <dd>
+                            <p><a href="{{ post.url }}">{{ post.title }}</a></p>
+                        </dd>
+                    </dl>
+                {% endfor %}
+            </div><!--/posts-->
+            <!-- End Posts -->
+            <!-- Photo Stream -->
+            <div class="headline headline-md"><h2>Books</h2></div>
+            <ul class="list-unstyled blog-photos margin-bottom-30">
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/3.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/3.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+            </ul>
+            <!-- End Photo Stream -->
+        </div>
+        <!-- End Right Sidebar -->
+    </div><!--/row-->
+</div><!--/container-->
+<!--=== End Content Part ===-->

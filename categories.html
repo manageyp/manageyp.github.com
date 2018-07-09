@@ -1,42 +1,103 @@
 ---
 layout: default
-title: Categories
-permalink: /categories/
+title: Categories of Henry Li's Blog
+description: Coding for fun. Manage Your Project - You can do well, you must do well.
 ---
 
-<div class="tabbable tabs-right row-fluid">
-  <ul class="nav nav-tabs" id="categories-nav">
-    {% for tag in site.tags %}
-      <li>
-        <a href="#{{ tag | first }}-ref" data-toggle="tab">
-          {{ tag | first }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
+<div class="header">
+    <div class="container">
+        <a class="logo" id="earth-logo" title="Time is flying." href="/"><img src="/images/demo/earth_logo.png" alt="Earth"></a>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="fa fa-bars"></span>
+        </button>
+    </div><!--/end container-->
+    <div class="collapse navbar-collapse navbar-responsive-collapse">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li class="active"><a href="/categories/">Categories</a></li>
+                <li><a href="/archives/">Archives</a></li>
+                <li><a href="/books/">Books</a></li>
+                <li class="mega-menu-fullwidth"><a href="/about/">About</a></li>
+            </ul>
+        </div><!--/end container-->
+    </div><!--/navbar-collapse-->
+</div><!--=== End Header ===-->
+<!--=== Content Part ===-->
+<div class="container content">
+    <div class="row blog-page">
+        <!-- Left Sidebar -->
+        <div class="col-md-9 md-margin-bottom-30">
 
-  <div class="tab-content">
-    {% for tag in site.tags %}
-    <div class="tab-pane" id="{{ tag | first }}-ref">
-      <ul class="posts-list">
-        {% for post in site.tags[tag.first] %}
-          <li>
-            <span class="category-archive">
-            <a href="{{ post.url }}">{{ post.title }}</a>
-            </span>
-            <span class="post-right-info pull-right">
-              {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}
-            </span>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-    {% endfor %}
-  </div>
-</div>
+          {% for tag in site.tags %}
+            {% for post in site.tags[tag.first] %}
+              <div class="row blog blog-medium margin-bottom-30">
+                  <div class="col-md-4">
+                      <img class="img-responsive" src="/images/demo/img22.jpg" alt="">
+                  </div>
+                  <div class="col-md-8">
+                      <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
+                      <ul class="list-unstyled list-inline blog-info">
+                          <li><i class="fa fa-calendar"></i> {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}</li>
+                          <li><i class="fa fa-tags"></i> {{ post.tags }}</li>
+                      </ul>
+                      <p>A{{ post.description }}</p>
+                  </div>
+              </div><!--End Blog Post-->
+              <hr class="margin-bottom-30">
+            {% endfor %}
+          {% endfor %}
 
-<script>
-  $(function () {
-    $('#categories-nav a:first').tab('show');
-  })
-</script>
+            <!--Pagination-->
+            <div class="text-center">
+                <ul class="pagination">
+                    <li><a href="#">«</a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li class="active"><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">6</a></li>
+                    <li><a href="#">7</a></li>
+                    <li><a href="#">8</a></li>
+                    <li><a href="#">»</a></li>
+                </ul>
+            </div><!--End Pagination-->
+        </div><!-- End Left Sidebar -->
+        <!-- Right Sidebar -->
+        <div class="col-md-3">
+            <div class="headline headline-md"><h2>Search</h2></div>
+            <div class="input-group margin-bottom-30">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-btn">
+                    <button class="btn-u" type="button">Go</button>
+                </span>
+            </div>
+            <!-- Tabs Widget -->
+            <div class="headline headline-md"><h2>Tags</h2></div>
+            <div class="margin-bottom-30">
+                <ul class="tags-v1 list-inline " style="">
+                  {% for tag in site.tags %}
+                    <li><a class="rounded-3x" href="{{ tag | first }}">{{ tag | first }}</a></li>
+                  {% endfor %}
+                </ul>
+            </div>
+            <!-- Photo Stream -->
+            <div class="headline headline-md"><h2>Books</h2></div>
+            <ul class="list-unstyled blog-photos margin-bottom-30">
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/3.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/3.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/1.jpg"></a></li>
+                <li><a href="#"><img class="hover-effect" alt="" src="/images/demo/2.jpg"></a></li>
+            </ul>
+            <!-- End Photo Stream -->
+        </div>
+        <!-- End Right Sidebar -->
+    </div><!--/row-->
+</div><!--/container-->
+<!--=== End Content Part ===-->
