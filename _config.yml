@@ -1,11 +1,25 @@
 author: Henry li
 email: manageyp@gmail.com
 title: Coding for fun.
-baseurl: /
+baseurl: ""
+url: ""
 github_username: manageyp
 tags: Python Ruby MySQL
 books: programming
 copyright: Designed by <a href="https://github.com/manageyp">Henry</a>
+
+# Pagination
+pagination:
+  enabled: true
+  per_page: 5
+  permalink: '/page/:num/'
+  limit: 0
+  sort_field: 'record_on'
+  sort_reverse: true
+
+
+plugins:
+  - jekyll-paginate-v2
 
 # Build settings
 # markdown: kramdown
