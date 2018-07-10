@@ -16,6 +16,9 @@ pagination:
   limit: 0
   sort_field: 'record_on'
   sort_reverse: true
+  trail:
+    before: 3
+    after: 3
 
 
 plugins:

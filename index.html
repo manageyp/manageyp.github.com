@@ -49,22 +49,6 @@ pagination:
                 <hr class="margin-bottom-30">
             {% endfor %}
 
-            <!--Pagination-->
-            <div class="text-center">
-                <ul class="pagination">
-                    <li><a href="#">«</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li class="active"><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">6</a></li>
-                    <li><a href="#">7</a></li>
-                    <li><a href="#">8</a></li>
-                    <li><a href="#">»</a></li>
-                </ul>
-            </div><!--End Pagination-->
-
           {% if paginator.total_pages > 1 %}
             <div class="text-center">
               <ul class="pagination">
@@ -74,15 +58,13 @@ pagination:
                   <li><a href="javascript:void(0);">«</a></li>
               {% endif %}
 
-              {% for page in (1..paginator.total_pages) %}
-                {% if page == paginator.page %}
-                  <li class="active"><a href="javascript:void(0);">{{ page }}</a></li>
-                {% elsif page == 1 %}
-                  <li><a href="/">{{ page }}</a></li>
-                {% else %}
-                  <li><a href="{{ site.paginate_path | replace: ':num', '/:num/' | replace: ':num', page }}">{{ page }}</a></li>
-                {% endif %}
-              {% endfor %}
+              {% if paginator.page_trail %}
+                  {% for trail in paginator.page_trail %}
+                      <li {% if page.url == trail.path %} class="active" {% endif %}>
+                        <a href="{{ trail.path }}">{{ trail.num }}</a>
+                      </li>
+                  {% endfor %}
+              {% endif %}
 
               {% if paginator.next_page %}
                 <li><a href="{{ paginator.next_page_path  }}">»</a></li>
