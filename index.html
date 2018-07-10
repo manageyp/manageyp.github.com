@@ -3,6 +3,8 @@ layout: default
 title: Henry Li's Blog
 description: Coding for fun. Manage Your Project - You can do well, you must do well.
 permalink: /
+pagination:
+  enabled: true
 ---
 
 <div class="header">
@@ -30,7 +32,7 @@ permalink: /
     <div class="row blog-page">
         <!-- Left Sidebar -->
         <div class="col-md-9 md-margin-bottom-30">
-            {% for post in site.posts limit: 5 %}
+            {% for post in paginator.posts %}
                 <div class="row blog blog-medium margin-bottom-30">
                     <div class="col-md-4">
                         <img class="img-responsive" src="/images/demo/img22.jpg" alt="">
@@ -62,6 +64,35 @@ permalink: /
                     <li><a href="#">»</a></li>
                 </ul>
             </div><!--End Pagination-->
+
+          {% if paginator.total_pages > 1 %}
+            <div class="text-center">
+              <ul class="pagination">
+              {% if paginator.previous_page %}
+                  <li><a href="{{ paginator.previous_page_path }}">«</a></li>
+              {% else %}
+                  <li><a href="javascript:void(0);">«</a></li>
+              {% endif %}
+
+              {% for page in (1..paginator.total_pages) %}
+                {% if page == paginator.page %}
+                  <li class="active"><a href="javascript:void(0);">{{ page }}</a></li>
+                {% elsif page == 1 %}
+                  <li><a href="/">{{ page }}</a></li>
+                {% else %}
+                  <li><a href="{{ site.paginate_path | replace: ':num', '/:num/' | replace: ':num', page }}">{{ page }}</a></li>
+                {% endif %}
+              {% endfor %}
+
+              {% if paginator.next_page %}
+                <li><a href="{{ paginator.next_page_path  }}">»</a></li>
+              {% else %}
+                <li><a href="javascript:void(0);">»</a></li>
+              {% endif %}
+               </ul>
+            </div>
+          {% endif %}
+
         </div><!-- End Left Sidebar -->
         <!-- Right Sidebar -->
         <div class="col-md-3">
