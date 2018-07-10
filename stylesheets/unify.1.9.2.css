@@ -3904,6 +3904,11 @@ select::-ms-expand {
 	color: #777;
 }
 
+.blog-medium .blog-info li a:hover {
+	color: #72c02c;
+	text-decoration: none;
+}
+
 /* Medium devices (desktops, 992px and up) */
 @media (max-width: 992px) {
 	.blog-medium img {

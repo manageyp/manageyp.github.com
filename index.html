@@ -41,7 +41,11 @@ pagination:
                         <h2><a href="{{ post.url }}">{{ post.title }}</a></h2>
                         <ul class="list-unstyled list-inline blog-info">
                             <li><i class="fa fa-calendar"></i> {{ post.record_on | date: " %Y 年 %m 月 %d 日" }}</li>
-                            <li><i class="fa fa-tags"></i> {{ post.tags }}</li>
+                            <li><i class="fa fa-tags"></i>
+                               {% for tag in post.tags %}
+                                  <a href="/categories/{{tag}}">{{ tag }}</a>
+                               {% endfor %}
+                            </li>
                         </ul>
                         <p>{{ post.description }}</p>
                     </div>
