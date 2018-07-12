@@ -4,7 +4,7 @@ title: High Performance Web Sites
 description: High Performance Web Sites
 categories: Performance
 tags: Performance
-record_on: 2013-04-03
+date: 2013-04-03
 ---
 <p>
 《高性能网站建设指南》阅读记录。学习了 Web 性能优化的几个规则，补充了 HTTP 协议的基础知识。
@@ -111,7 +111,7 @@ record_on: 2013-04-03
   <pre>
     DNS 缓存：服务器可以表明记录可以被缓存多久，查找返回的 DNS 记录包含了一个存活时间值 TTL（Time-to-live），
     该值告诉客户端可以对该记录缓存多久。
-    
+
     拥有巨大数量用户的顶级网站，努力做到当服务器、虚拟IP地址或联合定位掉线时，提供快速故障转移。
     会选择设置短 TTL。
   </pre>
@@ -156,7 +156,7 @@ record_on: 2013-04-03
 <p>
   <pre>
     实体标签（Entity Tag）是 Web 服务器和浏览器用于确认缓存组件的有效性的一种机制。
-     
+
     服务器在检测缓存的组件是否和原始服务器上的组件匹配时，有两种方式：
     a. 比较最新修改日期
     b. 比较实体标签
@@ -199,7 +199,7 @@ record_on: 2013-04-03
    她可以使浏览器在一个单独的连接上，进行多个请求。
    浏览器和服务器使用 Connection 头来指出对 Keep-Alive 的支持。
 
-   Connection： keep-alive  
+   Connection： keep-alive
   </pre>
 </p>
 

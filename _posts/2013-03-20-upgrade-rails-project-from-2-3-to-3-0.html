@@ -4,7 +4,7 @@ title: Upgrade Rails project from 2.3 to 3.0
 description: Upgrade Rails project version from 2.3.x to 3.0.x
 categories: Ruby-on-Rails
 tags: Ruby-on-Rails
-record_on: 2013-03-20
+date: 2013-03-20
 ---
 <p>曾今将一个项目代码由 Rails 2.3.11 升级为 3.0.20。整理一下在这个过程中，解决问题的清单。</p>
 <p>升级的原因主要是 Rails 3 在性能和安全上有很大提升，另外 3 引入 assets 管理 js/css/images；
@@ -57,7 +57,7 @@ rake rails:upgrade:configuration
 <h3>2. 生成 Rails 3 文件</h3>
 
 <p>
-  在项目目录下执行 
+  在项目目录下执行
 <pre class="prettyprint lang-html">
 rails new .
 </pre>
@@ -87,7 +87,7 @@ config.autoload_paths += %W(#{Rails.root}/lib #{Rails.root}/extras)
 <p>
   will_paginate 由 plugin 替换为 gem. 重写分页的显示需要参考: <a href="http://thewebfellas.com/blog/2010/8/22/revisited-roll-your-own-pagination-links-with-will_paginate-and-rails-3" target="_blank"> 文章链接</a>
 <pre class="prettyprint lang-html">
-# .paginate().all 
+# .paginate().all
 </pre>
   cache_fu 替换为 dalli <a href="https://github.com/mperham/dalli" target="_blank"> Dalli 链接</a>
 </p>
@@ -97,7 +97,7 @@ config.autoload_paths += %W(#{Rails.root}/lib #{Rails.root}/extras)
 <pre class="prettyprint lang-html">
 # 多加 = 等号，输出 html
 # form_for, form_tag, fields_for and link_to using < % = instead of < %
-    
+
 # Rails 3 默认使用了 safebuffers, 不需要到处加< % = h ... % >
 # Rails 3 推荐无侵入式的JS，一些旧的 onclick 的 helper 都改写成 UJS 方式
 # Use raw to avoid escaping HTML characters in views

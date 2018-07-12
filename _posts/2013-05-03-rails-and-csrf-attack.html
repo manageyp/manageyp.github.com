@@ -4,7 +4,7 @@ title: Rails And CSRF Attack
 description: Rails And CSRF Attack
 categories: Ruby-on-Rails
 tags: Ruby-on-Rails
-record_on: 2013-05-03
+date: 2013-05-03
 ---
 
 <h3>CSRF 介绍，攻击原理</h3>
@@ -67,7 +67,7 @@ CSRF 攻击原理图解：<br />
   </pre>
   这个 security token，是由 current session 和 server-side secret 按照一定规则生成。<br />
   如果 client-side 的请求送回的 token 验证失败，则 session 会被注销，请求也不会被执行。<br />
-  但是，如果该 token 也被截获，那就可能造成危害。 
+  但是，如果该 token 也被截获，那就可能造成危害。
 </p>
 
 <p>

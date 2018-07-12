@@ -4,7 +4,7 @@ title: Inheritance and Polymorphismin Model Design in Relational Databases
 description: Inheritance and Polymorphismin Model Design in Relational Databases
 categories: Design
 tags: Design
-record_on: 2013-02-13
+date: 2013-02-13
 ---
 <p>在关系型数据库的表设计中，使用继承和多态</p>
 <p>基于 Web 开发的互联网应用，仍然在使用关系型数据库，如 MySQL。在表设计上，引入继承和多态，可以解决一些常见的问题。
@@ -19,7 +19,7 @@ record_on: 2013-02-13
 <p>
   <pre>
     优点：独立的表结构设计，结构清晰
-    缺点：有重复的、统一字段，如：title, price; 
+    缺点：有重复的、统一字段，如：title, price;
          丢失统一字段的索引，如：
            a. SKU, 产品统一编号的简称，每种产品均对应有唯一的SKU号, 因此需要在多个表中，维护其唯一性；
            b. 搜索 title 包含 ‘手机’的商品，既要搜索 books, 又要搜索 phones 表。若这样独立的商品种类越多，越麻烦。
@@ -47,7 +47,7 @@ record_on: 2013-02-13
 
 <p>
   <pre>
-    优点：解决了第1、2种设计存在的缺点; 
+    优点：解决了第1、2种设计存在的缺点;
          能够较好的适应未来的变化
     缺点：创建时需要维护表之间 关系；
          读取时，需要关联表查询
@@ -61,7 +61,7 @@ record_on: 2013-02-13
 
 <p>
   <pre>
-    优点：解决了第1、2种设计存在的缺点; 
+    优点：解决了第1、2种设计存在的缺点;
          能够较好的适应未来的变化；
          Rails 已经有了很好的支持
     缺点：应用层需要维护表之间的关系
