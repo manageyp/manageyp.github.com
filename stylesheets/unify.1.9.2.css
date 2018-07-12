@@ -3127,7 +3127,7 @@ ul.blog-tags a:hover i {
 }
 
 .project-details strong {
-  min-width: 100px;
+  min-width: 65px;
   display: inline-block;
 }
 
@@ -3902,6 +3902,11 @@ select::-ms-expand {
 .blog-medium .blog-info li,
 .blog-medium .blog-info li a {
 	color: #777;
+}
+
+.blog-medium .blog-info li a:hover {
+	color: #72c02c;
+	text-decoration: none;
 }
 
 /* Medium devices (desktops, 992px and up) */
